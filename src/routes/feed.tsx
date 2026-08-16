@@ -179,9 +179,13 @@ function FeedPage() {
             </button>
           </motion.div>
         ) : (
-          <div className="space-y-4" aria-label="Publicaciones">
+          <div className="space-y-5" aria-label="Publicaciones">
             {posts.map((p, i) => (
-              <div key={p.id} className="card-enter" style={{ animationDelay: `${Math.min(i * 25, 180)}ms` }}>
+              <div
+                key={p.id}
+                className="card-enter rounded-[1.35rem] bg-background/90 p-1.5 shadow-[0_8px_24px_-22px_oklch(0.35_0.04_258/0.45)]"
+                style={{ animationDelay: `${Math.min(i * 25, 180)}ms` }}
+              >
                 <PostCard post={p} myId={myId} isMod={mod} onChange={reload} />
               </div>
             ))}

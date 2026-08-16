@@ -1,3 +1,17 @@
+# Corrección estructural del Feed
+
+Estado: completado.
+
+- [x] Auditar la estructura real de la lista y cada PostCard.
+- [x] Identificar fondos, bordes o wrappers que eliminan la separación visual.
+- [x] Implementar espacio y contraste entre publicaciones.
+- [x] Validar Feed móvil, escritorio y compilación.
+- [x] Guardar un checkpoint y entregar.
+
+La separación ya no depende solamente de `space-y`: cada publicación tiene un canal visual propio mediante un wrapper con fondo de lienzo, padding y sombra sutil, mientras que `PostCard` conserva su superficie blanca, borde reforzado y elevación independiente. El ritmo entre tarjetas pasó a 20 px. `pnpm build` completó correctamente.
+
+---
+
 # Panel independiente de Buscar
 
 Estado: completado.

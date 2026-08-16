@@ -72,7 +72,7 @@ export const PostCard = memo(function PostCard({
   ) : null;
 
   return (
-    <article className={`group panel rounded-2xl border border-border/60 transition-[border-color,box-shadow] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-sm ${entranceClass}`}>
+    <article className={`group panel rounded-2xl border border-border/70 bg-card shadow-[0_4px_14px_-8px_oklch(0.28_0.03_258/0.22)] transition-[border-color,box-shadow,transform] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-[0_10px_24px_-14px_oklch(0.35_0.12_258/0.3)] ${entranceClass}`}>
       {/* Hairline degradado superior */}
       <div className="h-[3px] w-full rounded-t-2xl grad-brand-fade opacity-70 pointer-fine:group-hover:opacity-100 transition-opacity duration-300" />
 
