@@ -241,47 +241,39 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
     >
       {/* Cabecera */}
       <header className="shrink-0 border-b border-border/60 bg-background/80 backdrop-blur-md">
-        <div className="max-w-2xl md:max-w-3xl mx-auto flex items-center gap-2.5 px-4 py-3">
-          <div
-            className="relative shrink-0 rounded-full grid place-items-center text-primary-foreground"
-            style={{
-              width: 42,
-              height: 42,
-              padding: 2,
-              background: "var(--color-primary)",
-              boxShadow: "0 4px 16px -6px oklch(0.55 0.15 262/0.5)",
-            }}
-          >
+        <div className="max-w-2xl md:max-w-3xl mx-auto px-4 py-3">
+          <div className="flex items-center gap-2.5">
             <div
-              className="w-full h-full rounded-full grid place-items-center"
-              style={{ background: "var(--gradient-asternal)" }}
+              className="relative shrink-0 rounded-full grid place-items-center text-primary-foreground"
+              style={{ width: 42, height: 42, padding: 2, background: "var(--color-primary)", boxShadow: "0 4px 16px -6px oklch(0.55 0.15 262/0.5)" }}
             >
-              <Bot size={19} strokeWidth={2.2} className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" />
+              <div className="w-full h-full rounded-full grid place-items-center" style={{ background: "var(--gradient-asternal)" }}>
+                <Bot size={19} strokeWidth={2.2} className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" />
+              </div>
             </div>
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[15px] leading-tight font-semibold flex items-center gap-1.5">
-              Orión
-              <span className="shrink-0 text-[8px] font-display tracking-widest px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
-                ASISTENTE IA
-              </span>
+            <div className="min-w-0 flex-1">
+              <div className="text-[15px] leading-tight font-semibold flex items-center gap-1.5">
+                Orión
+                <span className="shrink-0 text-[8px] font-display tracking-widest px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">ASISTENTE IA</span>
+              </div>
+              <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                Ayuda profesional para crear juegos · motor de Asternal
+              </div>
             </div>
-            <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              Ayuda profesional para crear juegos · motor de Asternal
-              {balance !== null && (
-                <span className="ml-1 text-[9px] font-mono text-muted-foreground/70">
-                  · saldo ${balance.toFixed(2)}
-                </span>
-              )}
-            </div>
+            <button onClick={newChat} title="Nueva conversación" className="w-9 h-9 rounded-xl border border-border/70 bg-card grid place-items-center active:scale-95 transition shrink-0 text-primary hover:border-primary/40">
+              <Plus size={15} />
+            </button>
+            <button onClick={onClose} className="w-9 h-9 rounded-xl border border-border/70 bg-background grid place-items-center active:scale-95 transition shrink-0">
+              <X size={16} />
+            </button>
           </div>
 
-          {/* Selector de chats */}
-          <div className="relative shrink-0">
+          {/* Selector de chats: segunda fila en móvil para que nunca comprima el título ni las acciones. */}
+          <div className="relative mt-2.5 sm:absolute sm:top-3 sm:right-4 sm:mt-0 sm:max-w-[200px]">
             <button
               onClick={() => setPickerOpen(o => !o)}
-              className="flex items-center gap-1.5 max-w-[140px] sm:max-w-[200px] rounded-xl border border-border/70 bg-card px-2.5 py-1.5 active:scale-95 transition text-left"
+              className="w-full flex items-center gap-1.5 rounded-xl border border-border/70 bg-card px-3 py-2 active:scale-95 transition text-left sm:max-w-[200px]"
               title="Cambiar de conversación"
             >
               <MessageSquare size={13} className="text-primary shrink-0" />
@@ -342,20 +334,6 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
               )}
             </AnimatePresence>
           </div>
-
-          <button
-            onClick={newChat}
-            title="Nueva conversación"
-            className="w-9 h-9 rounded-xl border border-border/70 bg-card grid place-items-center active:scale-95 transition shrink-0 text-primary hover:border-primary/40"
-          >
-            <Plus size={15} />
-          </button>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-xl border border-border/70 bg-background grid place-items-center active:scale-95 transition shrink-0"
-          >
-            <X size={16} />
-          </button>
         </div>
       </header>
 

@@ -28,6 +28,20 @@ Se eliminó el padding especial aplicado cuando Inicio estaba incrustado, que ca
 
 ---
 
+# Corrección de Orión, Feed y juegos adjuntos
+
+Estado: completado.
+
+- [x] Auditar los desbordes marcados en Orión y en los selectores del Feed.
+- [x] Encontrar el flujo de apertura de un juego adjunto en una publicación.
+- [x] Reparar el layout responsive y la navegación al modo jugable.
+- [x] Validar interacción, vistas móviles y compilación.
+- [x] Guardar un checkpoint y entregar.
+
+El selector del Feed ya no comprime ni corta sus etiquetas en móvil: las pestañas conservan ancho legible y permiten desplazamiento horizontal. La cabecera de Orión separa el selector de conversaciones en una segunda fila móvil para preservar título, estado y acciones. Los juegos adjuntos ya no navegan a una ruta sin handler: se hidrata el juego completo y se abre GameCard, que reutiliza el runtime existente; si el juego fue eliminado o no contiene una escena, aparece un mensaje claro. `pnpm build` y una revisión de renderizado móvil completaron correctamente.
+
+---
+
 # Reparación visual de Feed y perfil
 
 Estado: completado.

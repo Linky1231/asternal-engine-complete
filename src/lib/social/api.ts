@@ -186,6 +186,23 @@ export async function fetchFeed(opts: { search?: string; tag?: string; category?
   return enrichPosts(posts as PostRow[], me, opts.tag);
 }
 
+/** Carga un post individual con el mismo enriquecimiento que el Feed.
+ * Se usa al abrir un juego adjunto: el adjunto solo contiene metadatos ligeros
+ * y el runtime necesita la escena serializada en `signed_media`. */
+export async function fetchPostById(postId: string): Promise<PostWithMeta | null> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", postId)
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const { data: { user } } = await supabase.auth.getUser();
+  const [post] = await enrichPosts([data as PostRow], user?.id ?? null);
+  return post ?? null;
+}
+
 /**
  * Enriquecimiento común de posts: perfiles (incluido el vendedor actual en reventas),
  * reacciones, comentarios, media firmada y estado de propiedad.
@@ -1569,4 +1586,3 @@ export async function fetchFollowing(userId: string): Promise<Profile[]> {
   const byId = new Map((profiles ?? []).map(p => [p.id, p as Profile]));
   return ids.map(id => byId.get(id)).filter((p): p is Profile => !!p);
 }
-

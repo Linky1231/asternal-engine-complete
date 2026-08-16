@@ -2,13 +2,14 @@ import { memo, useState } from "react";
 import { Avatar } from "./Avatar";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { type PostWithMeta, toggleReaction, toggleRepost, deletePost, updatePost, reportContent, votePoll, isPlusActive } from "@/lib/social/api";
+import { type PostWithMeta, toggleReaction, toggleRepost, deletePost, updatePost, reportContent, votePoll, isPlusActive, fetchPostById } from "@/lib/social/api";
 import { CommentSection } from "./CommentSection";
+import { GameCard } from "./GameCard";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
-  FileText, Download, Lock, Gamepad2, Code2, Link2,
+  FileText, Download, Lock, Gamepad2, Code2, Link2, Loader2,
 } from "lucide-react";
 
 function timeAgo(iso: string) {
@@ -28,6 +29,9 @@ export const PostCard = memo(function PostCard({
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const [showHtml, setShowHtml] = useState(false);
+  const [attachedGame, setAttachedGame] = useState<PostWithMeta | null>(null);
+  const [attachedGameLoading, setAttachedGameLoading] = useState(false);
+  const [attachedGameError, setAttachedGameError] = useState<string | null>(null);
   const menu = useCardMenuAnchor<HTMLButtonElement>();
 
   const mine = myId === post.author_id;
@@ -61,6 +65,25 @@ export const PostCard = memo(function PostCard({
     if (!post.poll) return;
     await votePoll(post.poll.id, i);
     onChange();
+  };
+
+  // El adjunto solo contiene título y portada. Se hidrata el juego completo
+  // antes de abrir el GameCard, que ya conoce el runtime y el control de compra.
+  const openAttachedGame = async () => {
+    if (!post.pinned_game?.id || attachedGameLoading) return;
+    setAttachedGameLoading(true);
+    setAttachedGameError(null);
+    try {
+      const game = await fetchPostById(post.pinned_game.id);
+      if (!game || game.category !== "game" || !game.signed_media[0]) {
+        throw new Error("Este juego ya no está disponible para jugar.");
+      }
+      setAttachedGame(game);
+    } catch (e) {
+      setAttachedGameError((e as Error).message || "No se pudo abrir el juego adjunto.");
+    } finally {
+      setAttachedGameLoading(false);
+    }
   };
 
   const avatarInner = <Avatar p={author} className="w-full h-full" />;
@@ -184,8 +207,13 @@ export const PostCard = memo(function PostCard({
 
         {/* Juego fijado */}
         {post.pinned_game && (
-          <Link to="/" search={{ p: post.pinned_game.id } as never}
-            className="group/game flex items-center gap-3 rounded-2xl p-2 pr-3 bg-primary/[0.04] border border-primary/20 pointer-fine:hover:border-primary/40 transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md">
+          <div className="space-y-1.5">
+          <button
+            type="button"
+            onClick={openAttachedGame}
+            disabled={attachedGameLoading}
+            className="group/game w-full flex items-center gap-3 rounded-2xl p-2 pr-3 bg-primary/[0.04] border border-primary/20 text-left pointer-fine:hover:border-primary/40 transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md disabled:cursor-wait disabled:opacity-70"
+          >
             {post.pinned_game.cover_url ? (
               <img src={post.pinned_game.cover_url} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0 ring-1 ring-border/50" />
             ) : (
@@ -197,8 +225,12 @@ export const PostCard = memo(function PostCard({
               <div className="text-[9px] font-display tracking-[0.18em] text-primary-glow uppercase">Juego fijado</div>
               <div className="text-sm font-display truncate mt-0.5">{post.pinned_game.title}</div>
             </div>
-            <span className="w-7 h-7 rounded-full bg-primary/10 grid place-items-center text-primary-glow transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">▶</span>
-          </Link>
+            <span className="w-7 h-7 rounded-full bg-primary/10 grid place-items-center text-primary-glow transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">
+              {attachedGameLoading ? <Loader2 size={14} className="animate-spin" /> : "▶"}
+            </span>
+          </button>
+          {attachedGameError && <p className="px-1 text-[10px] text-rose-600">{attachedGameError}</p>}
+          </div>
         )}
 
         {/* Encuesta */}
@@ -301,6 +333,20 @@ export const PostCard = memo(function PostCard({
       </footer>
 
       {openComments && <div className="border-t border-border/50 bg-muted/10 px-3 py-2.5"><CommentSection postId={post.id} myId={myId} isMod={isMod} onChange={onChange} /></div>}
+
+      {attachedGame && (
+        <div
+          className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm p-3 flex items-start justify-center pt-16 overflow-y-auto"
+          onClick={() => setAttachedGame(null)}
+        >
+          <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
+            <GameCard post={attachedGame} myId={myId} isMod={isMod} onChange={onChange} />
+            <button type="button" onClick={() => setAttachedGame(null)} className="mt-3 w-full h-10 rounded-xl bg-white/10 text-white text-xs font-display tracking-widest border border-white/20 active:scale-95">
+              CERRAR
+            </button>
+          </div>
+        </div>
+      )}
     </article>
   );
 });

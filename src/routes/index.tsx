@@ -515,7 +515,7 @@ function FeedSubTabs({ value, onChange }: { value: FeedSub; onChange: (v: FeedSu
     { id: "forums", label: "Foros", icon: <MessageSquare size={13} /> },
   ];
   return (
-    <div className="flex gap-1.5 pt-1 pb-2">
+    <div className="-mx-3 flex gap-2 overflow-x-auto no-scrollbar px-3 pt-1 pb-2" aria-label="Filtro del Feed">
       {items.map((it) => {
         const active = value === it.id;
         return (
@@ -523,7 +523,7 @@ function FeedSubTabs({ value, onChange }: { value: FeedSub; onChange: (v: FeedSu
             key={it.id}
             onClick={() => onChange(it.id)}
             aria-pressed={active}
-            className={`flex-1 min-w-0 flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-xl text-[10px] sm:text-[11px] font-display font-semibold tracking-wide whitespace-nowrap border transition-colors duration-200 outline-none focus:outline-none active:scale-[0.97] ${
+            className={`shrink-0 min-w-[108px] sm:flex-1 sm:min-w-0 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-[10px] sm:text-[11px] font-display font-semibold tracking-wide whitespace-nowrap border transition-colors duration-200 outline-none focus:outline-none active:scale-[0.97] ${
               active
                 ? "border-transparent grad-brand text-primary-foreground shadow-sm"
                 : "border-line-strong bg-card text-muted-foreground hover:border-primary/25 hover:text-foreground"
