@@ -19,13 +19,11 @@ function ProfileByIdPage() {
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { navigate({ to: "/auth" }); return; }
-      setMyId(session.user.id);
-      setMod(await checkMod());
+      setMyId(session?.user?.id ?? null);
+      if (session) setMod(await checkMod());
     })();
   }, [navigate]);
 
-  if (!myId) return null;
   const viewingOwn = myId === userId;
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">

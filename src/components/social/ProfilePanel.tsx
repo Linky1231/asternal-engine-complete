@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import QRCode from "qrcode";
 import {
   Loader2, Camera, Save, Gamepad2, Newspaper, CheckCircle2, Star, ChevronRight,
   ImagePlus, MapPin, Cake, Palette, Tag, Sparkles as SparklesIcon, Eye, EyeOff,
   Heart, MessageCircle, ChevronDown, ChevronUp, Share2, Link2, Check,
-  Youtube, Instagram, Globe, UserPlus, UserCheck, X, Fingerprint, Copy,
+  Youtube, Instagram, Globe, UserPlus, UserCheck, X, Fingerprint, Copy, QrCode,
 } from "lucide-react";
 import {
   type Profile,
@@ -80,6 +81,8 @@ export function ProfilePanel({
   const [followBusy, setFollowBusy] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [followList, setFollowList] = useState<null | { kind: "followers" | "following"; items: Profile[]; loading: boolean }>(null);
 
   const load = async () => {
@@ -124,6 +127,7 @@ export function ProfilePanel({
   useEffect(() => { load(); loadContent(); loadFollow(); /* eslint-disable-next-line */ }, [userId]);
 
   const toggleFollow = async () => {
+    if (!myId) { navigate({ to: "/auth" }); return; }
     if (followBusy) return;
     setFollowBusy(true);
     try {
@@ -146,6 +150,26 @@ export function ProfilePanel({
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 1800);
   };
+  const openQr = async () => {
+    setQrOpen(true);
+    setQrDataUrl(null);
+    try {
+      const dataUrl = await QRCode.toDataURL(shareLink, {
+        width: 420,
+        margin: 2,
+        errorCorrectionLevel: "M",
+        color: { dark: "#10223f", light: "#ffffff" },
+      });
+      setQrDataUrl(dataUrl);
+    } catch { setQrDataUrl(null); }
+  };
+  const qrButton = (
+    <button onClick={() => void openQr()}
+      className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium flex items-center gap-1.5 active:scale-95 transition"
+      title="Mostrar QR del perfil">
+      <QrCode size={13} /> QR
+    </button>
+  );
   const shareMenu = (
     <div className="relative">
       <button onClick={() => setShareOpen(s => !s)}
@@ -331,6 +355,7 @@ export function ProfilePanel({
                 <div className="mt-12 flex items-center gap-2">
                   <button onClick={() => setEditing(true)}
                     className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
+                  {qrButton}
                   {shareMenu}
                 </div>
               )
@@ -340,6 +365,7 @@ export function ProfilePanel({
                   className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
                   {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
                 </button>
+                {qrButton}
                 {shareMenu}
               </div>
             )}
@@ -363,6 +389,30 @@ export function ProfilePanel({
           )}
 
           {followList && <FollowListModal list={followList} myId={myId} onClose={() => setFollowList(null)} onChanged={loadFollow} />}
+
+          {qrOpen && (
+            <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/55 p-4" role="dialog" aria-modal="true" aria-label="Código QR del perfil">
+              <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-5 shadow-2xl">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h2 className="font-display text-base font-bold">Comparte tu perfil</h2>
+                    <p className="mt-1 text-xs text-muted-foreground">Escanea este código para abrir directamente el perfil en Asternal.</p>
+                  </div>
+                  <button onClick={() => setQrOpen(false)} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-muted/60" aria-label="Cerrar QR">
+                    <X size={16} />
+                  </button>
+                </div>
+                <div className="mt-5 grid place-items-center rounded-xl bg-white p-4">
+                  {qrDataUrl ? <img src={qrDataUrl} alt={`Código QR del perfil de ${profile.display_name || profile.username || "usuario"}`} className="h-64 w-64" /> : <Loader2 size={22} className="animate-spin text-primary" />}
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-2">
+                  <span className="min-w-0 truncate font-mono text-[10px] text-muted-foreground">{shareLink}</span>
+                  {qrDataUrl && <a href={qrDataUrl} download={`asternal-perfil-${profile.username || userId}.png`}
+ className="shrink-0 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white">Descargar</a>}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Social links (Plus feature, always shown if present and Plus active) */}
           {!editing && isPlusActive(profile) && profile.social_links && (
