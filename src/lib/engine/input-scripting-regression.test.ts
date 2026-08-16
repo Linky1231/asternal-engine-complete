@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { addDefaultComponents } from "./ecs";
 import { newRuntimeState, stepScene, type Entity, type Scene } from "./core";
 import { createScriptRunner } from "./scripts";
 
 function player(): Entity {
-  return addDefaultComponents({
+  return {
     id: "player",
     kind: "player",
     x: 40,
@@ -20,7 +19,7 @@ function player(): Entity {
     collectible: false,
     hazard: false,
     goal: false,
-  });
+  };
 }
 
 function sceneOf(entity: Entity): Scene {
@@ -28,7 +27,7 @@ function sceneOf(entity: Entity): Scene {
 }
 
 describe("input and scripting regressions", () => {
-  it("moves an ECS controller from the same left/right input produced by a joystick", () => {
+  it("moves a legacy controller from the same left/right input produced by a joystick", () => {
     const entity = player();
     const scene = sceneOf(entity);
     const state = newRuntimeState(scene);
@@ -72,9 +71,9 @@ describe("input and scripting regressions", () => {
 it("jumps a controller player from the same jump input used by keyboard and joystick", () => {
   const entity = player();
   entity.y = 101;
-  const floor = addDefaultComponents({
+  const floor = {
     id: "floor",
-    kind: "platform",
+    kind: "platform" as const,
     x: 0,
     y: 132,
     w: 640,
@@ -88,7 +87,7 @@ it("jumps a controller player from the same jump input used by keyboard and joys
     collectible: false,
     hazard: false,
     goal: false,
-  });
+  };
   const scene: Scene = { ...sceneOf(entity), gravity: 900, entities: [entity, floor] };
   const state = newRuntimeState(scene);
   stepScene(scene, { left: false, right: false, jump: true }, state, 1 / 60);

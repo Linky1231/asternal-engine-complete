@@ -4,7 +4,6 @@ import { stepScene, newRuntimeState, resolveUIRect, sortedForRender, isOnHiddenL
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
 import { resolveEntityInstance, resolveEntityWorld, sampleTransformTrack } from "@/lib/engine/transforms";
-import { syncLegacyFields } from "@/lib/engine/ecs";
 import { createScriptRunner } from "@/lib/engine/scripts";
 import { startMusic, stopMusic, setVolume, setMuted } from "@/lib/engine/sfx";
 import { drawUIElement } from "./UIEditor";
@@ -49,7 +48,7 @@ export function GameRuntime({
     const ctx = canvas.getContext("2d")!;
     const normalizeRuntimeScene = (source: Scene): Scene => ({
       ...source,
-      entities: source.entities.map(entity => syncLegacyFields(JSON.parse(JSON.stringify(entity)) as Entity)),
+      entities: source.entities.map(entity => JSON.parse(JSON.stringify(entity)) as Entity),
     });
     const initial: Scene = normalizeRuntimeScene(scene);
     let work: Scene = normalizeRuntimeScene(initial);

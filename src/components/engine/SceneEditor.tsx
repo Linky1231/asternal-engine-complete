@@ -4,7 +4,6 @@ import { KIND_PRESETS, uid, sortedForRender, isOnHiddenLayer, layerOpacityFor } 
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
 import { resizeEntityTransform, updateEntityTransform } from "@/lib/engine/transforms";
-import { componentsForKind, normalizeEntityComponents } from "@/lib/engine/ecs";
 
 interface Props {
   scene: Scene;
@@ -565,13 +564,12 @@ export function SceneEditor({ scene, tool, selectedId, onSelect, onChange }: Pro
       gesture.current = { mode: "idle" };
     } else {
       const preset = KIND_PRESETS[tool];
-      const ent: Entity = normalizeEntityComponents({
+      const ent: Entity = {
         ...preset,
         id: uid(),
         x: snapVal(w.x - preset.w / 2),
         y: snapVal(w.y - preset.h / 2),
-        components: { ...componentsForKind(tool), ...(preset.components ?? {}) },
-      });
+      };
       const transformed = updateEntityTransform(ent, { position: { x: ent.x, y: ent.y, z: ent.z ?? 0 } });
       let entities = scene.entities;
       if (tool === "player") entities = entities.filter(e => e.kind !== "player");

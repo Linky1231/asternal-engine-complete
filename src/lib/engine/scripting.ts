@@ -1,7 +1,6 @@
 import type { Entity, EntityKind, RuntimeInput, RuntimeState, Scene, UIElement } from "./core";
 import { KIND_PRESETS, uid as coreUid } from "./core";
 import { getEntityTransform, updateEntityTransform } from "./transforms";
-import { addDefaultComponents, getComponent, hasComponent, withComponent, withoutComponent } from "./ecs";
 import { playSound, type SoundName } from "./sfx";
 
 export interface ScriptRuntimeHooks {
@@ -30,9 +29,6 @@ export interface ScriptObjectApi {
   pivot: { x: number; y: number; z: number };
   parent: ScriptObjectApi | null;
   readonly children: ScriptObjectApi[];
-  getComponent<T = unknown>(type: string): T | undefined;
-  addComponent(type: string, data?: Record<string, unknown>): void;
-  removeComponent(type: string): void;
   destroy(): void;
 }
 
@@ -60,15 +56,6 @@ export function createScriptApi(context: ScriptApiContext) {
       get parent() { return objectFor(find(entity.parentId)); },
       set parent(value) { entity.parentId = value?.id ?? null; },
       get children() { return scene.entities.filter(child => child.parentId === entity.id).map(makeObjectApi); },
-      getComponent<T = unknown>(type: string) { return getComponent<T>(entity, type as never); },
-      addComponent(type: string, data = {}) {
-        const next = withComponent(entity, type as never, data);
-        entity.components = next.components;
-      },
-      removeComponent(type: string) {
-        const next = withoutComponent(entity, type as never);
-        entity.components = next.components;
-      },
       destroy() { entity.x = -99999; entity.visible = false; },
     };
     return api;
@@ -77,10 +64,6 @@ export function createScriptApi(context: ScriptApiContext) {
   const object = makeObjectApi(self);
   const physics = {
     addForce(x = 0, y = 0, z = 0) {
-      const body = getComponent<{ velocity?: { x: number; y: number; z: number }; enabled?: boolean }>(self, "rigidbody") ?? {};
-      const velocity = body.velocity ?? { x: self.vx, y: self.vy, z: 0 };
-      const next = { ...body, velocity: { x: velocity.x + x, y: velocity.y + y, z: velocity.z + z }, enabled: true };
-      self.components = { ...(self.components ?? {}), rigidbody: next };
       self.vx += x;
       self.vy += y;
     },
@@ -110,17 +93,17 @@ export function createScriptApi(context: ScriptApiContext) {
   };
   const animation = {
     play(name: string, speed = 1) {
-      const animator = getComponent<Record<string, unknown>>(self, "animator") ?? {};
-      self.components = { ...(self.components ?? {}), animator: { ...animator, enabled: true, activeClip: name, speed } };
+      const legacy = self as Entity & { animation?: { activeClip?: string | null; speed?: number; playing?: boolean } };
+      legacy.animation = { ...(legacy.animation ?? {}), activeClip: name, speed, playing: true };
     },
-    stop() { const animator = getComponent<Record<string, unknown>>(self, "animator") ?? {}; self.components = { ...(self.components ?? {}), animator: { ...animator, activeClip: null } }; },
+    stop() { const legacy = self as Entity & { animation?: { activeClip?: string | null; speed?: number; playing?: boolean } }; legacy.animation = { ...(legacy.animation ?? {}), activeClip: null, playing: false }; },
   };
   const sceneApi = {
     load(sceneId: string) { hooks.loadScene?.(sceneId); },
     spawn(kind: EntityKind | string, x = self.x, y = self.y) {
       const preset = KIND_PRESETS[kind as EntityKind];
       if (!preset) return null;
-      const spawned = addDefaultComponents({ ...preset, id: coreUid(), x, y });
+      const spawned = { ...preset, id: coreUid(), x, y };
       scene.entities.push(spawned);
       return objectFor(spawned);
     },

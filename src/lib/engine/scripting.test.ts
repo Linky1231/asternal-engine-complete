@@ -1,14 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import type { Entity, RuntimeState, Scene } from "./core";
-import { addDefaultComponents } from "./ecs";
 import { createScriptApi, executeScriptCode } from "./scripting";
 import { createScriptRunner } from "./scripts";
 
 function entity(id: string, x = 0, y = 0): Entity {
-  return addDefaultComponents({
+  return {
     id, kind: "decor", x, y, w: 32, h: 32, vx: 0, vy: 0, color: "#fff",
     solid: false, gravity: false, controllable: false, collectible: false, hazard: false, goal: false,
-  });
+  };
 }
 
 function sceneOf(...entities: Entity[]): Scene {
@@ -18,7 +17,7 @@ function sceneOf(...entities: Entity[]): Scene {
 const state = (): RuntimeState => ({ score: 0, lives: 3, time: 0, win: false, dead: false, cameraX: 0, jumpPrev: false, djumpAvailable: false, coyoteT: 0, jumpBufferT: 0, invulnT: 0, speedT: 0, switches: {} });
 
 describe("open scripting API", () => {
-  it("exposes object transforms and parent/children through the real ECS transform", () => {
+  it("exposes object transforms and parent/children through the real entity transform", () => {
     const parent = entity("parent", 20, 30);
     const child = entity("child", 4, 5);
     child.parentId = parent.id;

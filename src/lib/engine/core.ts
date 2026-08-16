@@ -1,4 +1,4 @@
-// Asternal Engine core: ECS-lite + loop + physics + scenes + input
+// Asternal Engine core: legacy entities + loop + physics + scenes + input
 import type { AnimationClip } from "./animations";
 import type { Script } from "./scripts";
 
@@ -102,105 +102,9 @@ export interface DialogSpec {
   pausesGame?: boolean;   // if true, freezes physics while the dialog is on screen
 }
 
-export type ComponentType =
-  | "transform" | "renderer" | "collider" | "rigidbody" | "audioSource"
-  | "animator" | "particleEmitter" | "light" | "camera" | "script" | "ui"
-  | "gravity" | "collectible" | "hazard" | "goal" | "checkpoint" | "patrol"
-  | "moving" | "crumble" | "spring" | "powerup" | "controller" | "custom";
-
-export interface ComponentBase {
-  enabled?: boolean;
-}
-
-export interface TransformComponent extends ComponentBase {
-  position: TransformVector3;
-  rotation: TransformVector3;
-  scale: TransformVector3;
-  pivot: TransformVector3;
-  baseSize: TransformVector3;
-  space: TransformSpace;
-}
-
-export interface RendererComponent extends ComponentBase {
-  color?: string;
-  texture?: string | null;
-  textureFit?: "stretch" | "contain" | "cover";
-  opacity?: number;
-  visible?: boolean;
-  flipX?: boolean;
-  flipY?: boolean;
-  z?: number;
-}
-
-export interface ColliderComponent extends ComponentBase {
-  solid?: boolean;
-  hitbox?: Hitbox | null;
-  isTrigger?: boolean;
-}
-
-export interface RigidbodyComponent extends ComponentBase {
-  gravity?: boolean;
-  mass?: number;
-  drag?: number;
-  velocity?: TransformVector3;
-  terminalVelocity?: number;
-}
-
-export interface AudioSourceComponent extends ComponentBase {
-  url?: string | null;
-  volume?: number;
-  loop?: boolean;
-  autoplay?: boolean;
-}
-
-export interface AnimatorComponent extends ComponentBase {
-  clips?: AnimationClip[];
-  activeClip?: string | null;
-  speed?: number;
-}
-
-export interface ParticleEmitterComponent extends ParticleEmitter {}
-export interface LightComponent extends ComponentBase { color?: string; intensity?: number; radius?: number; }
-export interface CameraComponent extends ComponentBase { primary?: boolean; zoom?: number; follow?: boolean; }
-export interface ScriptComponent extends ComponentBase { scripts: Script[]; }
-export interface UIComponent extends ComponentBase { element: UIElement; }
-
-export interface CustomComponent extends ComponentBase {
-  [key: string]: unknown;
-}
-
-export interface EntityComponents {
-  transform?: TransformComponent;
-  renderer?: RendererComponent;
-  collider?: ColliderComponent;
-  rigidbody?: RigidbodyComponent;
-  audioSource?: AudioSourceComponent;
-  animator?: AnimatorComponent;
-  particleEmitter?: ParticleEmitterComponent;
-  light?: LightComponent;
-  camera?: CameraComponent;
-  script?: ScriptComponent;
-  ui?: UIComponent;
-  gravity?: ComponentBase;
-  collectible?: ComponentBase & { value?: number };
-  hazard?: ComponentBase;
-  goal?: ComponentBase & { nextSceneId?: string | null; endsGame?: boolean };
-  checkpoint?: ComponentBase;
-  patrol?: ComponentBase & PatrolSpec;
-  moving?: ComponentBase & MovingSpec;
-  crumble?: ComponentBase & CrumbleSpec;
-  spring?: ComponentBase & SpringSpec;
-  powerup?: ComponentBase & { kind: PowerupKind };
-  controller?: ComponentBase;
-  custom?: Record<string, CustomComponent>;
-  [key: string]: unknown;
-}
-
 export interface Entity {
   id: string;
   kind: EntityKind;
-  /** Extensible ECS composition. Legacy fields remain authoritative fallback data. */
-  components?: EntityComponents;
   /** Optional user-facing label independent from the legacy kind. */
   name?: string;
 
@@ -266,31 +170,6 @@ export interface Entity {
   // dialog
   dialog?: DialogSpec | null;
   _dialogPlayed?: boolean;
-}
-
-export function getEntityComponent<T = unknown>(entity: Entity, type: ComponentType): T | undefined {
-  const value = entity.components?.[type];
-  if (value === undefined || value === null) return undefined;
-  if (typeof value === "object" && (value as { enabled?: boolean }).enabled === false) return undefined;
-  return value as T;
-}
-
-export function hasEntityComponent(entity: Entity, type: ComponentType, legacyFallback = false): boolean {
-  const value = entity.components?.[type];
-  if (value !== undefined && value !== null) return typeof value !== "object" || (value as { enabled?: boolean }).enabled !== false;
-  if (type === "gravity" || type === "rigidbody") return legacyFallback || entity.gravity;
-  if (type === "collider") return legacyFallback || entity.solid;
-  if (type === "controller") return legacyFallback || entity.controllable;
-  if (type === "collectible") return legacyFallback || entity.collectible;
-  if (type === "hazard") return legacyFallback || entity.hazard;
-  if (type === "goal") return legacyFallback || entity.goal;
-  if (type === "checkpoint") return legacyFallback || !!entity.checkpoint;
-  if (type === "moving") return legacyFallback || !!entity.moving;
-  if (type === "crumble") return legacyFallback || !!entity.crumble;
-  if (type === "spring") return legacyFallback || !!entity.spring;
-  if (type === "patrol") return legacyFallback || !!entity.patrol;
-  if (type === "powerup") return legacyFallback || !!entity.powerup;
-  return legacyFallback;
 }
 
 export interface ParallaxLayer { color: string; speed: number; height: number; y: number }
@@ -614,8 +493,8 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
 
   // Moving platforms
   for (const e of scene.entities) {
-    const m = getEntityComponent<NonNullable<Entity["moving"]>>(e, "moving") ?? e.moving;
-    if (!m || !hasEntityComponent(e, "moving")) continue;
+    const m = e.moving;
+    if (!m || !e.moving) continue;
     if (m._origin === undefined) { m._origin = m.axis === "x" ? e.x : e.y; m._dir = 1; }
     const v = (m.speed || 60) * (m._dir ?? 1);
     if (m.axis === "x") {
@@ -631,8 +510,8 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
 
   // Crumble respawn
   for (const e of scene.entities) {
-    const c = getEntityComponent<NonNullable<Entity["crumble"]>>(e, "crumble") ?? e.crumble;
-    if (!c || !hasEntityComponent(e, "crumble")) continue;
+    const c = e.crumble;
+    if (!c || !e.crumble) continue;
     if (c._state === "gone") {
       c._rt = (c._rt ?? 0) + dt;
       if (c._rt >= (c.respawn || 3)) { c._state = "idle"; c._t = 0; c._rt = 0; e.solid = true; e.visible = true; e.opacity = 1; }
@@ -647,7 +526,7 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
   const speedMul = state.speedT > 0 ? 1.6 : 1;
   const TERMINAL = 1200;
   for (const e of scene.entities) {
-    if (hasEntityComponent(e, "controller", e.controllable)) {
+    if (!!e.controllable) {
       const wasGrounded = (e as Entity & { _grounded?: boolean })._grounded ?? false;
       const target = ((input.right ? 1 : 0) - (input.left ? 1 : 0)) * BASE_SPEED * speedMul;
       // Ground = snappy, air = floaty. Slippery overrides ground accel.
@@ -663,18 +542,17 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
         if (Math.abs(e.vx) < 4) e.vx = 0;
       }
     }
-    const body = getEntityComponent<{ gravity?: boolean }>(e, "rigidbody");
-    if (hasEntityComponent(e, "rigidbody", body?.gravity ?? e.gravity)) {
+    if (!!e.gravity) {
       e.vy += scene.gravity * dt;
       if (e.vy > TERMINAL) e.vy = TERMINAL;
     }
     // facing direction follows velocity
-    if ((hasEntityComponent(e, "controller", e.controllable) || hasEntityComponent(e, "patrol", e.kind === "enemy")) && Math.abs(e.vx) > 1) {
+    if ((!!e.controllable || !!e.patrol || e.kind === "enemy") && Math.abs(e.vx) > 1) {
       e.facing = e.vx > 0 ? 1 : -1;
     }
   }
-  const solids = scene.entities.filter((e) => hasEntityComponent(e, "collider", e.solid));
-  const interactables = scene.entities.filter((e) => hasEntityComponent(e, "collectible", e.collectible) || hasEntityComponent(e, "hazard", e.hazard) || hasEntityComponent(e, "goal", e.goal) || e.switchId || hasEntityComponent(e, "checkpoint", !!e.checkpoint) || hasEntityComponent(e, "crumble", !!e.crumble));
+  const solids = scene.entities.filter((e) => !!e.solid);
+  const interactables = scene.entities.filter((e) => !!e.collectible || !!e.hazard || !!e.goal || e.switchId || !!e.checkpoint || !!e.crumble);
 
   // Predictive ledge detection for enemies (before moving)
   for (const e of scene.entities) {
@@ -688,7 +566,7 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
     const probeW = 3, probeH = 6;
     let hasGround = false;
     for (const o of solids) {
-      if (o === e || !hasEntityComponent(o, "collider", o.solid)) continue;
+      if (o === e || !o.solid) continue;
       if (
         ahead < o.x + o.w &&
         ahead + probeW > o.x &&
@@ -717,17 +595,17 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
   // controllable (player). Pickups (coin/goal) and hazard enemies w/o gravity
   // are skipped so they remain in place for the interaction loop.
   const collidesWithSolids = (e: Entity) =>
-    e.kind !== "platform" && (hasEntityComponent(e, "rigidbody", e.gravity) || hasEntityComponent(e, "controller", e.controllable) || hasEntityComponent(e, "patrol", e.kind === "enemy"));
+    e.kind !== "platform" && (!!e.gravity || !!e.controllable || !!e.patrol || e.kind === "enemy");
 
   for (let iter = 0; iter < 4; iter++) {
     let anyHit = false;
     for (const e of scene.entities) {
       if (!collidesWithSolids(e)) continue;
       for (const o of solids) {
-        if (o === e || !hasEntityComponent(o, "collider", o.solid)) continue;
+        if (o === e || !o.solid) continue;
         // Hazards never push the player physically — interaction loop handles damage.
         // (But enemy-vs-platform must still resolve so enemies don't fall through.)
-        if ((hasEntityComponent(o, "hazard", o.hazard) && hasEntityComponent(e, "controller", e.controllable)) || (hasEntityComponent(e, "hazard", e.hazard) && hasEntityComponent(o, "controller", o.controllable))) continue;
+        if ((!!o.hazard && !!e.controllable) || (!!e.hazard && !!o.controllable)) continue;
         if (!intersects(e, o)) continue;
         anyHit = true;
         const A = aabb(e), B = aabb(o);
@@ -747,8 +625,8 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
         if (resolveY) {
           if (pushUp <= pushDown) {
             e.y -= pushUp + EPS;
-            const spring = getEntityComponent<{ force?: number }>(o, "spring") ?? o.spring;
-            if (spring && hasEntityComponent(o, "spring")) {
+            const spring = o.spring;
+            if (spring && !!o.spring) {
               e.vy = -(spring.force || 720);
             } else {
               if (e.vy > 0) e.vy = 0;
@@ -786,8 +664,8 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
 
   // Enemy patrol (with ledge detection so enemies don't fall off platforms)
   for (const e of scene.entities) {
-    const patrol = getEntityComponent<NonNullable<Entity["patrol"]>>(e, "patrol") ?? e.patrol;
-    if (!hasEntityComponent(e, "patrol", e.kind === "enemy") || !patrol) continue;
+    const patrol = e.patrol;
+    if (!patrol) continue;
     if (patrol._origin === undefined) patrol._origin = e.x;
     if (e.x - patrol._origin > patrol.range) { e.x = patrol._origin + patrol.range; e.vx = -Math.abs(e.vx || 60); }
     else if (e.x - patrol._origin < -patrol.range) { e.x = patrol._origin - patrol.range; e.vx = Math.abs(e.vx || 60); }
@@ -822,7 +700,7 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
   const JUMP_BUFFER = 0.12;   // 120 ms pre-input buffer before landing
   const JUMP_CUT = 0.45;      // vy multiplier when jump released early
   for (const e of scene.entities) {
-    if (!hasEntityComponent(e, "controller", e.controllable)) continue;
+    if (!e.controllable) continue;
     const onGround = grounded.has(e.id);
     if (onGround) {
       state.djumpAvailable = true;
@@ -880,14 +758,14 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
       if (o.x < -9000) continue;
       if (!intersects(e, o)) continue;
       // Crumble start when stood on
-      if (o.crumble && hasEntityComponent(o, "crumble") && grounded.has(e.id) && groundedOn.get(e.id) === o && o.crumble._state !== "break" && o.crumble._state !== "gone") {
+      if (o.crumble && grounded.has(e.id) && groundedOn.get(e.id) === o && o.crumble._state !== "break" && o.crumble._state !== "gone") {
         o.crumble._state = "break"; o.crumble._t = 0;
       }
-      if (hasEntityComponent(o, "checkpoint", !!o.checkpoint)) {
+      if (!!o.checkpoint) {
         state.checkpoint = { x: o.x, y: o.y - e.h };
         o.color = "#22c55e";
       }
-      if (hasEntityComponent(o, "collectible", o.collectible)) {
+      if (!!o.collectible) {
         emit(state, { x: o.x + o.w / 2, y: o.y + o.h / 2, color: o.color, count: 8 });
         const pu = o.powerup;
         if (pu === "speed") state.speedT = 6;
@@ -895,7 +773,7 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
         else if (pu === "invuln") state.invulnT = 5;
         else state.score += o.value ?? 10;
         o.x = -9999;
-      } else if (hasEntityComponent(o, "hazard", o.hazard)) {
+      } else if (!!o.hazard) {
         if (state.invulnT <= 0) {
           emit(state, { x: e.x + e.w / 2, y: e.y + e.h / 2, color: "#f43f5e", count: 14 });
           // Knockback player away from hazard so they don't get stuck inside
@@ -907,7 +785,7 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
           else state.dead = true;
         }
 
-      } else if (hasEntityComponent(o, "goal", o.goal)) {
+      } else if (!!o.goal) {
         state.win = true;
         if (typeof window !== "undefined") {
           try {
@@ -932,7 +810,7 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
   // Follow only the player/controller. Keeping this outside the interaction
   // loop prevents the last iterated entity from hijacking the viewport.
   const cameraTarget = scene.entities.find((candidate) =>
-    hasEntityComponent(candidate, "controller", candidate.controllable),
+    !!candidate.controllable,
   );
   if (cameraTarget) {
     state.cameraX = Math.max(0, Math.min(scene.width - 360, cameraTarget.x - 160));

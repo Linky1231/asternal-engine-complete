@@ -301,3 +301,14 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Integrar ejecución, serialización y migración de scripts visuales sin romper proyectos existentes.
 - [x] Añadir pruebas de bloques, ejecución, persistencia, migración y combinaciones no previstas.
 - [x] Validar interfaz, runtime, build y publicar la nueva experiencia visual.
+
+
+---
+
+# Eliminación completa del sistema ECS/componentes
+
+- [x] Auditar imports, persistencia, runtime, transformaciones, instancias y editor que dependan de ECS/componentes.
+- [x] Migrar dependencias necesarias a entidades legacy y scripts visuales sin perder datos ni comportamiento.
+- [x] Retirar ComponentInspector, ecs.ts, contratos de componentes y referencias ECS obsoletas.
+- [x] Añadir migración/regresión para escenas antiguas y validar tests, build y preview.
+- [x] Guardar checkpoint publicado de la eliminación completa.
