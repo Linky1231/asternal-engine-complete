@@ -204,3 +204,33 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 
 - [x] Implementar semántica real de instancias compartidas o acotar explícitamente el contrato y sincronizar propiedades desde la fuente.
 - [x] Añadir prueba que refleje cambios compartidos de la fuente en la instancia, preservando overrides locales permitidos.
+
+
+---
+
+# Sistema ECS basado en componentes
+
+- [x] Auditar entidades, runtime, editor, persistencia y comportamientos actuales para definir límites del ECS.
+- [x] Diseñar e implementar un contrato de componentes extensible con Transform y componentes de render, física, audio, animación, partículas, luz, cámara, script y UI.
+- [x] Añadir normalización/migración retrocompatible desde entidades legacy hacia componentes sin perder datos existentes.
+- [x] Integrar composición, alta/baja/edición de componentes y presets reutilizables en el editor.
+- [x] Integrar sistemas de runtime que consulten componentes en lugar de tipos rígidos y permitan combinaciones arbitrarias.
+- [x] Añadir pruebas de composición, serialización, retrocompatibilidad y ejecución de combinaciones no previstas.
+- [x] Validar interfaz del editor, `pnpm test`, `pnpm build`, servidor de producción y guardar checkpoint final.
+
+
+## Correcciones de profundidad ECS antes del checkpoint
+
+- [x] Implementar edición completa de propiedades por componente en el editor para Rigidbody, Collider, Light, Camera, AudioSource, ParticleEmitter y Script.
+- [x] Adaptar la biblioteca/presets del editor para guardar y restaurar composiciones ECS explícitas, no solo presets legacy.
+- [x] Refactorizar los sistemas principales del runtime para consultar componentes ECS directamente, dejando kind/flags como adaptador retrocompatible.
+- [x] Revalidar pruebas, interfaz y build después de las correcciones de profundidad ECS.
+
+
+## Revisión adicional de profundidad ECS
+
+- [x] Añadir pruebas explícitas de serialización/deserialización ECS y ejecución runtime con combinaciones arbitrarias.
+- [x] Completar la edición de propiedades principales de Script, ParticleEmitter, Rigidbody y Collider en el inspector.
+- [x] Integrar presets ECS explícitos en la biblioteca de creación y persistencia del editor, no solo botones locales.
+- [x] Hacer que los sistemas runtime lean datos desde componentes ECS como fuente principal, dejando campos legacy como fallback.
+- [x] Validar el arranque de producción después de estos cambios y guardar checkpoint final.

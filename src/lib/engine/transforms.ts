@@ -63,6 +63,7 @@ export function updateEntityTransform(entity: Entity, patch: TransformPatch): En
     w: Math.max(1, transform.baseSize.x * Math.abs(transform.scale.x)),
     h: Math.max(1, transform.baseSize.y * Math.abs(transform.scale.y)),
     transform,
+    components: entity.components ? { ...entity.components, transform } : entity.components,
   };
 }
 
@@ -74,7 +75,8 @@ export function resizeEntityTransform(entity: Entity, w: number, h: number): Ent
     y: Math.max(1, h / transform.scale.y),
     z: transform.baseSize.z,
   };
-  return { ...entity, w, h, transform: { ...transform, baseSize } };
+  const nextTransform = { ...transform, baseSize };
+  return { ...entity, w, h, transform: nextTransform, components: entity.components ? { ...entity.components, transform: nextTransform } : entity.components };
 }
 
 export function snapValue(value: number, step: number) {

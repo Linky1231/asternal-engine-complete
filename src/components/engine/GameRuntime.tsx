@@ -4,6 +4,7 @@ import { stepScene, newRuntimeState, resolveUIRect, sortedForRender, isOnHiddenL
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
 import { resolveEntityInstance, resolveEntityWorld, sampleTransformTrack } from "@/lib/engine/transforms";
+import { syncLegacyFields } from "@/lib/engine/ecs";
 import { createScriptRunner } from "@/lib/engine/scripts";
 import { startMusic, stopMusic, setVolume, setMuted } from "@/lib/engine/sfx";
 import { drawUIElement } from "./UIEditor";
@@ -46,8 +47,12 @@ export function GameRuntime({
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
-    const initial: Scene = JSON.parse(JSON.stringify(scene));
-    let work: Scene = JSON.parse(JSON.stringify(initial));
+    const normalizeRuntimeScene = (source: Scene): Scene => ({
+      ...source,
+      entities: source.entities.map(entity => syncLegacyFields(JSON.parse(JSON.stringify(entity)) as Entity)),
+    });
+    const initial: Scene = normalizeRuntimeScene(scene);
+    let work: Scene = normalizeRuntimeScene(initial);
     let drawList = sortedForRender(work).filter(e => !isOnHiddenLayer(work, e));
     const state: RuntimeState = newRuntimeState(initial);
     stateRef.current = state;
@@ -59,7 +64,7 @@ export function GameRuntime({
         shake.time = Math.max(shake.time, duration);
       },
       restart: () => {
-        work = JSON.parse(JSON.stringify(initial));
+        work = normalizeRuntimeScene(initial);
         drawList = sortedForRender(work).filter(e => !isOnHiddenLayer(work, e));
         Object.assign(state, newRuntimeState(initial));
         scripts = createScriptRunner();

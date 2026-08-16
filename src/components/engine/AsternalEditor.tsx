@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "@tanstack/react-router";
 import { PublishGameDialog } from "./PublishGameDialog";
 import type { EntityKind, Project, SpriteAsset, Entity, Scene, Hitbox, SceneLayer } from "@/lib/engine/core";
+import { addDefaultComponents } from "@/lib/engine/ecs";
 import { newScene, uid, ensureSceneLayers, DEFAULT_LAYER_ID } from "@/lib/engine/core";
 import { loadProject, loadProjectById, saveProject, saveProjectById, getCurrentProjectId, setCurrentProjectId } from "@/lib/engine/storage";
 import { useFormFactor } from "@/hooks/use-mobile";
@@ -17,6 +18,7 @@ import { PaintEditor } from "./PaintEditor";
 import { UIEditor } from "./UIEditor";
 import { ProjectManager } from "./ProjectManager";
 import { TransformInspector } from "./TransformInspector";
+import { ComponentInspector } from "./ComponentInspector";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { ScriptEditor } from "./ScriptEditor";
@@ -533,12 +535,12 @@ export function AsternalEditor() {
           onRemove={(id) => updateLibrary(library.filter(i => i.id !== id))}
           onPlace={(item) => {
             const s = activeScene;
-            const ent: Entity = {
+            const ent: Entity = addDefaultComponents({
               ...item.preset,
               id: uid(),
               x: Math.round(s.width / 2 - item.preset.w / 2),
               y: Math.round(s.height / 2 - item.preset.h / 2),
-            };
+            });
             updateScene({ ...s, entities: [...s.entities, ent] });
             setSelectedId(ent.id);
             setLibraryOpen(false);
@@ -716,6 +718,10 @@ function InspectorPanel({
         entity={ent}
         onChangeScene={onChangeScene}
         onSelect={onSelect}
+      />
+      <ComponentInspector
+        entity={ent}
+        onChange={(next) => onChangeScene({ ...scene, entities: scene.entities.map(item => item.id === ent.id ? next : item) })}
       />
       <div>
         <label className="text-[10px] font-display tracking-widest text-muted-foreground">{t("inspector.color")}</label>

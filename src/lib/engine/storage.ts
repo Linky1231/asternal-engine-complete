@@ -1,6 +1,7 @@
 import type { Project } from "./core";
 import { DEFAULT_SETTINGS, newProject, uid } from "./core";
 import { normalizeTransformEntity } from "./transforms";
+import { addDefaultComponents } from "./ecs";
 
 const LEGACY_KEY = "asternal:project";
 const INDEX_KEY = "asternal:projects:index";
@@ -54,7 +55,7 @@ function normalize(p: Project): Project {
   if (!p.settings.fpsDefault60Applied) p.settings = { ...p.settings, fpsCap: 60, fpsDefault60Applied: true };
   p.scenes = p.scenes.map(scene => ({
     ...scene,
-    entities: (scene.entities ?? []).map(normalizeTransformEntity),
+    entities: (scene.entities ?? []).map(entity => addDefaultComponents(normalizeTransformEntity(entity))),
   }));
   return p;
 }
