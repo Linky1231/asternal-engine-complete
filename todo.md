@@ -278,3 +278,26 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Corregir el enrutamiento de input hacia la entidad Controller del jugador sin romper la cámara.
 - [x] Añadir pruebas de regresión para movimiento horizontal, salto y joystick.
 - [x] Ejecutar tests, build, validar runtime/preview y guardar checkpoint publicado.
+
+
+---
+
+# Integración segura de Stripe para Plan Plus
+
+- [ ] Configurar Stripe Claimable Sandbox para Plan Plus con productos, precios, checkout, suscripciones y webhooks.
+- [ ] Mantener el entorno en modo prueba: el sandbox no procesa dinero real ni crea saldo reclamable.
+- [ ] Mostrar en Plus el estado sandbox y bloquear cualquier activación de cobros reales hasta reclamar/configurar una cuenta Stripe real.
+- [ ] Añadir trazabilidad, idempotencia, estados de suscripción y pruebas de checkout sin dinero real.
+- [ ] Documentar que reclamar el sandbox transfiere configuración, no fondos de prueba.
+
+
+---
+
+# Reemplazo por scripts visuales tipo Scratch
+
+- [x] Auditar ECS, scripts legacy, ScriptEditor, runtime y persistencia antes de retirar la experiencia actual.
+- [x] Diseñar un modelo de bloques extensible con eventos, acciones, valores, condiciones, operadores, variables, mensajes, ciclos y funciones.
+- [x] Sustituir el inspector ECS por un editor visual tipo Scratch con conexión, arrastre, anidamiento y categorías ampliables.
+- [x] Integrar ejecución, serialización y migración de scripts visuales sin romper proyectos existentes.
+- [x] Añadir pruebas de bloques, ejecución, persistencia, migración y combinaciones no previstas.
+- [x] Validar interfaz, runtime, build y publicar la nueva experiencia visual.

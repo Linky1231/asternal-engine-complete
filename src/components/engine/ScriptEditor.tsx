@@ -9,6 +9,19 @@ import { SOUND_NAMES, type SoundName, playSound } from "@/lib/engine/sfx";
 const KIND_OPTIONS: (EntityKind | "any")[] = ["any", "player", "platform", "enemy", "coin", "goal"];
 const KIND_ONLY: EntityKind[] = ["player", "platform", "enemy", "coin", "goal"];
 
+type BlockCategory = "events" | "motion" | "looks" | "control" | "game" | "sound" | "world";
+const CATEGORY_META: Record<BlockCategory, { label: string; color: string; kinds: BlockKind[] }> = {
+  events: { label: "Eventos", color: "#f59e0b", kinds: [] },
+  motion: { label: "Movimiento", color: "#3b82f6", kinds: ["jump", "setVx", "setVy", "setX", "setY", "moveX", "moveY", "teleport", "impulse", "setSpeed", "stop", "flipVx", "flipVy", "bounceY", "setFacing", "knockback", "pushAway", "chase", "faceTarget", "wrapScreen"] },
+  looks: { label: "Apariencia", color: "#8b5cf6", kinds: ["setColor", "setSize", "setOpacity", "setVisible", "setBg", "setHitbox", "clearHitbox"] },
+  control: { label: "Control", color: "#f97316", kinds: ["if", "wait", "comment"] },
+  game: { label: "Juego", color: "#10b981", kinds: ["addScore", "setScore", "resetScore", "addLives", "setLives", "setGravity", "setSceneGravity", "setControllable", "setHazard", "setSolid", "setCollectible", "setGoalFlag", "hurtPlayer", "win", "lose", "restartScene", "spawnEntity", "cloneSelf", "destroySelf", "destroyOther", "removeAllOf"] },
+  sound: { label: "Sonido", color: "#ec4899", kinds: ["playSound", "playRandomSound", "vibrate", "shake"] },
+  world: { label: "Mundo", color: "#14b8a6", kinds: [] },
+};
+const CATEGORY_BY_BLOCK = Object.fromEntries(Object.entries(CATEGORY_META).flatMap(([category, meta]) => meta.kinds.map(kind => [kind, category]))) as Record<BlockKind, BlockCategory>;
+const BLOCK_COLORS: Record<BlockCategory, string> = Object.fromEntries(Object.entries(CATEGORY_META).map(([key, meta]) => [key, meta.color])) as Record<BlockCategory, string>;
+
 interface Props {
   entity: Entity;
   onChange: (patch: Partial<Entity>) => void;
@@ -18,6 +31,8 @@ interface Props {
 export function ScriptEditor({ entity, onChange, onClose }: Props) {
   const [scripts, setScripts] = useState<Script[]>(entity.scripts ?? []);
   const [openId, setOpenId] = useState<string | null>(scripts[0]?.id ?? null);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<BlockCategory>("motion");
 
   const commit = (next: Script[]) => {
     setScripts(next);
@@ -147,18 +162,23 @@ export function ScriptEditor({ entity, onChange, onClose }: Props) {
                     <span className="mt-1 block normal-case tracking-normal text-muted-foreground/70">Usa object, physics, audio, camera, animation, scene, input y ui. Los bloques debajo siguen funcionando para proyectos legacy.</span>
                   </label>
 
-                  <div className="space-y-1.5">
-                    {s.blocks.map(b => (
-                      <BlockRow
-                        key={b.id}
-                        block={b}
-                        onChange={patch => updateBlock(s.id, b.id, patch)}
-                        onRemove={() => removeBlock(s.id, b.id)}
-                      />
-                    ))}
+                  <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px]">
+                    <div className="min-h-40 rounded-xl border border-dashed border-primary/30 bg-black/10 p-2 space-y-1.5" onDragOver={e => e.preventDefault()} onDrop={e => { const kind = e.dataTransfer.getData("text/block-kind") as BlockKind; if (kind && ALL_BLOCKS.includes(kind)) addBlock(s.id, kind); }}>
+                      <div className="text-[9px] font-display tracking-[0.18em] text-muted-foreground px-1 pb-1">SCRIPT CANVAS · ARRASTRA PARA REORDENAR</div>
+                      {s.blocks.length === 0 && <div className="py-12 text-center text-xs text-muted-foreground">Arrastra un bloque aquí o pulsa uno de la paleta.</div>}
+                      {s.blocks.map((b, index) => (
+                        <div key={b.id} draggable onDragStart={() => setDraggedId(b.id)} onDragEnd={() => setDraggedId(null)} onDragOver={e => e.preventDefault()} onDrop={() => {
+                          if (!draggedId || draggedId === b.id) return;
+                          const from = s.blocks.findIndex(item => item.id === draggedId);
+                          const next = [...s.blocks]; const [moved] = next.splice(from, 1); next.splice(index, 0, moved);
+                          commit(scripts.map(item => item.id === s.id ? { ...item, blocks: next } : item)); setDraggedId(null);
+                        }} className={`${draggedId === b.id ? "opacity-40" : ""} transition-opacity`}>
+                          <BlockRow block={b} color={BLOCK_COLORS[CATEGORY_BY_BLOCK[b.kind] ?? "world"]} onChange={patch => updateBlock(s.id, b.id, patch)} onRemove={() => removeBlock(s.id, b.id)} />
+                        </div>
+                      ))}
+                    </div>
+                    <BlockPalette active={activeCategory} onCategory={setActiveCategory} onAdd={k => addBlock(s.id, k)} />
                   </div>
-
-                  <AddBlock onAdd={k => addBlock(s.id, k)} />
 
                   <button
                     onClick={() => removeScript(s.id)}
@@ -228,9 +248,9 @@ function defaultBlock(k: BlockKind): Block {
   }
 }
 
-function BlockRow({ block, onChange, onRemove }: { block: Block; onChange: (p: Partial<Block>) => void; onRemove: () => void }) {
+function BlockRow({ block, color, onChange, onRemove }: { block: Block; color: string; onChange: (p: Partial<Block>) => void; onRemove: () => void }) {
   return (
-    <div className="panel rounded-md border border-border/60 p-2 space-y-1.5">
+    <div className="rounded-md border border-border/60 bg-card/80 p-2 space-y-1.5 shadow-sm" style={{ borderLeftColor: color, borderLeftWidth: 4 }}>
       <div className="flex items-center gap-2">
         <span className="text-xs font-display text-primary-glow tracking-widest">{BLOCK_LABELS[block.kind]}</span>
         <button onClick={onRemove} className="ml-auto text-destructive text-sm px-1">✕</button>
@@ -388,36 +408,17 @@ function BlockFields({ block, onChange }: { block: Block; onChange: (p: Partial<
   }
 }
 
-function AddBlock({ onAdd }: { onAdd: (k: BlockKind) => void }) {
-  const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState("");
-  const filtered = filter
-    ? ALL_BLOCKS.filter(k => BLOCK_LABELS[k].toLowerCase().includes(filter.toLowerCase()))
-    : ALL_BLOCKS;
-  return (
-    <div>
-      <button
-        onClick={() => setOpen(o => !o)}
-        className="w-full py-2 rounded-md border border-dashed border-primary/40 text-primary-glow font-display text-xs tracking-widest"
-      >+ ADD BLOCK</button>
-      {open && (
-        <div className="mt-1.5 space-y-1.5">
-          <input
-            value={filter}
-            onChange={e => setFilter(e.target.value)}
-            placeholder="search blocks…"
-            className="w-full bg-input/60 border border-border rounded px-2 py-1 text-xs font-mono"
-          />
-          <div className="grid grid-cols-2 gap-1.5 max-h-72 overflow-auto">
-            {filtered.map(k => (
-              <button key={k}
-                onClick={() => { onAdd(k); setOpen(false); setFilter(""); }}
-                className="text-[11px] py-1.5 rounded panel border border-border/60 text-left px-2 font-mono"
-              >{BLOCK_LABELS[k]}</button>
-            ))}
-          </div>
-        </div>
-      )}
+function BlockPalette({ active, onCategory, onAdd }: { active: BlockCategory; onCategory: (category: BlockCategory) => void; onAdd: (k: BlockKind) => void }) {
+  const meta = CATEGORY_META[active];
+  const kinds = meta.kinds.length ? meta.kinds : ALL_BLOCKS.filter(k => !CATEGORY_BY_BLOCK[k]);
+  return <div className="rounded-xl border border-border/60 bg-card/50 p-2 space-y-2">
+    <div className="text-[9px] font-display tracking-[0.18em] text-muted-foreground">PALETA DE BLOQUES</div>
+    <div className="grid grid-cols-2 lg:grid-cols-1 gap-1">
+      {(Object.keys(CATEGORY_META) as BlockCategory[]).map(category => <button key={category} onClick={() => onCategory(category)} className={`rounded px-2 py-1.5 text-left text-[10px] font-display tracking-widest ${active === category ? "text-white" : "text-muted-foreground"}`} style={active === category ? { backgroundColor: CATEGORY_META[category].color } : undefined}>{CATEGORY_META[category].label}</button>)}
     </div>
-  );
+    <div className="space-y-1 max-h-72 overflow-auto pt-1">
+      {kinds.map(kind => <button key={kind} draggable onDragStart={e => e.dataTransfer.setData("text/block-kind", kind)} onClick={() => onAdd(kind)} className="w-full rounded border border-border/60 bg-background/50 px-2 py-1.5 text-left text-[10px] font-mono hover:border-primary/60" style={{ borderLeftColor: meta.color, borderLeftWidth: 3 }}>{BLOCK_LABELS[kind]}</button>)}
+    </div>
+  </div>;
 }
+

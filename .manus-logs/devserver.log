@@ -610,3 +610,6 @@
 [2026-08-16T14:45:08.860Z] VITE v7.3.6  ready in 236 ms
 [2026-08-16T14:45:08.860Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T14:45:08.860Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T15:25:49.796Z] 3:25:49 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T15:26:00.507Z] 3:26:00 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T15:26:12.298Z] 3:26:12 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
