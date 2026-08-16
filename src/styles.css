@@ -72,11 +72,11 @@
   /* ── Azul Asternal «Azure Drift»: cobalto → azur → cielo (suave, luminoso,
      profesional). Es la única familia azul de la app: botones, degradados,
      sombras de color y monogramas usan estos mismos tonos. ── */
-  --primary: oklch(0.55 0.15 262);
+  --primary: oklch(0.54 0.20 260);
   --primary-foreground: oklch(0.99 0 0);
-  --primary-glow: oklch(0.63 0.12 252);
-  --blue-600: oklch(0.46 0.15 268);
-  --azure: oklch(0.72 0.08 236);
+  --primary-glow: oklch(0.68 0.18 242);
+  --blue-600: oklch(0.44 0.20 268);
+  --azure: oklch(0.74 0.16 232);
   --violet-accent: oklch(0.63 0.15 300);
   --cyan-accent: oklch(0.75 0.07 210);
   --accent: var(--azure);
@@ -108,15 +108,15 @@
   --shadow-xl: 0 20px 44px -12px oklch(0 0 0 / 0.14);
 
   /* Sombras de color (elementos flotando sobre el lienzo blanco) */
-  --shadow-float: 0 18px 44px -18px oklch(0.5 0.13 266 / 0.3);
-  --shadow-glow: 0 10px 30px -12px oklch(0.55 0.14 262 / 0.3), 0 4px 18px -8px oklch(0.68 0.08 230 / 0.26);
+  --shadow-float: 0 18px 44px -18px oklch(0.45 0.18 264 / 0.34);
+  --shadow-glow: 0 12px 34px -12px oklch(0.48 0.20 260 / 0.38), 0 5px 20px -8px oklch(0.68 0.16 232 / 0.32);
 
   /* ── Degradados oficiales (DESIGN.md §2.2) ── */
   /* ÚNICO degradado de marca: 135° cobalto → azur → cielo (Azure Drift). */
-  --gradient-asternal: linear-gradient(135deg, oklch(0.52 0.15 266) 0%, oklch(0.61 0.12 254) 48%, oklch(0.74 0.08 234) 100%);
-  /* Variantes del MISMO degradado: diluido (acentos de fondo) y suave-profundo (banner destacado). */
-  --gradient-asternal-soft: linear-gradient(135deg, oklch(0.52 0.15 266 / 0.1), oklch(0.61 0.12 254 / 0.08) 48%, oklch(0.74 0.08 234 / 0.06));
-  --gradient-asternal-deep: linear-gradient(135deg, oklch(0.42 0.12 266) 0%, oklch(0.48 0.11 256) 48%, oklch(0.57 0.08 236) 100%);
+  --gradient-asternal: linear-gradient(135deg, oklch(0.49 0.20 266) 0%, oklch(0.56 0.21 252) 48%, oklch(0.64 0.18 232) 100%);
+  /* Variantes del mismo azul: atmósfera ligera para fondos y una versión profunda para banners. */
+  --gradient-asternal-soft: linear-gradient(135deg, oklch(0.49 0.20 266 / 0.13), oklch(0.56 0.21 252 / 0.10) 48%, oklch(0.64 0.18 232 / 0.08));
+  --gradient-asternal-deep: linear-gradient(135deg, oklch(0.36 0.16 268) 0%, oklch(0.43 0.18 252) 48%, oklch(0.50 0.15 232) 100%);
 
   /* Asternal Plus — azul cian (logo gota+cruz) */
   --plus: oklch(0.62 0.12 220);
@@ -144,11 +144,11 @@
   --surface-2: oklch(0.95 0.008 252);
   --popover: oklch(1 0 0);
   --popover-foreground: var(--ink);
-  --primary: oklch(0.55 0.15 262);
+  --primary: oklch(0.54 0.20 260);
   --primary-foreground: oklch(0.99 0 0);
-  --primary-glow: oklch(0.63 0.12 252);
-  --blue-600: oklch(0.46 0.15 268);
-  --azure: oklch(0.72 0.08 236);
+  --primary-glow: oklch(0.68 0.18 242);
+  --blue-600: oklch(0.44 0.20 268);
+  --azure: oklch(0.74 0.16 232);
   --violet-accent: oklch(0.63 0.15 300);
   --cyan-accent: oklch(0.75 0.07 210);
   --accent: var(--azure);
@@ -174,8 +174,8 @@
   --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 0.06), 0 1px 2px -1px oklch(0 0 0 / 0.06);
   --shadow-md: 0 4px 12px -2px oklch(0 0 0 / 0.08), 0 2px 4px -2px oklch(0 0 0 / 0.04);
   --shadow-lg: 0 12px 28px -8px oklch(0 0 0 / 0.10), 0 4px 12px -4px oklch(0 0 0 / 0.06);
-  --shadow-float: 0 18px 44px -18px oklch(0.5 0.13 266 / 0.3);
-  --shadow-glow: 0 10px 30px -12px oklch(0.55 0.14 262 / 0.3), 0 4px 18px -8px oklch(0.68 0.08 230 / 0.26);
+  --shadow-float: 0 18px 44px -18px oklch(0.45 0.18 264 / 0.34);
+  --shadow-glow: 0 12px 34px -12px oklch(0.48 0.20 260 / 0.38), 0 5px 20px -8px oklch(0.68 0.16 232 / 0.32);
 }
 
 @layer base {
@@ -396,9 +396,9 @@
 .grad-brand-fade {
   background-image: linear-gradient(
     to right,
-    oklch(0.52 0.15 266) 0%,
-    oklch(0.61 0.12 254) 40%,
-    oklch(0.74 0.08 234) 62%,
+    oklch(0.49 0.20 266) 0%,
+    oklch(0.56 0.21 252) 40%,
+    oklch(0.64 0.18 232) 62%,
     transparent 100%
   );
 }
@@ -410,9 +410,9 @@
 .banner-overlay-deep {
   background: linear-gradient(
     to top,
-    oklch(0.24 0.06 264 / 0.92) 0%,
-    oklch(0.3 0.07 258 / 0.4) 40%,
-    oklch(0.34 0.06 248 / 0.1) 75%,
+    oklch(0.19 0.10 266 / 0.95) 0%,
+    oklch(0.27 0.12 254 / 0.58) 40%,
+    oklch(0.35 0.10 240 / 0.16) 75%,
     transparent 100%
   );
 }
@@ -430,8 +430,8 @@
 }
 .banner-glow-halo {
   pointer-events: none;
-  box-shadow: 0 26px 72px -18px oklch(0.52 0.13 262 / 0.45),
-              0 0 30px -6px oklch(0.68 0.08 236 / 0.3);
+  box-shadow: 0 26px 72px -18px oklch(0.48 0.20 260 / 0.52),
+              0 0 30px -6px oklch(0.68 0.16 232 / 0.38);
   animation: glow-pulse 4s ease-in-out infinite;
 }
 
@@ -453,7 +453,7 @@
 
 /* Insignia MEJOR JUEGO: sombra estática + pulso de opacidad (composited). */
 .badge-glow {
-  box-shadow: 0 6px 16px -6px oklch(0.35 0.09 262 / 0.4);
+  box-shadow: 0 6px 16px -6px oklch(0.34 0.16 262 / 0.5);
   animation: glow-pulse 2.8s ease-in-out infinite;
 }
 
@@ -514,15 +514,15 @@
   100% { background-position: 200% 50%; }
 }
 @keyframes name-pulse-anim {
-  0%, 100% { text-shadow: 0 0 6px oklch(0.72 0.15 245 / 0.55); }
-  50%      { text-shadow: 0 0 14px oklch(0.72 0.15 245 / 0.95), 0 0 22px oklch(0.72 0.15 245 / 0.55); }
+  0%, 100% { text-shadow: 0 0 6px oklch(0.68 0.18 242 / 0.55); }
+  50%      { text-shadow: 0 0 14px oklch(0.68 0.18 242 / 0.95), 0 0 22px oklch(0.68 0.18 242 / 0.55); }
 }
 
 .name-fx { display: inline-block; position: relative; }
 
 .name-fx-glow {
-  color: oklch(0.72 0.15 245);
-  text-shadow: 0 0 8px oklch(0.72 0.15 245 / 0.8);
+  color: oklch(0.68 0.18 242);
+  text-shadow: 0 0 8px oklch(0.68 0.18 242 / 0.8);
 }
 .name-fx-rainbow {
   background: linear-gradient(90deg,
@@ -533,14 +533,14 @@
   animation: name-rainbow-anim 6s linear infinite;
 }
 .name-fx-gradient {
-  background: linear-gradient(90deg, oklch(0.55 0.16 262), oklch(0.72 0.15 320), oklch(0.64 0.12 220));
+  background: linear-gradient(90deg, oklch(0.49 0.20 266), oklch(0.61 0.20 245), oklch(0.68 0.17 220));
   background-size: 200% 100%;
   -webkit-background-clip: text; background-clip: text;
   color: transparent;
   animation: name-rainbow-anim 5s linear infinite;
 }
 .name-fx-pulse {
-  color: oklch(0.55 0.16 262);
+  color: oklch(0.50 0.20 260);
   animation: name-pulse-anim 2.2s ease-in-out infinite;
 }
 .name-fx-shadow {

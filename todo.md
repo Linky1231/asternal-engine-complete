@@ -1,8 +1,9 @@
-# Corrección de implementación
+# Actualización del sistema de degradados azules
 
-- [x] Declarar `react-router` como dependencia reproducible del proyecto.
-- [x] Declarar `@zumer/snapdom` como dependencia reproducible del proyecto.
-- [x] Regenerar el lockfile usado por `pnpm`.
-- [x] Ejecutar `pnpm build` y verificar que TypeScript y Vite completen correctamente.
-- [x] Confirmar que el código fuente existente no fue modificado fuera de los archivos de dependencias necesarios.
-- [ ] Guardar un nuevo checkpoint estable después de la validación.
+- [x] Inventariar degradados, colores azules y superficies que los usan en toda la aplicación.
+- [x] Revisar la identidad visual actual y definir una paleta azul más viva, profunda y legible.
+- [x] Diseñar tokens reutilizables para degradados primarios, hero, tarjetas, botones y estados.
+- [x] Aplicar los nuevos degradados sin modificar lógica, rutas ni comportamiento.
+- [x] Verificar visualmente las rutas principales, editor, juegos, perfiles, chat, foro, Orbes y Plus.
+- [x] Validar contraste, modo oscuro/claro y responsive.
+- [ ] Guardar un checkpoint y entregar la versión actualizada.
