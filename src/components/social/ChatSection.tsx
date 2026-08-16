@@ -161,7 +161,7 @@ function BubbleActions({ mine, copied, onCopy, onReply }: { mine: boolean; copie
   return (
     <div className={`absolute top-1/2 -translate-y-1/2 ${mine ? "-left-2" : "-right-2"} hidden group-hover:flex gap-0.5 bg-background border border-border rounded-lg p-0.5 shadow-md z-10`}>
       <button onClick={onCopy} title="Copiar" className="w-6 h-6 grid place-items-center rounded-md hover:bg-muted/70 text-muted-foreground">
-        {copied ? <Check size={12} className="text-emerald-500" /> : <Copy size={12} />}
+        {copied ? <Check size={12} className="text-primary" /> : <Copy size={12} />}
       </button>
       <button onClick={onReply} title="Responder" className="w-6 h-6 grid place-items-center rounded-md hover:bg-muted/70 text-muted-foreground">
         <Reply size={12} />
@@ -796,7 +796,7 @@ function GiftCard({
         {/* Acción */}
         <div className="relative mt-3">
           {claimedAmount != null ? (
-            <div className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-[11px] font-display tracking-wider">
+            <div className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-primary/10 border border-primary/25 text-primary  text-[11px] font-display tracking-wider">
               <CheckCircle2 size={13} /> ¡REGALO ABIERTO! +{claimedAmount} ORBES
             </div>
           ) : open && !expiredLocal ? (
@@ -2552,8 +2552,8 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
 
       {/* Aviso de modo local */}
       {isLocal && (
-        <div className="shrink-0 mx-3 mt-2 px-3 py-2 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-center gap-2">
-          <span className="flex-1 text-[11px] text-amber-700 dark:text-amber-300">
+        <div className="shrink-0 mx-3 mt-2 px-3 py-2 rounded-xl border border-primary/25 bg-primary/5 flex items-center gap-2">
+          <span className="flex-1 text-[11px] text-primary ">
             {hasSupabaseConfig()
               ? "Chat local: tu cuenta actual no está en Supabase, así que los mensajes se guardan solo en este dispositivo. Entra con tu cuenta de Supabase (⋮ → Cerrar sesión → login) para compartirlos con la comunidad."
               : "Modo local: los mensajes no se comparten entre dispositivos. Conecta tu base de datos para el chat comunitario."}
@@ -2578,9 +2578,9 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
 
       {/* Error de conexión / esquema / sesión del chat */}
       {initError && !chatInfo && !loading && (
-        <div className="shrink-0 mx-3 mt-2 px-3 py-3 rounded-xl border border-rose-500/25 bg-rose-500/[0.06] space-y-2.5">
+        <div className="shrink-0 mx-3 mt-2 px-3 py-3 rounded-xl border border-destructive/25 bg-destructive/5 space-y-2.5">
           <div className="flex items-start gap-2.5">
-            <WifiOff size={15} className="text-rose-500 shrink-0 mt-0.5" />
+            <WifiOff size={15} className="text-destructive shrink-0 mt-0.5" />
             <div className="text-[11px] leading-relaxed text-muted-foreground">
               {initError === "schema" ? (
                 <>
@@ -2938,7 +2938,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
           {recording ? (
             /* ── Grabando: timer + cancelar + enviar ── */
             <div className="flex-1 flex items-center gap-2 py-1">
-              <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse shrink-0" />
+              <span className="w-2.5 h-2.5 rounded-full bg-destructive animate-pulse shrink-0" />
               <span className="font-mono tabular-nums text-sm">
                 {String(Math.floor(recSeconds / 60)).padStart(2, "0")}:{String(recSeconds % 60).padStart(2, "0")}
               </span>
@@ -3102,7 +3102,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
             onClick={() => void startRecording()}
             disabled={sendingAudio}
             title="Grabar audio de voz"
-            className="w-9 h-9 rounded-xl border border-border/70 grid place-items-center text-muted-foreground hover:text-rose-500 hover:border-rose-400/40 active:scale-95 transition shrink-0 disabled:opacity-40"
+            className="w-9 h-9 rounded-xl border border-border/70 grid place-items-center text-muted-foreground hover:text-destructive hover:border-destructive/40 active:scale-95 transition shrink-0 disabled:opacity-40"
           >
             <Mic size={16} />
           </button>
@@ -3339,7 +3339,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                 </div>
               )}
               {cgErr && (
-                <div className="mb-2 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                <div className="mb-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                   <span>{cgErr}</span>
                 </div>
@@ -3405,7 +3405,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
               </div>
 
               {gInfoErr && (
-                <div className="mb-2 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                <div className="mb-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                   <span>{gInfoErr}</span>
                 </div>
@@ -3463,7 +3463,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                     />
                   </div>
                   {egErr && (
-                    <div className="rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                       <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                       <span>{egErr}</span>
                     </div>
@@ -3546,7 +3546,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                         <button
                           onClick={() => void handleRemoveMember(m.profile.id)}
                           title="Quitar del grupo"
-                          className="shrink-0 w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-rose-300 grid place-items-center active:scale-95 transition"
+                          className="shrink-0 w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 grid place-items-center active:scale-95 transition"
                         >
                           <UserMinus size={12} />
                         </button>
@@ -3626,8 +3626,8 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                   disabled={deleteBusy}
                   className={`w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border text-[11px] font-display tracking-widest transition active:scale-[0.98] disabled:opacity-40 mb-2 ${
                     deleteArm
-                      ? "border-rose-500/60 bg-rose-500/15 text-rose-600 dark:text-rose-400"
-                      : "border-rose-300/50 bg-rose-500/[0.06] text-rose-600 dark:text-rose-400 hover:bg-rose-500/10"
+                      ? "border-destructive/60 bg-destructive/15 text-destructive "
+                      : "border-destructive/40/50 bg-destructive/5 text-destructive  hover:bg-destructive/10"
                   }`}
                 >
                   {deleteBusy ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
@@ -3638,7 +3638,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
               <button
                 onClick={() => void handleLeaveGroup()}
                 disabled={gInfoBusy}
-                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-rose-300/50 bg-rose-500/[0.06] text-rose-600 dark:text-rose-400 text-[11px] font-display tracking-widest hover:bg-rose-500/10 active:scale-[0.98] transition disabled:opacity-40"
+                className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-destructive/40/50 bg-destructive/5 text-destructive  text-[11px] font-display tracking-widest hover:bg-destructive/10 active:scale-[0.98] transition disabled:opacity-40"
               >
                 <LogOut size={13} /> SALIR DEL GRUPO
               </button>
@@ -3687,7 +3687,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                 className="w-full bg-input/50 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 border border-border/60 mb-2"
               />
               {connectError && (
-                <div className="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                <div className="mb-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                   <span>{connectError}</span>
                 </div>
@@ -3755,7 +3755,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                 className="w-full bg-input/50 rounded-xl px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 border border-border/60 mb-2 resize-none"
               />
               {announceErr && (
-                <div className="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                <div className="mb-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                   <span>{announceErr}</span>
                 </div>
@@ -3863,7 +3863,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                 orbes
               </div>
               {giftErr && (
-                <div className="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                <div className="mb-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                   <span>{giftErr}</span>
                 </div>
@@ -3958,7 +3958,7 @@ export default function ChatSection({ myId, onClose, initialText }: { myId: stri
                 </button>
               )}
               {pollErr && (
-                <div className="mb-3 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[11px] text-rose-700 dark:text-rose-300 flex items-start gap-1.5">
+                <div className="mb-3 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-[11px] text-destructive flex items-start gap-1.5">
                   <AlertTriangle size={12} className="shrink-0 mt-0.5" />
                   <span>{pollErr}</span>
                 </div>

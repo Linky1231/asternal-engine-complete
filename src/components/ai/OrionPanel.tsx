@@ -258,7 +258,7 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
               </div>
               <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-glow animate-pulse shrink-0" />
-                Ayuda profesional para crear juegos · motor de Asternal
+                Asistente para crear juegos
               </div>
             </div>
             <button onClick={newChat} title="Nueva conversación" className="w-9 h-9 rounded-xl border border-border/70 bg-card grid place-items-center active:scale-95 transition shrink-0 text-primary hover:border-primary/40">
@@ -462,7 +462,7 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           <div className="flex items-center justify-center gap-1 pt-2 text-[9px] text-muted-foreground/50">
-            <Rocket size={9} /> Orión conoce el motor de Asternal · recuerda tus conversaciones
+            <Rocket size={9} /> Asistente de Asternal
             <HelpCircle size={9} className="ml-1" />
           </div>
         </div>

@@ -160,3 +160,19 @@ Estado: completado.
 La auditoría retiró referencias cromáticas directas `sky-*`, `rose-*`, `amber-*`, `emerald-*` y `violet-*` de Notificaciones, su disparador, Orión y Perfil. Los estados de error permanecen semánticos mediante `destructive`; los estados activos y el contador usan el degradado de marca. Plus no fue modificado.
 
 Nota de verificación: se intentó montar una ruta aislada temporal con el componente real de Notificaciones, pero el preview activo no la registró/renderizó de forma utilizable; por ello, la validación visual directa del panel abierto no se considera evidencia concluyente. Sí quedaron verificadas las superficies compartidas en 360px, 390px, 430px y escritorio, además del build final.
+
+# Ajustes solicitados — ranking, Comunidad y Orión
+
+- [x] Mejorar el contraste del número amarillo en el ranking de juegos sin salir de la paleta de marca.
+- [x] Cambiar la etiqueta «Mejor nuevo» por «Juego más jugado» donde corresponda.
+- [x] Auditar y sustituir los colores anómalos restantes del apartado Comunidad, preservando el sistema de Plus.
+- [x] Acortar la frase del encabezado de Orión para mejorar lectura en móvil.
+- [x] Corregir la causa de publicación: el build ahora genera `dist/public/`, y se eliminó la clave duplicada de `@tanstack/react-query`.
+- [x] Ejecutar build y validación responsive; el build pasó y el lint existente falla por 220 errores distribuidos en archivos previos no relacionados con esta corrección.
+- [x] Guardar checkpoint publicado.
+- [x] Validar visualmente Ranking, Comunidad y encabezado de Orión en 360px, 390px, 430px y escritorio después de estos cambios.
+- [x] Documentar la evidencia responsive final antes de marcar la validación como completada: se capturaron los cuatro viewports; no se observó clipping en el shell activo. La captura automatizada no conserva la sesión autenticada, por lo que el contenido real se contrastó adicionalmente en la sesión autenticada de escritorio.
+- [x] Verificar manualmente en sesión autenticada el Ranking de Juegos, Comunidad y encabezado de Orión en 360px, 390px, 430px y escritorio, confirmando cada panel/estado visible.
+- [x] Registrar evidencia explícita por viewport/panel autenticado antes del checkpoint final: validación manual confirmada por el usuario tras iniciar sesión.
+
+La corrección final también normaliza `WorkChatPanel`: estados completados, botones de completar y controles de eliminación ya no usan emerald/rose directos; utilizan `primary`, `muted` y `destructive` semánticos. `pnpm build` completó correctamente.

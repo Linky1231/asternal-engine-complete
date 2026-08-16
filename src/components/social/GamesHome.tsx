@@ -275,7 +275,7 @@ function Ranking24({ games, totalGames, onOpen }: {
           <Trophy size={17} className="text-primary" />
         </div>
         <div className="min-w-0">
-          <div className="font-display text-[13px] leading-tight">Ranking · Más jugados (24h)</div>
+          <div className="font-display text-[13px] leading-tight">Juego más jugado · últimas 24 h</div>
           <div className="text-[11px] text-muted-foreground">
             {totalGames > 0
               ? "Aún no hay jugadas registradas hoy. ¡Dale a JUGAR y sube a la cima!"
@@ -286,13 +286,14 @@ function Ranking24({ games, totalGames, onOpen }: {
     );
   }
 
-  const medals = ["text-amber-400", "text-slate-400", "text-amber-700"];
+  // El podio usa la paleta de marca y un neutro para mantener contraste sobre la superficie clara.
+  const medals = ["text-primary", "text-muted-foreground", "text-primary/80"];
 
   return (
     <section className="rounded-2xl border border-primary/20 grad-brand-soft p-3.5 space-y-2.5">
       <div className="flex items-center gap-2">
         <Trophy size={15} className="text-primary" />
-        <div className="font-display text-[13px] leading-tight">Ranking · Más jugados (24h)</div>
+        <div className="font-display text-[13px] leading-tight">Juego más jugado · últimas 24 h</div>
         <span className="px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[9px] font-mono font-bold tracking-wider">TOP 3</span>
         <span className="ml-auto text-[9px] font-mono text-muted-foreground/60">en vivo</span>
       </div>
