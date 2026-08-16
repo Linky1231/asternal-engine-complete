@@ -281,9 +281,9 @@ export function ProfilePanel({
   );
 
   return (
-    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Header card with banner */}
-      <section className="rounded-lg border border-border/70 bg-surface overflow-hidden">
+      <section className="rounded-2xl border border-border/70 bg-surface overflow-hidden">
         <div className="relative h-28 grad-brand-soft">
           {bannerPreview && <img src={bannerPreview} alt="banner" className="absolute inset-0 w-full h-full object-cover" />}
           {viewingOwn && editing && (
@@ -296,8 +296,8 @@ export function ProfilePanel({
             onChange={e => pickBanner(e.target.files?.[0] ?? null)} />
         </div>
 
-        <div className="p-4 space-y-3">
-          <div className="flex items-start gap-3 -mt-12">
+        <div className="p-4 sm:p-5 space-y-4">
+          <div className="flex flex-wrap items-start gap-3 -mt-12">
             {/* Avatar: marco de degradado ceñido a la foto (mismo lenguaje que PostCard),
                 en vez del anillo animado flotante que se veía como un borde roto. */}
             {frameRing ? (
@@ -309,7 +309,7 @@ export function ProfilePanel({
             )}
 
 
-            <div className="flex-1 min-w-0 pt-12">
+            <div className="flex-1 min-w-[calc(100%-5rem)] sm:min-w-0 pt-12">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -320,18 +320,18 @@ export function ProfilePanel({
               ) : (
                 <>
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <UserName p={profile} size="lg" showBadge={false} />
+                    <UserName p={profile} size="lg" showBadge={false} className="max-w-full" />
                     {isPlusActive(profile) && profile.show_plus_badge !== false && (
                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-display font-bold text-white shrink-0"
                         style={{ background: "var(--gradient-plus)" }}>PLUS</span>
                     )}
                   </div>
-                  <div className="text-[11px] font-mono text-muted-foreground truncate">
-                    @{profile.username}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
+                  <div className="max-w-full truncate text-[11px] font-mono text-muted-foreground">
+                    @{profile.username || userId.slice(0, 8)}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
                   {!editing && (
                     <button onClick={() => void copyCode()}
-                      className="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
+                      className="mt-1 inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
                       title="ID de usuario · toca para copiar">
                       <Fingerprint size={10} className="text-primary-glow" />
                       {userCode}
@@ -350,11 +350,11 @@ export function ProfilePanel({
             {viewingOwn ? (
               editing ? (
                 <button onClick={save} disabled={saving}
-                  className="mt-12 h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60">
+                  className="w-full sm:w-auto sm:mt-12 h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60">
                   {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
                 </button>
               ) : (
-                <div className="mt-12 flex items-center gap-2">
+                <div className="w-full sm:w-auto sm:mt-12 flex items-center justify-end gap-2">
                   <button onClick={() => setEditing(true)}
                     className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
                   {qrButton}
@@ -362,7 +362,7 @@ export function ProfilePanel({
                 </div>
               )
             ) : (
-              <div className="mt-12 flex items-center gap-2">
+              <div className="w-full sm:w-auto sm:mt-12 flex items-center justify-end gap-2">
                 <button onClick={toggleFollow} disabled={followBusy}
                   className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
                   {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
@@ -375,7 +375,7 @@ export function ProfilePanel({
 
           {/* Follow counts (tocables: muestran la lista de personas) */}
           {!editing && (
-            <div className="flex items-center gap-1 text-[11px]">
+            <div className="flex items-center gap-1 pt-1 text-[11px]">
               <button onClick={() => openFollowList("followers")}
                 className="flex items-center gap-1 px-2 py-1 -mx-1 rounded-lg hover:bg-muted/40 active:scale-95 transition text-left">
                 <b className="text-foreground tabular-nums">{follow.followers}</b>
@@ -573,7 +573,7 @@ export function ProfilePanel({
         onChange={setTab}
       />
 
-      <div className="space-y-3">
+      <div className="space-y-4">
         {contentLoading ? (
           <div className="p-8 text-center text-xs text-muted-foreground"><Loader2 className="animate-spin inline mr-2" size={14} /></div>
         ) : tab === "games" ? (
@@ -631,7 +631,7 @@ export function ProfilePanel({
         ) : (
           posts.length === 0 ? (
             <div className="px-4 py-8 text-center text-xs text-muted-foreground rounded-lg border border-dashed border-border bg-surface">Sin publicaciones</div>
-          ) : posts.map(p => <PostCard key={p.id} post={p} myId={myId} isMod={isMod} onChange={loadContent} />)
+          ) : <div className="space-y-4" aria-label="Publicaciones del perfil">{posts.map(p => <PostCard key={p.id} post={p} myId={myId} isMod={isMod} onChange={loadContent} />)}</div>
         )}
       </div>
     </div>

@@ -140,13 +140,13 @@ function FeedPage() {
         </AnimatePresence>
       </div>
 
-      <main className="flex-1 p-3 space-y-3 max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto w-full pb-[env(safe-area-inset-bottom)]">
+      <main className="flex-1 p-3 space-y-5 max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto w-full pb-[env(safe-area-inset-bottom)]">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
           <PostComposer onCreated={reload} />
         </motion.div>
 
         {loading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[0, 1, 2].map(i => (
               <div key={i} className="rounded-lg border border-border/70 bg-surface p-3 space-y-3">
                 <div className="flex items-center gap-2.5">
@@ -179,13 +179,13 @@ function FeedPage() {
             </button>
           </motion.div>
         ) : (
-          <>
+          <div className="space-y-4" aria-label="Publicaciones">
             {posts.map((p, i) => (
               <div key={p.id} className="card-enter" style={{ animationDelay: `${Math.min(i * 25, 180)}ms` }}>
                 <PostCard post={p} myId={myId} isMod={mod} onChange={reload} />
               </div>
             ))}
-          </>
+          </div>
         )}
       </main>
     </div>

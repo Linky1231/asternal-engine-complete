@@ -298,3 +298,11 @@
 [2026-08-16T01:03:53.978Z] VITE v7.3.6  ready in 239 ms
 [2026-08-16T01:03:53.979Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T01:03:53.979Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T01:18:30.032Z] 1:18:30 AM [vite] (client) hmr update /src/styles.css, /src/routes/feed.tsx
+[2026-08-16T01:18:30.469Z] 1:18:30 AM [vite] (client) hmr invalidate /src/routes/feed.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:18:30.470Z] 1:18:30 AM [vite] (client) hmr update /src/main.tsx
+[2026-08-16T01:18:30.520Z] 1:18:30 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:18:30.520Z] 1:18:30 AM [vite] (client) page reload src/main.tsx
+[2026-08-16T01:19:16.364Z] 1:19:16 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-16T01:19:19.522Z] 1:19:19 AM [vite] (client) hmr update /src/styles.css, /src/components/social/UserName.tsx
+[2026-08-16T01:19:23.649Z] 1:19:23 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
