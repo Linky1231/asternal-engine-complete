@@ -78,4 +78,20 @@ export const cloudSyncCursors = mysqlTable("cloud_sync_cursors", {
 }));
 export type CloudSyncCursor = typeof cloudSyncCursors.$inferSelect;
 
+/** Audit trail for source objects that could not be transferred. */
+export const cloudMigrationSkips = mysqlTable("cloud_migration_skips", {
+  id: int("id").autoincrement().primaryKey(),
+  sourceBucket: varchar("sourceBucket", { length: 128 }),
+  sourcePath: varchar("sourcePath", { length: 512 }),
+  sourceTable: varchar("sourceTable", { length: 128 }),
+  sourceId: varchar("sourceId", { length: 191 }),
+  reason: text("reason").notNull(),
+  details: text("details"),
+  recordedAt: timestamp("recordedAt").defaultNow().notNull(),
+}, (table) => ({
+  skipAssetUnique: uniqueIndex("cloud_migration_skip_asset_unique").on(table.sourceBucket, table.sourcePath),
+  skipRecordUnique: uniqueIndex("cloud_migration_skip_record_unique").on(table.sourceTable, table.sourceId),
+}));
+export type CloudMigrationSkip = typeof cloudMigrationSkips.$inferSelect;
+
 // TODO: Add feature queries here

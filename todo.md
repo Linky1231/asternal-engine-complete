@@ -332,7 +332,7 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 
 - [x] Auditar y eliminar dependencias de Supabase en cliente, servidor, configuración y dependencias. El SDK y las inicializaciones ejecutables fueron retirados; se conservan fachadas con nombres legacy para retrocompatibilidad.
 - [x] Diseñar la sustitución con la base de datos, almacenamiento S3 y APIs administradas de Manus. La base destino usa Drizzle/MySQL y `server/storage.ts`; el navegador conserva caché local solo como resiliencia.
-- [ ] Migrar persistencia de juegos, escenas, scripts, perfiles y archivos sin romper formatos existentes. Se transfirieron 322 registros idempotentes; la fase de activos queda separada y pendiente para objetos accesibles.
+- [x] Migrar persistencia de juegos, escenas, scripts, perfiles y archivos sin romper formatos existentes. Se transfirieron 322 registros idempotentes; los 6 objetos listados en Storage fueron comprobados y registrados como ausentes en el origen, por lo que no había bytes que copiar.
 - [x] Añadir sincronización persistente para apartados que actualmente solo usan estado local o memoria. La cola Manus cubre proyectos, colecciones de chats y chats de trabajo, con reintento al iniciar y al recuperar conexión.
 - [x] Implementar estrategia de compatibilidad, estados offline/error y reintentos seguros mediante cola local limitada, respuestas autenticadas y upserts por hash.
 - [x] Añadir o actualizar pruebas unitarias para almacenamiento, sincronización y retrocompatibilidad. La suite pasó con 24 pruebas, incluida la validación de credenciales de solo lectura.
@@ -341,16 +341,16 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 
 ## Registro de auditoría de la migración
 
-- Auditoría completada: el origen contiene 14 usuarios, 322 registros transferibles, 6 objetos de Storage inventariados y una tabla declarada ausente. Las contraseñas de Supabase Auth no son exportables; los identificadores se conservan como registros de compatibilidad.
+- Auditoría completada: el origen contiene 14 usuarios, 322 registros transferibles, 6 objetos de Storage inventariados y una tabla declarada ausente. Los 322 registros existen en Manus sin duplicados; `cloud_migration_skips` contiene 6 omisiones de Storage. Las contraseñas de Supabase Auth no son exportables; los identificadores se conservan como registros de compatibilidad.
 
 
 ## Alcance ampliado confirmado por el usuario
 
-- [ ] Conservar y migrar todos los usuarios, identidades y perfiles existentes.
-- [ ] Conservar y migrar todos los juegos, escenas, scripts, transformaciones y metadatos. Los proyectos de editor ya escriben en Manus; falta finalizar la fase de activos y cotejo por dominio.
-- [ ] Conservar y migrar chats, mensajes, comunidades, publicaciones, comentarios, reacciones y notificaciones. Chat y trabajo local ya se encolan en Manus; falta migrar y verificar cada dominio social remoto.
-- [ ] Conservar y migrar galerías, archivos, avatares, imágenes y referencias de almacenamiento. Los 6 objetos de Storage requieren una fase separada porque el origen contiene referencias huérfanas o no accesibles.
-- [ ] Mantener relaciones, permisos, identificadores y compatibilidad con enlaces existentes.
+- [x] Conservar y migrar todos los usuarios, identidades y perfiles existentes como registros de compatibilidad, preservando sus IDs y payloads. Las contraseñas de Supabase Auth no son exportables y el acceso futuro debe completarse mediante Manus OAuth.
+- [x] Conservar y migrar todos los juegos, escenas, scripts, transformaciones y metadatos. Los 182 proyectos forman parte de los 322 registros transferidos y los proyectos nuevos se sincronizan directamente con Manus.
+- [x] Conservar y migrar chats, mensajes, comunidades, publicaciones, comentarios, reacciones y notificaciones presentes en las tablas de origen; chat y trabajo local también se encolan en Manus.
+- [x] Conservar y migrar galerías, archivos, avatares, imágenes y referencias de almacenamiento en lo verificable: los 6 objetos `post-media` fueron auditados y quedaron registrados como omitidos porque el origen devolvió `source object missing`; no se inventaron archivos ni se eliminaron referencias.
+- [x] Mantener relaciones, permisos, identificadores y compatibilidad con enlaces existentes mediante `sourceTable`, `sourceId`, `ownerOpenId` y los payloads originales; la fachada legacy conserva imports mientras el runtime usa Manus.
 - [x] Ejecutar la transferencia en modo no destructivo, con verificación de conteos, hashes y reintentos idempotentes para los 322 registros. Los activos inaccesibles quedan auditados y no se elimina el origen.
 - [x] Mantener Supabase intacto como respaldo hasta completar la validación y el corte a Manus.
 

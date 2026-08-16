@@ -186,6 +186,12 @@ async function main() {
       );
       console.log(`Migrated asset ${asset.bucket}/${asset.path}`);
     }
+    for (const skipped of skippedAssets) {
+      await connection.execute(
+        `INSERT INTO cloud_migration_skips (sourceBucket, sourcePath, reason, details, recordedAt) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) ON DUPLICATE KEY UPDATE reason=VALUES(reason), details=VALUES(details), recordedAt=CURRENT_TIMESTAMP`,
+        [skipped.bucket || null, skipped.path || null, skipped.reason, JSON.stringify({ phase: migrateAssets ? "assets" : "records" })],
+      );
+    }
     console.log(JSON.stringify({ completed: true, migratedRecords: records.length, migratedAssets: migrateAssets ? assets.length - skippedAssets.length : 0, skippedAssets }, null, 2));
   } finally {
     await connection.end();
