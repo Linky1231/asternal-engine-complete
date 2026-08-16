@@ -284,11 +284,11 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 
 # Integración segura de Stripe para Plan Plus
 
-- [ ] Configurar Stripe Claimable Sandbox para Plan Plus con productos, precios, checkout, suscripciones y webhooks.
-- [ ] Mantener el entorno en modo prueba: el sandbox no procesa dinero real ni crea saldo reclamable.
-- [ ] Mostrar en Plus el estado sandbox y bloquear cualquier activación de cobros reales hasta reclamar/configurar una cuenta Stripe real.
-- [ ] Añadir trazabilidad, idempotencia, estados de suscripción y pruebas de checkout sin dinero real.
-- [ ] Documentar que reclamar el sandbox transfiere configuración, no fondos de prueba.
+- [x] Pospuesto por el usuario: no configurar Stripe Claimable Sandbox, productos, precios, checkout, suscripciones ni webhooks en este alcance.
+- [x] Documentado y cerrado por alcance: el sandbox no procesa dinero real ni crea saldo reclamable; Stripe queda pospuesto.
+- [x] Pospuesto por el usuario: no modificar Plus ni activar ningún flujo de cobro.
+- [x] Pospuesto por el usuario: no añadir checkout ni estados de suscripción en esta iteración.
+- [x] Documentado previamente: reclamar un sandbox transfiere configuración, no fondos de prueba; no se implementa Stripe ahora.
 
 
 ---
