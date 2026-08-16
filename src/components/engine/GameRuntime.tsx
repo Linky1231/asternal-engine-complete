@@ -3,6 +3,7 @@ import type { Entity, RuntimeInput, RuntimeState, Scene, UIElement } from "@/lib
 import { stepScene, newRuntimeState, resolveUIRect, sortedForRender, isOnHiddenLayer, layerOpacityFor } from "@/lib/engine/core";
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
+import { resolveEntityWorld, sampleTransformTrack } from "@/lib/engine/transforms";
 import { createScriptRunner } from "@/lib/engine/scripts";
 import { startMusic, stopMusic, setVolume, setMuted } from "@/lib/engine/sfx";
 import { drawUIElement } from "./UIEditor";
@@ -198,7 +199,13 @@ export function GameRuntime({
 
       const tSec = performance.now() / 1000;
       const visualEffects = W >= 700;
-      for (const e of drawList) {
+      const animatedScene: Scene = {
+        ...work,
+        entities: work.entities.map(entity => sampleTransformTrack(entity, tSec)),
+      };
+      const transformedDrawList = sortedForRender(animatedScene)
+        .map(entity => resolveEntityWorld(animatedScene, entity));
+      for (const e of transformedDrawList) {
         if (e.visible === false) continue;
         const la = layerOpacityFor(work, e);
         const a = (e.opacity ?? 1) * la;
@@ -549,13 +556,14 @@ export function drawEntity(ctx: CanvasRenderingContext2D, e: Entity, time: numbe
   ctx.save();
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  const rot = ((e.rotation ?? 0) * Math.PI) / 180;
-  if (rot) {
-    const cx = e.x + e.w / 2;
-    const cy = e.y + e.h / 2;
-    ctx.translate(cx, cy);
+  const rot = ((e.transform?.rotation.z ?? e.rotation ?? 0) * Math.PI) / 180;
+  const pivotX = e.x + e.w * (e.transform?.pivot.x ?? 0.5);
+  const pivotY = e.y + e.h * (e.transform?.pivot.y ?? 0.5);
+  if (rot || e.flipY) {
+    ctx.translate(pivotX, pivotY);
     ctx.rotate(rot);
-    ctx.translate(-cx, -cy);
+    ctx.scale(1, e.flipY ? -1 : 1);
+    ctx.translate(-pivotX, -pivotY);
   }
   const flip = (e.facing === -1) !== !!e.flipX;
   if (flip) {
@@ -583,12 +591,11 @@ export function drawEntity(ctx: CanvasRenderingContext2D, e: Entity, time: numbe
   // fallback shape — reset flip/translate but keep rotation, so redraw at absolute coords
   ctx.restore();
   ctx.save();
-  if (rot) {
-    const cx = e.x + e.w / 2;
-    const cy = e.y + e.h / 2;
-    ctx.translate(cx, cy);
+  if (rot || e.flipY) {
+    ctx.translate(pivotX, pivotY);
     ctx.rotate(rot);
-    ctx.translate(-cx, -cy);
+    ctx.scale(1, e.flipY ? -1 : 1);
+    ctx.translate(-pivotX, -pivotY);
   }
   if (visualEffects) {
     ctx.shadowColor = e.color;

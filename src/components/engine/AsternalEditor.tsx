@@ -16,6 +16,7 @@ import { AnimationEditor } from "./AnimationEditor";
 import { PaintEditor } from "./PaintEditor";
 import { UIEditor } from "./UIEditor";
 import { ProjectManager } from "./ProjectManager";
+import { TransformInspector } from "./TransformInspector";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { ScriptEditor } from "./ScriptEditor";
@@ -710,6 +711,12 @@ function InspectorPanel({
         <Slider label="Ancho" value={ent.w} min={8} max={400} step={4} onChange={v => update({ w: v })} />
         <Slider label="Alto" value={ent.h} min={8} max={400} step={4} onChange={v => update({ h: v })} />
       </div>
+      <TransformInspector
+        scene={scene}
+        entity={ent}
+        onChangeScene={onChangeScene}
+        onSelect={onSelect}
+      />
       <div>
         <label className="text-[10px] font-display tracking-widest text-muted-foreground">{t("inspector.color")}</label>
         <input

@@ -3,6 +3,7 @@ import type { Entity, EntityKind, Scene } from "@/lib/engine/core";
 import { KIND_PRESETS, uid, sortedForRender, isOnHiddenLayer, layerOpacityFor } from "@/lib/engine/core";
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
+import { resizeEntityTransform, updateEntityTransform } from "@/lib/engine/transforms";
 
 interface Props {
   scene: Scene;
@@ -569,10 +570,11 @@ export function SceneEditor({ scene, tool, selectedId, onSelect, onChange }: Pro
         x: snapVal(w.x - preset.w / 2),
         y: snapVal(w.y - preset.h / 2),
       };
+      const transformed = updateEntityTransform(ent, { position: { x: ent.x, y: ent.y, z: ent.z ?? 0 } });
       let entities = scene.entities;
       if (tool === "player") entities = entities.filter(e => e.kind !== "player");
-      onChange({ ...scene, entities: [...entities, ent] });
-      onSelect(ent.id);
+      onChange({ ...scene, entities: [...entities, transformed] });
+      onSelect(transformed.id);
       gesture.current = { mode: "idle" };
     }
   };
@@ -612,7 +614,7 @@ export function SceneEditor({ scene, tool, selectedId, onSelect, onChange }: Pro
       const dy = (sy - (g.startSY || 0)) / scale;
       const entities = scene.entities.map(e =>
         e.id === g.entId
-          ? { ...e, x: snapVal((g.entStartX || 0) + dx), y: snapVal((g.entStartY || 0) + dy) }
+          ? updateEntityTransform(e, { position: { x: snapVal((g.entStartX || 0) + dx), y: snapVal((g.entStartY || 0) + dy), z: e.transform?.position.z ?? e.z ?? 0 } })
           : e
       );
       onChange({ ...scene, entities });
@@ -621,7 +623,8 @@ export function SceneEditor({ scene, tool, selectedId, onSelect, onChange }: Pro
       const entities = scene.entities.map(e => {
         if (e.id !== g.entId) return e;
         const base: Entity = { ...e, x: g.entStartX!, y: g.entStartY!, w: g.entStartW!, h: g.entStartH! };
-        return resizeEntity(base, g.handle!, w.x, w.y, snap);
+        const resized = resizeEntity(base, g.handle!, w.x, w.y, snap);
+        return resizeEntityTransform(resized, resized.w, resized.h);
       });
       onChange({ ...scene, entities });
     } else if (g.mode === "hb-move" && g.entId) {

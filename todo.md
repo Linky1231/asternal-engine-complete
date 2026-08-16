@@ -176,3 +176,25 @@ Nota de verificación: se intentó montar una ruta aislada temporal con el compo
 - [x] Registrar evidencia explícita por viewport/panel autenticado antes del checkpoint final: validación manual confirmada por el usuario tras iniciar sesión.
 
 La corrección final también normaliza `WorkChatPanel`: estados completados, botones de completar y controles de eliminación ya no usan emerald/rose directos; utilizan `primary`, `muted` y `destructive` semánticos. `pnpm build` completó correctamente.
+
+---
+
+# Sistema de transformaciones del editor
+
+- [x] Auditar el modelo de escenas, objetos, selección y persistencia existente del editor.
+- [x] Definir una transformación compatible con posición, rotación, escala, pivote, espacios local/global y claves de animación.
+- [x] Implementar mover, rotar y escalar en ejes X/Y/Z con valores editables.
+- [x] Incorporar origen/pivote configurable y snapping de posición, rotación y escala.
+- [x] Implementar relaciones parent/child, grupos y evaluación de coordenadas locales y globales.
+- [x] Añadir duplicación, clonación, instancias y mirror sin corromper referencias.
+- [x] Habilitar animación de propiedades de transformación en la línea de tiempo existente.
+- [x] Añadir pruebas unitarias viables, validar interacción y persistencia, compilar y publicar.
+- [x] Corregir el arranque de producción: el despliegue ahora genera `dist/index.js`, que sirve el frontend desde `dist/public`.
+
+Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migración de `storage.ts`. Las pruebas cubren composición parent/child, espacio global, escalado/pivote, clonación, interpolación de claves y normalización retrocompatible de escenas. `pnpm test`, `pnpm build` y el servidor estático de producción completaron correctamente. La inspección autenticada confirmó la presencia de los controles de transformación integrados.
+
+## Evidencia adicional antes de publicar
+
+- [ ] Añadir pruebas específicas para crear grupos y propagar transformaciones locales/globales a sus miembros.
+- [ ] Añadir pruebas separadas para duplicados independientes, instancias con referencia compartida y mirror en ambos ejes.
+- [ ] Guardar un checkpoint publicado específico de la ampliación de transformaciones después de estas validaciones.

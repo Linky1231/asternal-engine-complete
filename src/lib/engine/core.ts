@@ -4,6 +4,40 @@ import type { Script } from "./scripts";
 
 export type EntityKind = "player" | "platform" | "enemy" | "coin" | "goal" | "decor";
 
+/**
+ * Transform data stays compatible with the legacy x/y/w/h fields.  The editor
+ * uses the structured model; the runtime can keep reading the legacy fields.
+ */
+export type TransformSpace = "local" | "global";
+export interface TransformVector3 { x: number; y: number; z: number }
+export interface EntityTransform {
+  position: TransformVector3;
+  rotation: TransformVector3;
+  scale: TransformVector3;
+  pivot: TransformVector3; // normalized for x/y (0..1), depth pivot for z
+  baseSize: TransformVector3;
+  space: TransformSpace;
+}
+export interface TransformKeyframe {
+  id: string;
+  time: number;
+  position: TransformVector3;
+  rotation: TransformVector3;
+  scale: TransformVector3;
+}
+export interface TransformTrack {
+  enabled: boolean;
+  duration: number;
+  loop: boolean;
+  keyframes: TransformKeyframe[];
+}
+
+export interface TransformSnapping {
+  position: number;
+  rotation: number;
+  scale: number;
+}
+
 // --- Sprite asset (created in the in-engine pixel editor) ---
 export interface SpriteLayer {
   id: string;
@@ -110,7 +144,20 @@ export interface Entity {
   layerId?: string;          // optional scene layer assignment
   facing?: 1 | -1;           // last horizontal direction
   flipX?: boolean;           // force horizontal flip
+  flipY?: boolean;           // force vertical flip
   rotation?: number;         // degrees (0-360), rotation around center for rendering
+  /** Structured transform, synchronized with legacy x/y/z/rotation/w/h. */
+  transform?: EntityTransform;
+  /** Parent graph used by the editor. A child's stored position is local to its parent. */
+  parentId?: string | null;
+  /** Editor-only container. Groups do not render or collide. */
+  isGroup?: boolean;
+  /** Links a lightweight instance to its source while allowing local overrides. */
+  instanceOf?: string | null;
+  /** Optional animation channel for position, rotation and scale. */
+  transformTrack?: TransformTrack | null;
+  /** Per-object increments used by the transform inspector and canvas gestures. */
+  transformSnapping?: TransformSnapping;
   textureFit?: "stretch" | "contain" | "cover";
   // goal-specific
   nextSceneId?: string | null;
