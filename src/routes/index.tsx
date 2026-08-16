@@ -102,17 +102,6 @@ function HomePage() {
   const [orionOpen, setOrionOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [chatShareText, setChatShareText] = useState<string | null>(null);
-  const [inPreview, setInPreview] = useState(false);
-
-  // When the app runs embedded in the Freebuff preview (inside an iframe), the
-  // platform's floating button overlaps the top-right of the app. Push the
-  // header row down so the menu (☰) stays visible and tappable there.
-  useEffect(() => {
-    try {
-      setInPreview(typeof window !== "undefined" && window.self !== window.top);
-    } catch { /* cross-origin access can throw; treat as standalone */ }
-  }, []);
-
   // Abrir el chat con un mensaje compartido (botón «Compartir en el chat» del perfil).
   useEffect(() => {
     try {
@@ -222,7 +211,7 @@ function HomePage() {
       {/* bg casi opaco + blur reducido: el backdrop-blur-xl sobre un header
           sticky obligaba a re-desenfocar el fondo en cada frame de scroll → lag. */}
       <header className="app-header sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/70">
-        <div className={`max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 ${inPreview ? "pt-14 pb-3" : "py-2.5"}`}>
+        <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5">
           <button onClick={() => navigate({ to: "/profile" })} title="Mi perfil"
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-slate-900/5 shadow-[0_8px_20px_-10px_oklch(0.5_0.13_266/0.35)] active:scale-95 transition shrink-0">
             <Avatar p={me} className="w-full h-full" />

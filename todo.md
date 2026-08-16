@@ -14,6 +14,20 @@ La búsqueda de perfiles ya no usa una única expresión `or` compartida, que se
 
 ---
 
+# Cabecera compacta y controles de Buscar
+
+Estado: completado.
+
+- [x] Localizar y eliminar el espacio vacío incorrecto de la cabecera.
+- [x] Auditar campo de búsqueda, pestañas y filtros del panel Buscar.
+- [x] Aplicar degradado de marca a selecciones y acciones activas.
+- [x] Validar contraste, scroll horizontal y responsive.
+- [x] Guardar un checkpoint y entregar.
+
+Se eliminó el padding especial aplicado cuando Inicio estaba incrustado, que causaba el espacio vacío señalado. El panel Buscar ahora tiene un campo con contorno de degradado, limpieza de texto visible, cierre claro, ayudas breves y controles de alcance, filtros y pestañas con degradado de marca únicamente cuando están activos. Las variantes inactivas conservan una superficie neutra legible; las filas permanecen sin degradado para priorizar contenido. `pnpm build` y la revisión móvil de renderizado completaron correctamente.
+
+---
+
 # Reparación visual de Feed y perfil
 
 Estado: completado.

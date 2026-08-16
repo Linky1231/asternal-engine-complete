@@ -184,10 +184,10 @@ export function GlobalSearchPanel({
   const chip = (active: boolean, label: string, onClick: () => void) => (
     <button
       onClick={onClick}
-      className={`shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-display tracking-wider transition active:scale-95 ${
+      className={`shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-display tracking-wider transition active:scale-95 ${
         active
-          ? "bg-primary text-white"
-          : "bg-card border border-border text-muted-foreground hover:text-foreground"
+          ? "btn-grad text-white border border-white/15 shadow-[0_7px_16px_-11px_oklch(0.5_0.15_252/0.9)]"
+          : "bg-card/80 border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
       }`}
     >
       {label}
@@ -197,15 +197,15 @@ export function GlobalSearchPanel({
   const tabBtn = (t: Tab, label: string, count: number) => (
     <button
       onClick={() => setTab(t)}
-      className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-display tracking-[0.12em] flex items-center justify-center gap-1 transition active:scale-[0.98] ${
+      className={`shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-display tracking-[0.12em] flex items-center justify-center gap-1 transition active:scale-[0.98] ${
         tab === t
-          ? "bg-primary/15 text-primary border border-primary/30"
-          : "border border-transparent text-muted-foreground hover:text-foreground"
+          ? "btn-grad text-white border border-white/15 shadow-[0_7px_16px_-11px_oklch(0.5_0.15_252/0.8)]"
+          : "bg-card/60 border border-border/70 text-muted-foreground hover:text-foreground hover:border-primary/25"
       }`}
     >
       {label}
       {count > 0 && (
-        <span className="px-1 py-0.5 rounded-full bg-primary/10 text-[9px] font-bold">{count}</span>
+        <span className={`px-1 py-0.5 rounded-full text-[9px] font-bold ${tab === t ? "bg-white/20 text-white" : "bg-primary/10 text-primary"}`}>{count}</span>
       )}
     </button>
   );
@@ -374,44 +374,51 @@ export function GlobalSearchPanel({
         className={standalone ? "w-full bg-card border border-border rounded-2xl shadow-sm flex flex-col overflow-hidden min-h-[min(680px,calc(100vh-150px))]" : "w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]"}
       >
         {/* Cabecera: buscador */}
-        <div className="p-3 border-b border-border/60 flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 bg-background border border-border rounded-xl px-3 py-2.5">
-            <Search size={15} className="text-muted-foreground shrink-0" />
-            <input
-              ref={inputRef}
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar usuarios, juegos, arte, publicaciones y más…"
-              className="flex-1 bg-transparent outline-none text-sm min-w-0"
-            />
-            {q && (
-              <button
-                onClick={() => setQ("")}
-                className="w-5 h-5 rounded-full bg-muted text-muted-foreground grid place-items-center shrink-0"
-              >
-                <X size={10} />
-              </button>
-            )}
+        <div className="p-3 sm:p-4 border-b border-border/60 bg-card/85">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 rounded-2xl bg-gradient-to-r from-primary/75 via-sky-500/35 to-cyan-400/70 p-px shadow-[0_10px_24px_-17px_oklch(0.5_0.16_250/0.85)]">
+              <div className="flex items-center gap-2 rounded-[15px] bg-background px-3 py-2.5 transition focus-within:bg-card">
+                <Search size={16} className="text-primary shrink-0" />
+                <input
+                  ref={inputRef}
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Busca cuentas, juegos, arte y publicaciones…"
+                  className="flex-1 bg-transparent outline-none text-sm min-w-0 placeholder:text-muted-foreground/70"
+                />
+                {q && (
+                  <button
+                    onClick={() => setQ("")}
+                    aria-label="Limpiar búsqueda"
+                    className="w-6 h-6 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 grid place-items-center shrink-0 transition active:scale-95"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              aria-label="Cerrar buscador"
+              className="w-10 h-10 rounded-xl border border-border bg-background text-muted-foreground hover:text-foreground hover:border-primary/35 grid place-items-center active:scale-95 shrink-0 transition"
+            >
+              <X size={16} />
+            </button>
           </div>
-          <button
-            onClick={onClose}
-            className="w-9 h-9 rounded-xl border border-border grid place-items-center active:scale-95 shrink-0"
-          >
-            <X size={15} />
-          </button>
+          <p className="mt-2 px-1 text-[10px] text-muted-foreground/75">Explora perfiles, creaciones, conversaciones y archivos desde un solo lugar.</p>
         </div>
 
         {/* Alcance: todo / comunidad / trabajo */}
-        <div className="px-3 pt-2.5 flex items-center gap-1.5">
+        <div className="px-3 sm:px-4 pt-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {chip(scope === "all", "Todo", () => setScope("all"))}
           {chip(scope === "community", "Comunidad", () => setScope("community"))}
           {chip(scope === "work", "Trabajo", () => setScope("work"))}
           <button
             onClick={() => setFiltersOpen((v) => !v)}
-            className={`ml-auto shrink-0 px-3 py-1.5 rounded-lg text-[10px] font-display tracking-wider transition active:scale-95 ${
+            className={`ml-auto shrink-0 px-3 py-1.5 rounded-xl text-[10px] font-display tracking-wider transition active:scale-95 ${
               channelId || personId || dateFrom || dateTo
-                ? "bg-primary/15 text-primary border border-primary/30"
-                : "bg-card border border-border text-muted-foreground hover:text-foreground"
+                ? "btn-grad text-white border border-white/15 shadow-[0_7px_16px_-11px_oklch(0.5_0.15_252/0.8)]"
+                : "bg-card/80 border border-border text-muted-foreground hover:text-foreground hover:border-primary/30"
             }`}
           >
             Filtros{filtersOpen ? " ▴" : " ▾"}
@@ -489,7 +496,7 @@ export function GlobalSearchPanel({
         )}
 
         {/* Pestañas */}
-        <div className="px-3 pt-2.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
+        <div className="px-3 sm:px-4 pt-3 pb-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           {tabBtn("all", "Todo", total)}
           {tabBtn("users", "Perfiles", users.length)}
           {tabBtn("games", "Juegos", games.length)}
