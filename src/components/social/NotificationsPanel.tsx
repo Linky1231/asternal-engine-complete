@@ -24,22 +24,22 @@ type Cat = "todas" | "interacciones" | "seguidores" | "juegos";
    un tinte al 12% con el icono del mismo color: sobre el blanco del panel el
    icono quedaba casi invisible (parecía un círculo vacío). */
 const TYPE_META: Record<string, { icon: typeof Heart; label: string; cat: Exclude<Cat, "todas">; badge: string }> = {
-  comment: { icon: MessageSquare, label: "comentó tu post", cat: "interacciones", badge: "bg-primary" },
-  reply: { icon: Reply, label: "respondió tu comentario", cat: "interacciones", badge: "bg-sky-500" },
-  reaction: { icon: Heart, label: "reaccionó a tu contenido", cat: "interacciones", badge: "bg-rose-500" },
-  like: { icon: Heart, label: "le gustó tu contenido", cat: "interacciones", badge: "bg-rose-500" },
-  favorite: { icon: Star, label: "guardó tu contenido como favorito", cat: "interacciones", badge: "bg-amber-500" },
-  repost: { icon: Repeat, label: "reposteó tu post", cat: "interacciones", badge: "bg-emerald-500" },
-  mention: { icon: AtSign, label: "te mencionó", cat: "interacciones", badge: "bg-violet-500" },
-  follow: { icon: UserPlus, label: "te siguió", cat: "seguidores", badge: "bg-sky-500" },
-  game: { icon: Gamepad2, label: "publicó un juego", cat: "juegos", badge: "bg-primary" },
+  comment: { icon: MessageSquare, label: "comentó tu post", cat: "interacciones", badge: "grad-brand" },
+  reply: { icon: Reply, label: "respondió tu comentario", cat: "interacciones", badge: "grad-brand" },
+  reaction: { icon: Heart, label: "reaccionó a tu contenido", cat: "interacciones", badge: "grad-brand" },
+  like: { icon: Heart, label: "le gustó tu contenido", cat: "interacciones", badge: "grad-brand" },
+  favorite: { icon: Star, label: "guardó tu contenido como favorito", cat: "interacciones", badge: "grad-brand" },
+  repost: { icon: Repeat, label: "reposteó tu post", cat: "interacciones", badge: "grad-brand" },
+  mention: { icon: AtSign, label: "te mencionó", cat: "interacciones", badge: "grad-brand" },
+  follow: { icon: UserPlus, label: "te siguió", cat: "seguidores", badge: "grad-brand" },
+  game: { icon: Gamepad2, label: "publicó un juego", cat: "juegos", badge: "grad-brand" },
 };
 
 const CATS: { id: Cat; label: string; icon: typeof Heart; tone: string }[] = [
-  { id: "todas", label: "Todas", icon: Inbox, tone: "text-primary bg-primary/12" },
-  { id: "interacciones", label: "Interacciones", icon: Heart, tone: "text-rose-500 bg-rose-500/12" },
-  { id: "seguidores", label: "Seguidores", icon: UserPlus, tone: "text-sky-500 bg-sky-500/12" },
-  { id: "juegos", label: "Juegos", icon: Gamepad2, tone: "text-primary bg-primary/12" },
+  { id: "todas", label: "Todas", icon: Inbox, tone: "text-primary bg-primary/10" },
+  { id: "interacciones", label: "Interacciones", icon: Heart, tone: "text-primary bg-primary/10" },
+  { id: "seguidores", label: "Seguidores", icon: UserPlus, tone: "text-primary bg-primary/10" },
+  { id: "juegos", label: "Juegos", icon: Gamepad2, tone: "text-primary bg-primary/10" },
 ];
 
 function timeAgo(iso: string) {
@@ -181,10 +181,10 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
           <button
             onClick={markAll}
             disabled={marking || unread === 0}
-            className="flex items-center gap-1.5 px-3 h-8 rounded-lg border border-border/60 text-[10px] font-display text-muted-foreground hover:text-primary hover:border-primary/40 active:scale-95 transition shrink-0 disabled:opacity-40"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 h-8 rounded-lg border border-border/60 text-[10px] font-display text-muted-foreground hover:text-primary hover:border-primary/40 active:scale-95 transition shrink-0 disabled:opacity-40"
           >
             {marking ? <Loader2 size={12} className="animate-spin" /> : <CheckCheck size={12} />}
-            MARCAR LEÍDAS
+            <span className="sm:hidden">LEÍDAS</span><span className="hidden sm:inline">MARCAR LEÍDAS</span>
           </button>
         )}
       </header>
@@ -220,10 +220,10 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
           </section>
 
           {/* Totales por categoría */}
-          <section className="grid grid-cols-3 gap-2">
-            <StatCard label="Interacciones" value={stats.interacciones.total} unread={stats.interacciones.unread} Icon={Heart} tone="text-rose-500" bg="bg-rose-500/10" />
-            <StatCard label="Seguidores" value={stats.seguidores.total} unread={stats.seguidores.unread} Icon={UserPlus} tone="text-sky-500" bg="bg-sky-500/10" />
-            <StatCard label="Juegos" value={stats.juegos.total} unread={stats.juegos.unread} Icon={Gamepad2} tone="text-primary" bg="bg-primary/10" />
+          <section className="grid grid-cols-1 min-[360px]:grid-cols-3 gap-2">
+            <StatCard label="Interacciones" value={stats.interacciones.total} unread={stats.interacciones.unread} Icon={Heart} />
+            <StatCard label="Seguidores" value={stats.seguidores.total} unread={stats.seguidores.unread} Icon={UserPlus} />
+            <StatCard label="Juegos" value={stats.juegos.total} unread={stats.juegos.unread} Icon={Gamepad2} />
           </section>
 
           {/* Desglose por categoría (filtro) */}
@@ -330,13 +330,13 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
                 <div className="text-xs text-muted-foreground">Sin notificaciones aquí</div>
               </div>
             ) : (
-              <ul className="rounded-lg border border-border/70 bg-surface divide-y divide-border/40 overflow-hidden">
+              <ul className="space-y-2">
                 {filtered.map(n => {
                   const meta = TYPE_META[n.type] ?? TYPE_META.comment;
                   const Icon = meta.icon;
                   const unseen = !n.read;
                   return (
-                    <li key={n.id} className={`flex items-start gap-3 px-3 py-3 transition-colors ${unseen ? "bg-primary/5" : "hover:bg-muted/30"}`}>
+                    <li key={n.id} className={`flex items-start gap-3 rounded-xl border px-3 py-3 shadow-xs transition-colors ${unseen ? "border-primary/25 bg-primary/5" : "border-border/70 bg-surface hover:border-primary/25 hover:bg-muted/30"}`}>
                       <Link to="/profile/$userId" params={{ userId: n.actor_id ?? "" }}
                         onClick={e => { if (!n.actor_id) e.preventDefault(); }}
                         className="relative shrink-0">
@@ -369,14 +369,14 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
   );
 }
 
-function StatCard({ label, value, unread, Icon, tone, bg }: {
+function StatCard({ label, value, unread, Icon }: {
   label: string; value: number; unread: number;
-  Icon: React.ComponentType<{ size?: number; className?: string }>; tone: string; bg: string;
+  Icon: React.ComponentType<{ size?: number; className?: string }>;
 }) {
   return (
     <div className="rounded-lg border border-border/70 bg-surface p-3 flex flex-col items-start gap-1 min-w-0 transition-transform hover:scale-[1.02]">
-      <div className={`w-7 h-7 rounded-lg grid place-items-center ${bg}`}>
-        <Icon size={13} className={tone} />
+      <div className="w-7 h-7 rounded-lg grad-brand grid place-items-center shadow-sm">
+        <Icon size={13} className="text-primary-foreground" />
       </div>
       <div className="text-lg font-display font-semibold tabular-nums leading-none mt-1">{value.toLocaleString()}</div>
       <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider truncate w-full">{label}</div>
@@ -396,11 +396,11 @@ function PeriodCard({ label, received, unread }: { label: string; received: numb
       </div>
       <div className="flex items-center justify-between gap-1">
         <span className="text-[10px] text-muted-foreground shrink-0">Sin leer</span>
-        <span className={`text-xs font-display font-semibold tabular-nums ${unread > 0 ? "text-primary-glow" : "text-emerald-500"}`}>{unread}</span>
+        <span className={`text-xs font-display font-semibold tabular-nums ${unread > 0 ? "text-primary" : "text-muted-foreground"}`}>{unread}</span>
       </div>
       <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-border/40">
         <span className="text-[10px] text-muted-foreground shrink-0">Leídas</span>
-        <span className="text-xs font-display font-semibold tabular-nums text-emerald-500">{read}</span>
+        <span className="text-xs font-display font-semibold tabular-nums text-muted-foreground">{read}</span>
       </div>
     </div>
   );

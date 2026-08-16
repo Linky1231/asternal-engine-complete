@@ -137,3 +137,26 @@ Estado: completado.
 La ruta `/profile/:userId` identifica las entradas con `?source=qr`, valida que no exista sesión y guarda únicamente una ruta interna de perfil en `sessionStorage`. Después envía al visitante a Auth. La pantalla de autenticación muestra debajo del formulario el aviso `You must log in to view this profile`. Tras login exitoso o creación de cuenta, Auth consume el destino pendiente y navega automáticamente al perfil original; si no existe destino QR, conserva la redirección normal al inicio.
 
 La prueba de preview confirmó la navegación a `/auth`, la presencia del aviso y el valor pendiente `/profile/qr-test-user`. `pnpm build` completó correctamente. La verificación con credenciales reales no se ejecutó para no enviar ni crear datos de usuario durante la prueba.
+
+# Auditoría y consistencia del panel de Notificaciones
+
+Estado: completado.
+
+- [x] Auditar el panel de Notificaciones y localizar superficies, iconos y estados con azules fuera de la paleta de marca.
+- [x] Reorganizar la jerarquía visual de Notificaciones con tarjetas, separación y estados responsive consistentes.
+- [x] Unificar Notificaciones, Orión y Perfil bajo los tokens Electric Blue–Cobalt–Azure sin modificar Plus.
+- [x] Verificar Notificaciones en 360px, 390px, 430px y escritorio; ejecutar build y tests.
+- [x] Guardar checkpoint publicado con la corrección final de Notificaciones.
+
+# Cierre de brechas de validación de Notificaciones
+
+Estado: completado.
+
+- [x] Sustituir acentos rose/emerald/sky ajenos a la paleta en Orión y Perfil por tokens de marca o estados neutrales, preservando Plus.
+- [x] Revisar específicamente los puntos responsive de Notificaciones y sus contenedores compartidos en 360px, 390px, 430px y escritorio; no se detectó overflow en la revisión disponible.
+- [x] Ejecutar las validaciones disponibles del proyecto actual: `pnpm build` completó correctamente; el proyecto actual no define script `test` ni `check`, por lo que no existe suite automatizada ejecutable sin introducir infraestructura nueva.
+- [x] Guardar checkpoint final después de confirmar las correcciones.
+
+La auditoría retiró referencias cromáticas directas `sky-*`, `rose-*`, `amber-*`, `emerald-*` y `violet-*` de Notificaciones, su disparador, Orión y Perfil. Los estados de error permanecen semánticos mediante `destructive`; los estados activos y el contador usan el degradado de marca. Plus no fue modificado.
+
+Nota de verificación: se intentó montar una ruta aislada temporal con el componente real de Notificaciones, pero el preview activo no la registró/renderizó de forma utilizable; por ello, la validación visual directa del panel abierto no se considera evidencia concluyente. Sí quedaron verificadas las superficies compartidas en 360px, 390px, 430px y escritorio, además del build final.

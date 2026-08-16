@@ -379,3 +379,46 @@
 [2026-08-16T02:17:39.711Z] 2:17:39 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
 [2026-08-16T02:17:39.711Z] 2:17:39 AM [vite] (client) page reload src/main.tsx
 [2026-08-16T02:17:39.942Z] 2:17:39 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-16T02:20:47.461Z] [ELIFECYCLE] Command failed.
+[2026-08-16T02:20:47.466Z] Dev server exited with code -1
+[2026-08-16T02:20:48.573Z] Starting dev server with command: pnpm run dev
+[2026-08-16T02:20:49.228Z] ✓ Lockfile passes supply-chain policies (verified 1h ago)
+[2026-08-16T02:20:49.311Z] Progress: resolved 1, reused 0, downloaded 0, added 0
+[2026-08-16T02:20:49.528Z] [WARN] deprecated recharts@2.15.4: 1.x and 2.x branches are no longer active. Bump to Recharts v3 to receive latest features and bugfixes. See https://github.com/recharts/recharts/wiki/3.0-migration-guide
+[2026-08-16T02:20:50.313Z] Progress: resolved 196, reused 188, downloaded 6, added 0
+[2026-08-16T02:20:51.318Z] Progress: resolved 515, reused 388, downloaded 29, added 0
+[2026-08-16T02:20:51.483Z] Packages: +30
+[2026-08-16T02:20:51.483Z] ++++++++++++++++++++++++++++++
+[2026-08-16T02:20:51.528Z] Progress: resolved 518, reused 391, downloaded 30, added 30, done
+[2026-08-16T02:20:51.771Z] dependencies:
+[2026-08-16T02:20:51.771Z] + @aws-sdk/client-s3 3.1111.0
+[2026-08-16T02:20:51.771Z] + @aws-sdk/s3-request-presigner 3.1111.0
+[2026-08-16T02:20:51.771Z] + @trpc/client 11.18.0
+[2026-08-16T02:20:51.771Z] + @trpc/react-query 11.18.0
+[2026-08-16T02:20:51.771Z] + @trpc/server 11.18.0
+[2026-08-16T02:20:51.771Z] + jose 6.1.0
+[2026-08-16T02:20:51.800Z] Done in 2.8s using pnpm v11.21.0
+[2026-08-16T02:20:51.853Z] $ vite
+[2026-08-16T02:20:51.969Z] ▲ [WARNING] Duplicate key "@tanstack/react-query" in object literal [duplicate-object-key]
+[2026-08-16T02:20:51.969Z] package.json:50:4:
+[2026-08-16T02:20:51.969Z] 50 │     "@tanstack/react-query": "^5.83.0",
+[2026-08-16T02:20:51.969Z] ╵     ~~~~~~~~~~~~~~~~~~~~~~~
+[2026-08-16T02:20:51.969Z] The original key "@tanstack/react-query" is here:
+[2026-08-16T02:20:51.969Z] package.json:43:4:
+[2026-08-16T02:20:51.969Z] 43 │     "@tanstack/react-query": "^5.90.2",
+[2026-08-16T02:20:51.969Z] ╵     ~~~~~~~~~~~~~~~~~~~~~~~
+[2026-08-16T02:20:52.160Z] 2:20:52 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-16T02:20:52.180Z] VITE v7.3.6  ready in 303 ms
+[2026-08-16T02:20:52.180Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T02:20:52.180Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T02:21:51.344Z] 2:21:51 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationsPanel.tsx
+[2026-08-16T02:23:48.943Z] 2:23:48 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-16T02:23:53.333Z] 2:23:53 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-16T02:23:56.739Z] 2:23:56 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationBell.tsx
+[2026-08-16T02:28:06.023Z] 2:28:06 AM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-16T02:28:06.448Z] 2:28:06 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T02:28:06.449Z] 2:28:06 AM [vite] (client) page reload src/main.tsx
+[2026-08-16T02:28:25.187Z] 2:28:25 AM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-16T02:28:25.283Z] 2:28:25 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T02:28:25.283Z] 2:28:25 AM [vite] (client) page reload src/main.tsx
+[2026-08-16T02:28:25.289Z] 2:28:25 AM [vite] (client) page reload src/routes/notifications-qa.tsx

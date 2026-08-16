@@ -19,6 +19,7 @@ export default defineConfig({
     // triggers "Invalid hook calls" errors at runtime.
     dedupe: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
   },
+  publicDir: path.resolve(import.meta.dirname, "client", "public"),
   build: {
     sourcemap: false,
     rollupOptions: {

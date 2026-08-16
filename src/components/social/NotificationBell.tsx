@@ -52,7 +52,7 @@ export function NotificationBell() {
       >
         <Bell size={16} />
         {unread > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[9px] font-mono rounded-full min-w-4 h-4 px-0.5 grid place-items-center animate-in zoom-in">{unread > 99 ? "99+" : unread}</span>
+          <span className="absolute -top-1.5 -right-1.5 grad-brand text-primary-foreground text-[9px] font-mono rounded-full min-w-4 h-4 px-0.5 grid place-items-center animate-in zoom-in">{unread > 99 ? "99+" : unread}</span>
         )}
       </button>
 

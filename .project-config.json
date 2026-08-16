@@ -1,8 +1,16 @@
 {
   "build_command": "pnpm run build",
-  "capabilities": [],
+  "capabilities": [
+    "db",
+    "server",
+    "user"
+  ],
   "dev_command": "pnpm run dev",
-  "env_vars": {},
+  "env_vars": {
+    "DATABASE_URL": "mysql://3iSZjGiKUZbXMmH.2749a2d7e20a:Z03F1yKE8k9DpkpR5vHw@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/DVLQmNYeSdpuhYJbkDTM8B?ssl={\"rejectUnauthorized\":true}",
+    "DRIZZLE_DATABASE_URL": "mysql://3iSZjGiKUZbXMmH.2749a2d7e20a:Z03F1yKE8k9DpkpR5vHw@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/DVLQmNYeSdpuhYJbkDTM8B?ssl={\"rejectUnauthorized\":true}",
+    "MANUS_WEBDEV_PROJECT_ID": "DVLQmNYeSdpuhYJbkDTM8B"
+  },
   "experiments": null,
   "git_remote": {
     "repo_url": "https://7f0548f6b28a1758d9bf7be630d36cb4.artifacts.cloudflare.net/git/prod/DVLQmNYeSdpuhYJbkDTM8B.git",
@@ -23,7 +31,7 @@
     "VITE_ANALYTICS_ENDPOINT": "https://manus-analytics.com",
     "VITE_ANALYTICS_WEBSITE_ID": "3c0b6ae2-77dc-4544-bbf8-4cda355efb22",
     "VITE_APP_ID": "DVLQmNYeSdpuhYJbkDTM8B",
-    "VITE_APP_LOGO": "",
+    "VITE_APP_LOGO": "https://files.manuscdn.com/user_upload_by_module/web_dev_logo/310519663883378795/BcjUjCwCcdTQfvyq.png",
     "VITE_APP_TITLE": "Asternal Engine",
     "VITE_FRONTEND_FORGE_API_KEY": "gpW4cSmFS37hAqx5mHTgjo",
     "VITE_FRONTEND_FORGE_API_URL": "https://forge.manus.ai",

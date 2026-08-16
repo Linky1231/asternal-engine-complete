@@ -186,7 +186,7 @@ export function ProfilePanel({
           </button>
           <button onClick={() => void copyLink()}
             className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-            {copiedLink ? <Check size={14} className="text-emerald-500 shrink-0" /> : <Link2 size={14} className="text-primary shrink-0" />}
+            {copiedLink ? <Check size={14} className="text-primary shrink-0" /> : <Link2 size={14} className="text-primary shrink-0" />}
             {copiedLink ? "¡Enlace copiado!" : "Copiar enlace al perfil"}
           </button>
         </div>
@@ -335,7 +335,7 @@ export function ProfilePanel({
                     title="ID de usuario · toca para copiar">
                     <Fingerprint size={10} className="text-primary-glow" />
                     {userCode}
-                    {codeCopied ? <Check size={9} className="text-emerald-500" /> : <Copy size={9} className="opacity-60" />}
+                    {codeCopied ? <Check size={9} className="text-primary" /> : <Copy size={9} className="opacity-60" />}
                   </button>
                   {profile.custom_title && (
                     <div className="text-[11px] mt-0.5" style={{ color: profile.accent_color ?? "var(--primary)" }}>
@@ -605,7 +605,7 @@ export function ProfilePanel({
                           <SparklesIcon size={9} /> {price}
                         </span>
                       ) : (
-                        <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full text-[9px] font-semibold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
+                        <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full text-[9px] font-semibold bg-primary/10 text-primary border border-primary/25">
                           GRATIS
                         </span>
                       )}
@@ -614,7 +614,7 @@ export function ProfilePanel({
                       <div className="text-xs font-display truncate font-semibold tracking-tight">{title}</div>
                       <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Heart size={10} className={a.likes > 0 ? "text-rose-400" : ""} /> {a.likes}
+                          <Heart size={10} className={a.likes > 0 ? "text-primary" : ""} /> {a.likes}
                         </span>
                         <span className="flex items-center gap-1">
                           <MessageCircle size={10} /> {a.comments_count}
