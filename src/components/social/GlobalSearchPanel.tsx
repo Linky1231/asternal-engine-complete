@@ -10,6 +10,7 @@ import {
   Users,
   FolderOpen,
   Gamepad2,
+  Palette,
   ChevronRight,
   Loader2,
   Download,
@@ -26,6 +27,8 @@ import {
   type SearchMessage,
   type SearchScope,
   type SearchProject,
+  type SearchPost,
+  searchPosts,
 } from "@/lib/social/global-search";
 import { fetchChatProfiles } from "@/lib/social/chat";
 import { setCurrentProjectId } from "@/lib/engine/storage";
@@ -33,7 +36,7 @@ import { formatBytes, fileExt, fileEmoji } from "@/lib/social/work";
 import type { Profile } from "@/lib/social/api";
 import type { WorkFile } from "@/lib/social/work";
 
-type Tab = "all" | "messages" | "users" | "projects" | "files";
+type Tab = "all" | "messages" | "users" | "posts" | "games" | "artworks" | "projects" | "files";
 
 function fmtWhen(iso: string): string {
   const d = new Date(iso);
@@ -74,6 +77,9 @@ export function GlobalSearchPanel({
   const [users, setUsers] = useState<Profile[]>([]);
   const [projects, setProjects] = useState<SearchProject[]>([]);
   const [files, setFiles] = useState<WorkFile[]>([]);
+  const [posts, setPosts] = useState<SearchPost[]>([]);
+  const [games, setGames] = useState<SearchPost[]>([]);
+  const [artworks, setArtworks] = useState<SearchPost[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const sendersRef = useRef<Map<string, Profile>>(new Map());
@@ -96,17 +102,23 @@ export function GlobalSearchPanel({
       setUsers([]);
       setProjects([]);
       setFiles([]);
+      setPosts([]);
+      setGames([]);
+      setArtworks([]);
       setSearched(false);
       setLoading(false);
       return;
     }
     setLoading(true);
     const f = { scope, channelId, personId, dateFrom, dateTo };
-    const [msgs, usrs, prjs, fls] = await Promise.all([
+    const [msgs, usrs, prjs, fls, postResults, gameResults, artworkResults] = await Promise.all([
       searchMessages(query, channels, f),
       searchUsers(query),
       searchProjects(query),
       searchFiles(query, channels, f),
+      searchPosts(query, "post"),
+      searchPosts(query, "game"),
+      searchPosts(query, "artwork"),
     ]);
     // Resolver nombres de los remitentes de los mensajes.
     const ids = Array.from(new Set(msgs.map((m) => m.sender_id).filter(Boolean))) as string[];
@@ -141,6 +153,9 @@ export function GlobalSearchPanel({
     setUsers(usrs);
     setProjects(prjs);
     setFiles(fls);
+    setPosts(postResults);
+    setGames(gameResults);
+    setArtworks(artworkResults);
     setSearched(true);
     setLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -150,7 +165,7 @@ export function GlobalSearchPanel({
     void runSearch();
   }, [runSearch]);
 
-  const total = messages.length + users.length + projects.length + files.length;
+  const total = messages.length + users.length + posts.length + games.length + artworks.length + projects.length + files.length;
 
   const channelName = (id: string) => channels.find((c) => c.id === id)?.name ?? "Chat";
   const senderOf = (m: SearchMessage) => senders.get(m.sender_id ?? "");
@@ -158,6 +173,10 @@ export function GlobalSearchPanel({
   const openProject = (id: string) => {
     setCurrentProjectId(id);
     router.navigate({ to: "/editor" });
+  };
+
+  const openPost = (id: string) => {
+    window.location.href = `/feed?p=${encodeURIComponent(id)}`;
   };
 
   const chip = (active: boolean, label: string, onClick: () => void) => (
@@ -176,7 +195,7 @@ export function GlobalSearchPanel({
   const tabBtn = (t: Tab, label: string, count: number) => (
     <button
       onClick={() => setTab(t)}
-      className={`flex-1 py-1.5 rounded-lg text-[10px] font-display tracking-[0.12em] flex items-center justify-center gap-1 transition active:scale-[0.98] ${
+      className={`shrink-0 px-2.5 py-1.5 rounded-lg text-[10px] font-display tracking-[0.12em] flex items-center justify-center gap-1 transition active:scale-[0.98] ${
         tab === t
           ? "bg-primary/15 text-primary border border-primary/30"
           : "border border-transparent text-muted-foreground hover:text-foreground"
@@ -237,6 +256,39 @@ export function GlobalSearchPanel({
     </Link>
   );
 
+  const postTitle = (p: SearchPost, fallback: string) =>
+    (p.content || fallback).split("\n")[0].replace(/^[🎮🎨🖼️\s]+/, "").trim() || fallback;
+
+  const postRow = (p: SearchPost, kind: "post" | "game" | "artwork") => {
+    const fallback = kind === "game" ? "Juego" : kind === "artwork" ? "Arte de galería" : "Publicación";
+    const title = postTitle(p, fallback);
+    const author = p.author;
+    const image = p.signed_cover || p.signed_media?.[0];
+    return (
+      <button
+        key={`${kind}-${p.id}`}
+        onClick={() => openPost(p.id)}
+        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl bg-background border border-border/60 hover:border-primary/40 hover:bg-primary/5 transition text-left active:scale-[0.99]"
+      >
+        {image ? (
+          <img src={image} alt="" className="w-10 h-10 rounded-lg object-cover border border-border/60 shrink-0" />
+        ) : (
+          <div className="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 text-primary grid place-items-center shrink-0">
+            {kind === "game" ? <Gamepad2 size={15} /> : kind === "artwork" ? <Palette size={15} /> : <FileText size={15} />}
+          </div>
+        )}
+        <div className="min-w-0 flex-1">
+          <div className="text-[12px] font-semibold truncate">{title}</div>
+          <div className="text-[10px] text-muted-foreground/70 truncate">
+            {kind === "game" ? "Juego" : kind === "artwork" ? "Arte de galería" : "Publicación"} · {author?.display_name || author?.username || "Usuario"} · {fmtWhen(p.created_at)}
+          </div>
+          {p.content && <div className="text-[10px] text-muted-foreground/60 truncate">{p.content.replace(/\s+/g, " ")}</div>}
+        </div>
+        <ChevronRight size={14} className="text-muted-foreground/50 shrink-0" />
+      </button>
+    );
+  };
+
   const projectRow = (p: SearchProject) => (
     <button
       key={`prj-${p.id}`}
@@ -282,9 +334,9 @@ export function GlobalSearchPanel({
     <div className="text-center text-[11px] text-muted-foreground/60 py-10 px-6 leading-relaxed">
       {!searched ? (
         <>
-          Escribe para buscar mensajes, usuarios,
-          <br />
-          proyectos y archivos.
+              Busca usuarios, perfiles, juegos, arte de galería,
+              <br />
+              publicaciones, mensajes y archivos.
         </>
       ) : (
         <>Sin resultados para «{debounced}».</>
@@ -293,9 +345,12 @@ export function GlobalSearchPanel({
   );
 
   const listBlocks: { key: Tab; label: string; icon: ReactNode; items: ReactNode; count: number }[] = [
+    { key: "users", label: "Usuarios y perfiles", icon: <Users size={11} />, items: users.slice(0, 4).map(userRow), count: users.length },
+    { key: "games", label: "Juegos", icon: <Gamepad2 size={11} />, items: games.slice(0, 4).map((p) => postRow(p, "game")), count: games.length },
+    { key: "artworks", label: "Arte de galería", icon: <Palette size={11} />, items: artworks.slice(0, 4).map((p) => postRow(p, "artwork")), count: artworks.length },
+    { key: "posts", label: "Publicaciones", icon: <FileText size={11} />, items: posts.slice(0, 4).map((p) => postRow(p, "post")), count: posts.length },
     { key: "messages", label: "Mensajes", icon: <MessageSquare size={11} />, items: messages.slice(0, 4).map(messageRow), count: messages.length },
-    { key: "users", label: "Usuarios", icon: <Users size={11} />, items: users.slice(0, 4).map(userRow), count: users.length },
-    { key: "projects", label: "Proyectos", icon: <Gamepad2 size={11} />, items: projects.slice(0, 4).map(projectRow), count: projects.length },
+    { key: "projects", label: "Proyectos locales", icon: <Gamepad2 size={11} />, items: projects.slice(0, 4).map(projectRow), count: projects.length },
     { key: "files", label: "Archivos", icon: <FolderOpen size={11} />, items: files.slice(0, 4).map(fileRow), count: files.length },
   ];
 
@@ -324,7 +379,7 @@ export function GlobalSearchPanel({
               ref={inputRef}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder="Buscar mensajes, usuarios, proyectos, archivos…"
+              placeholder="Buscar usuarios, juegos, arte, publicaciones y más…"
               className="flex-1 bg-transparent outline-none text-sm min-w-0"
             />
             {q && (
@@ -432,12 +487,13 @@ export function GlobalSearchPanel({
         )}
 
         {/* Pestañas */}
-        <div className="px-3 pt-2.5 flex items-center gap-1">
-          {tabBtn("all", "Todos", total)}
-          {tabBtn("messages", "Mensajes", messages.length)}
-          {tabBtn("users", "Usuarios", users.length)}
-          {tabBtn("projects", "Proyectos", projects.length)}
-          {tabBtn("files", "Archivos", files.length)}
+        <div className="px-3 pt-2.5 flex items-center gap-1 overflow-x-auto no-scrollbar">
+          {tabBtn("all", "Todo", total)}
+          {tabBtn("users", "Perfiles", users.length)}
+          {tabBtn("games", "Juegos", games.length)}
+          {tabBtn("artworks", "Arte", artworks.length)}
+          {tabBtn("posts", "Posts", posts.length)}
+          {tabBtn("messages", "Chats", messages.length)}
         </div>
 
         {/* Resultados */}
@@ -480,6 +536,12 @@ export function GlobalSearchPanel({
             ) : (
               <div className="space-y-1.5">{users.map(userRow)}</div>
             )
+          ) : tab === "games" ? (
+            games.length === 0 ? emptyState() : <div className="space-y-1.5">{games.map((p) => postRow(p, "game"))}</div>
+          ) : tab === "artworks" ? (
+            artworks.length === 0 ? emptyState() : <div className="space-y-1.5">{artworks.map((p) => postRow(p, "artwork"))}</div>
+          ) : tab === "posts" ? (
+            posts.length === 0 ? emptyState() : <div className="space-y-1.5">{posts.map((p) => postRow(p, "post"))}</div>
           ) : tab === "projects" ? (
             projects.length === 0 ? (
               emptyState()

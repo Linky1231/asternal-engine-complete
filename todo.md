@@ -1,3 +1,19 @@
+# Búsqueda global de Asternal
+
+Estado: completado.
+
+- [x] Auditar el buscador actual y sus resultados.
+- [x] Auditar los modelos y consultas de perfiles, juegos, arte y publicaciones.
+- [x] Definir resultados por categorías y navegación a cada destino.
+- [x] Implementar la consulta global con estados de carga, vacío y error.
+- [x] Integrar resultados de usuarios, juegos, galería y publicaciones.
+- [x] Validar búsqueda, límites, responsive y navegación.
+- [x] Guardar un checkpoint y entregar.
+
+El buscador ahora combina perfiles, juegos publicados, artes de galería, publicaciones, mensajes, proyectos locales y archivos. Los perfiles abren `/profile/:userId`; los proyectos conservan su apertura en el editor; los juegos, artes y publicaciones abren el Feed mediante su identificador. Las nuevas categorías tienen pestañas desplazables en móvil, resultados con miniaturas y estados de carga/vacío. `pnpm build` completó correctamente.
+
+---
+
 # Corrección visual de feed y perfil
 
 Estado: completado.

@@ -3,7 +3,7 @@
 // archivos de los chats de trabajo, con filtros por persona, canal y fecha.
 // Funciona igual en modo local y con Supabase conectado.
 
-import type { Profile } from "./api";
+import { fetchArtworks, fetchFeed, type PostWithMeta, type Profile } from "./api";
 import {
   getCommunityChat,
   fetchMyDmChats,
@@ -41,6 +41,7 @@ export type SearchMessage = {
 };
 
 export type SearchProject = { id: string; name: string; updatedAt: number };
+export type SearchPost = PostWithMeta;
 
 export type SearchFilters = {
   scope: SearchScope;
@@ -195,6 +196,18 @@ export async function searchUsers(q: string): Promise<Profile[]> {
   if (!query) return [];
   try {
     return await searchProfilesForMention(query, 20);
+  } catch {
+    return [];
+  }
+}
+
+/** Busca publicaciones públicas y separa posts, juegos y obras de galería por categoría. */
+export async function searchPosts(q: string, category: "post" | "game" | "artwork" = "post"): Promise<SearchPost[]> {
+  const query = q.trim();
+  if (!query) return [];
+  try {
+    if (category === "artwork") return await fetchArtworks({ search: query });
+    return await fetchFeed({ search: query, category: category === "game" ? "game" : undefined, includeGames: category === "game" });
   } catch {
     return [];
   }
