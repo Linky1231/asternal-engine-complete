@@ -535,3 +535,10 @@
 [2026-08-16T03:17:17.328Z] VITE v7.3.6  ready in 227 ms
 [2026-08-16T03:17:17.329Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T03:17:17.329Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T03:18:13.824Z] [ELIFECYCLE] Command failed.
+[2026-08-16T03:18:13.830Z] Dev server exited with code -1
+[2026-08-16T03:18:14.917Z] Starting dev server with command: pnpm run dev
+[2026-08-16T03:18:15.180Z] $ vite
+[2026-08-16T03:18:15.432Z] VITE v7.3.6  ready in 227 ms
+[2026-08-16T03:18:15.432Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T03:18:15.432Z] ➜  Network: http://169.254.0.21:5173/
