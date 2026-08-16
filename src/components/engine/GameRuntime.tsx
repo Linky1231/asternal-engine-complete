@@ -3,7 +3,7 @@ import type { Entity, RuntimeInput, RuntimeState, Scene, UIElement } from "@/lib
 import { stepScene, newRuntimeState, resolveUIRect, sortedForRender, isOnHiddenLayer, layerOpacityFor } from "@/lib/engine/core";
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
-import { resolveEntityWorld, sampleTransformTrack } from "@/lib/engine/transforms";
+import { resolveEntityInstance, resolveEntityWorld, sampleTransformTrack } from "@/lib/engine/transforms";
 import { createScriptRunner } from "@/lib/engine/scripts";
 import { startMusic, stopMusic, setVolume, setMuted } from "@/lib/engine/sfx";
 import { drawUIElement } from "./UIEditor";
@@ -203,8 +203,12 @@ export function GameRuntime({
         ...work,
         entities: work.entities.map(entity => sampleTransformTrack(entity, tSec)),
       };
-      const transformedDrawList = sortedForRender(animatedScene)
-        .map(entity => resolveEntityWorld(animatedScene, entity));
+      const instanceResolvedScene: Scene = {
+        ...animatedScene,
+        entities: animatedScene.entities.map(entity => resolveEntityInstance(animatedScene, entity)),
+      };
+      const transformedDrawList = sortedForRender(instanceResolvedScene)
+        .map(entity => resolveEntityWorld(instanceResolvedScene, entity));
       for (const e of transformedDrawList) {
         if (e.visible === false) continue;
         const la = layerOpacityFor(work, e);

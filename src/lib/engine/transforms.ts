@@ -233,6 +233,52 @@ export function createInstance(source: Entity, offset = 16): Entity {
   return { ...dup, instanceOf: source.id };
 }
 
+/**
+ * Resolves shared instance properties against the current source without
+ * mutating saved data. Placement and transform values remain local overrides.
+ */
+export function resolveEntityInstance(scene: Scene, entity: Entity, visited = new Set<string>()): Entity {
+  if (!entity.instanceOf || visited.has(entity.id)) return entity;
+  const source = scene.entities.find(candidate => candidate.id === entity.instanceOf);
+  if (!source || source.id === entity.id) return entity;
+  visited.add(entity.id);
+  const resolvedSource = resolveEntityInstance(scene, source, visited);
+  const sourceTransform = getEntityTransform(resolvedSource);
+  const ownTransform = getEntityTransform(entity);
+  const sharedKeys: Array<keyof Entity> = [
+    "kind", "w", "h", "color", "solid", "gravity", "controllable", "collectible", "hazard", "goal",
+    "visible", "opacity", "texture", "animations", "scripts", "hitbox", "value", "moving", "crumble",
+    "spring", "patrol", "checkpoint", "slippery", "sticky", "locked", "powerup", "switchId", "doorId",
+    "emitter", "facing", "flipX", "flipY", "textureFit", "dialog", "transformTrack",
+  ];
+  const merged: Entity = {
+    ...entity,
+    transform: {
+      ...sourceTransform,
+      position: cloneVec(ownTransform.position),
+      rotation: cloneVec(ownTransform.rotation),
+      scale: cloneVec(ownTransform.scale),
+      pivot: cloneVec(ownTransform.pivot),
+      space: ownTransform.space,
+      baseSize: cloneVec(sourceTransform.baseSize),
+    },
+  };
+  for (const key of sharedKeys) {
+    if (resolvedSource[key] !== undefined) (merged as unknown as Record<string, unknown>)[key] = resolvedSource[key];
+  }
+  return updateEntityTransform(merged, {
+    position: ownTransform.position,
+    rotation: ownTransform.rotation,
+    scale: ownTransform.scale,
+    pivot: ownTransform.pivot,
+    space: ownTransform.space,
+  });
+}
+
+export function resolveSceneInstances(scene: Scene): Scene {
+  return { ...scene, entities: scene.entities.map(entity => resolveEntityInstance(scene, entity)) };
+}
+
 export function mirrorEntity(entity: Entity, axis: "x" | "y"): Entity {
   const transform = getEntityTransform(entity);
   const scale = { ...transform.scale };

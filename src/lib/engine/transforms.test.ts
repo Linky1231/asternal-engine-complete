@@ -4,6 +4,8 @@ import {
   createGroup,
   createInstance,
   duplicateEntity,
+  resolveEntityInstance,
+  resizeEntityTransform,
   getEntityTransform,
   mirrorEntity,
   reparentEntity,
@@ -94,6 +96,20 @@ describe("transformaciones de entidades", () => {
     expect(getEntityTransform(group).position).toEqual({ x: 30, y: 40, z: 0 });
   });
 
+  it("propaga la transformación global de un grupo a sus miembros parentados", () => {
+    const parent = updateEntityTransform(entity("group-parent", 100, 50), {
+      rotation: { x: 0, y: 0, z: 90 },
+      scale: { x: 2, y: 2, z: 1 },
+    });
+    const child = updateEntityTransform(entity("group-child", 10, 5), { position: { x: 10, y: 5, z: 0 } });
+    const resolved = resolveEntityWorld(scene([parent, { ...child, parentId: parent.id }]), { ...child, parentId: parent.id });
+
+    expect(resolved.x).toBeCloseTo(90);
+    expect(resolved.y).toBeCloseTo(70);
+    expect(getEntityTransform(resolved).scale).toEqual({ x: 2, y: 2, z: 1 });
+    expect(getEntityTransform(resolved).rotation.z).toBe(90);
+  });
+
   it("duplica una entidad con un ID independiente y un desplazamiento controlado", () => {
     const original = entity("original", 50, 50);
     original.color = "#ff0000";
@@ -103,6 +119,17 @@ describe("transformaciones de entidades", () => {
     expect(clone.color).toBe("#ff0000");
     expect(clone.x).toBe(74);
     expect(clone.y).toBe(74);
+  });
+
+  it("mantiene el duplicado independiente de la fuente mientras conserva sus datos", () => {
+    const original = updateEntityTransform(entity("original-independent", 20, 30), { scale: { x: 2, y: 2, z: 1 } });
+    const duplicate = duplicateEntity(original, 10);
+    const changed = updateEntityTransform(duplicate, { position: { x: 200, y: 300, z: 0 }, scale: { x: 3, y: 3, z: 1 } });
+
+    expect(changed.id).not.toBe(original.id);
+    expect(changed.x).toBe(200);
+    expect(original.x).toBe(20);
+    expect(getEntityTransform(original).scale).toEqual({ x: 2, y: 2, z: 1 });
   });
 
   it("crea una instancia con referencia a la fuente y transformación independiente", () => {
@@ -115,6 +142,22 @@ describe("transformaciones de entidades", () => {
     expect(instance.color).toBe("#00ff00");
     expect(moved.x).toBe(100);
     expect(source.x).toBe(10);
+  });
+
+  it("propaga cambios compartidos de la fuente y conserva el override local de la instancia", () => {
+    const source = updateEntityTransform(entity("shared-source", 20, 20), { scale: { x: 2, y: 2, z: 1 } });
+    source.color = "#00ff00";
+    const instance = updateEntityTransform(createInstance(source, 40), { position: { x: 200, y: 180, z: 0 } });
+    source.color = "#ff00ff";
+    const resizedSource = resizeEntityTransform(source, 90, 90);
+
+    const resolved = resolveEntityInstance(scene([resizedSource, instance]), instance);
+
+    expect(resolved.color).toBe("#ff00ff");
+    expect(resolved.w).toBe(90);
+    expect(resolved.x).toBe(200);
+    expect(resolved.y).toBe(180);
+    expect(resolved.instanceOf).toBe(source.id);
   });
 
   it("aplica mirror horizontal y vertical conservando el resto de la transformación", () => {

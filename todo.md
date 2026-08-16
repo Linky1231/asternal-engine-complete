@@ -195,6 +195,12 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 
 ## Evidencia adicional antes de publicar
 
-- [ ] Añadir pruebas específicas para crear grupos y propagar transformaciones locales/globales a sus miembros.
-- [ ] Añadir pruebas separadas para duplicados independientes, instancias con referencia compartida y mirror en ambos ejes.
-- [ ] Guardar un checkpoint publicado específico de la ampliación de transformaciones después de estas validaciones.
+- [x] Añadir pruebas específicas para crear grupos y propagar transformaciones locales/globales a sus miembros.
+- [x] Añadir pruebas separadas para duplicados independientes, instancias con referencia compartida y mirror en ambos ejes.
+- [x] Guardar un checkpoint publicado específico de la ampliación de transformaciones después de estas validaciones.
+
+
+## Brecha detectada en instancias compartidas
+
+- [x] Implementar semántica real de instancias compartidas o acotar explícitamente el contrato y sincronizar propiedades desde la fuente.
+- [x] Añadir prueba que refleje cambios compartidos de la fuente en la instancia, preservando overrides locales permitidos.
