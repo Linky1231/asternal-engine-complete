@@ -51,10 +51,12 @@ export function GlobalSearchPanel({
   defaultScope,
   onClose,
   onOpenMessage,
+  standalone = false,
 }: {
   defaultScope: SearchScope;
   onClose: () => void;
   onOpenMessage: (chatId: string) => void;
+  standalone?: boolean;
 }) {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -360,7 +362,7 @@ export function GlobalSearchPanel({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
-      className="fixed inset-0 z-[97] bg-black/60 backdrop-blur-md grid place-items-center p-3 sm:p-4"
+      className={standalone ? "w-full" : "fixed inset-0 z-[97] bg-black/60 backdrop-blur-md grid place-items-center p-3 sm:p-4"}
       onClick={onClose}
     >
       <motion.div
@@ -369,7 +371,7 @@ export function GlobalSearchPanel({
         exit={{ scale: 0.96, y: 10 }}
         transition={{ duration: 0.16, ease: "easeOut" }}
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]"
+        className={standalone ? "w-full bg-card border border-border rounded-2xl shadow-sm flex flex-col overflow-hidden min-h-[min(680px,calc(100vh-150px))]" : "w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl flex flex-col overflow-hidden max-h-[90vh]"}
       >
         {/* Cabecera: buscador */}
         <div className="p-3 border-b border-border/60 flex items-center gap-2">

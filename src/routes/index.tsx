@@ -96,8 +96,6 @@ function HomePage() {
   const [games, setGames] = useState<PostWithMeta[]>([]);
   const [posts, setPosts] = useState<PostWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatRetryNonce, setChatRetryNonce] = useState(0);
@@ -139,11 +137,11 @@ function HomePage() {
     if (which === "profile") return;
     setLoading(true);
     try {
-      if (which === "games") setGames(await fetchGames({ search: search || undefined }));
-      else setPosts(await fetchFeed({ search: search || undefined }));
+      if (which === "games") setGames(await fetchGames());
+      else setPosts(await fetchFeed());
       getMyProfile().then(p => p && setMe(p)).catch(() => {/* ignore */});
     } finally { setLoading(false); }
-  }, [search]);
+  }, []);
 
   // Callback estable para PostCard (memoizado): no cambia de identidad en cada
   // render, así abrir un menú en una tarjeta no fuerza a re-renderizar el resto.
@@ -249,16 +247,7 @@ function HomePage() {
           </button>
         </div>
 
-        {showSearch && (
-          <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 pb-2 flex gap-2 animate-in fade-in slide-in-from-top-2">
-            <input value={search} onChange={e => setSearch(e.target.value)}
-              onKeyDown={e => e.key === "Enter" && reload(tab)}
-              placeholder={tab === "games" ? "Buscar juegos…" : "Buscar publicaciones…"}
-              className="flex-1 bg-card border border-line-strong rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground" />
-            <button onClick={() => reload(tab)}
-              className="px-4 py-2 rounded-lg btn-grad text-xs font-display tracking-widest shrink-0">IR</button>
-          </div>
-        )}
+
 
         {/* Tabs principales */}
         <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 pb-2.5">
@@ -419,7 +408,7 @@ function HomePage() {
             <CategoryHeader label="SOCIAL" />
             <MenuItem icon={<MessageCircle />} label="Chats" onClick={() => { setChatOpen(true); closeMenu(); }} />
             <MenuItem icon={<Bot />} label="Asistencia · Orión" onClick={() => { setOrionOpen(true); closeMenu(); }} />
-            <MenuItem icon={<Search />} label="Buscar" onClick={() => { setShowSearch(s => !s); closeMenu(); }} />
+            <MenuLink icon={<Search />} label="Buscar" to="/search" onClick={closeMenu} />
             <MenuItem icon={<Bell />} label="Notificaciones" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} />
 
             {/* Categoría: COMUNIDAD */}

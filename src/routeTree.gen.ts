@@ -13,6 +13,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as PlusRouteImport } from './routes/plus'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as OrbesRouteImport } from './routes/orbes'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as EditorRouteImport } from './routes/editor'
@@ -40,6 +41,11 @@ const ProfileRoute = ProfileRouteImport.update({
 const PlusRoute = PlusRouteImport.update({
   id: '/plus',
   path: '/plus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrbesRoute = OrbesRouteImport.update({
@@ -85,6 +91,7 @@ const PaintRoute = PaintRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/search': typeof SearchRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/profile/$userId': typeof ProfileUserIdRoute
 }
 export interface FileRoutesByTo {
+  '/search': typeof SearchRoute
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/profile/$userId': typeof ProfileUserIdRoute
 }
 export interface FileRoutesById {
+  '/search': typeof SearchRoute
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
@@ -130,6 +139,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/search'
     | '/'
     | '/admin'
     | '/auth'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/profile/$userId'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/search'
     | '/'
     | '/admin'
     | '/auth'
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/profile/$userId'
   id:
+    | '/search'
     | '__root__'
     | '/'
     | '/admin'
@@ -184,10 +196,18 @@ export interface RootRouteChildren {
   PlusRoute: typeof PlusRoute
   ProfileRoute: typeof ProfileRouteWithChildren
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SearchRoute: typeof SearchRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -298,6 +318,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlusRoute: PlusRoute,
   ProfileRoute: ProfileRouteWithChildren,
   ResetPasswordRoute: ResetPasswordRoute,
+  SearchRoute: SearchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

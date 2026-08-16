@@ -1,3 +1,18 @@
+# Panel independiente de Buscar
+
+Estado: completado.
+
+- [x] Auditar el menú lateral y los paneles de Historial, Orbes y Plus.
+- [x] Definir una ruta/panel propio para Buscar.
+- [x] Integrar Buscar como entrada independiente del menú.
+- [x] Reubicar la búsqueda global dentro del panel propio.
+- [x] Validar navegación, cierre, autenticación y responsive.
+- [x] Guardar un checkpoint y entregar.
+
+Buscar ahora vive en `/search`, con `SubPageHeader`, navegación de vuelta y una composición de panel de página, no como una barra desplegable dentro de Inicio. La entrada del menú lateral abre esa ruta. El panel conserva las categorías globales de perfiles, juegos, arte, publicaciones y demás contenido, y se reutiliza en Chats como modal. La ruta redirige a Auth cuando no hay sesión. `pnpm build` completó correctamente y la navegación `/search` fue verificada en preview.
+
+---
+
 # Búsqueda global de Asternal
 
 Estado: completado.

@@ -311,3 +311,15 @@
 [2026-08-16T01:27:29.000Z] 1:27:28 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
 [2026-08-16T01:27:35.038Z] 1:27:35 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
 [2026-08-16T01:27:58.366Z] 1:27:58 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
+[2026-08-16T01:32:33.554Z] 1:32:33 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
+[2026-08-16T01:32:56.909Z] 1:32:56 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
+[2026-08-16T01:32:57.050Z] 1:32:57 AM [vite] (client) hmr invalidate /src/routes/index.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:32:57.051Z] 1:32:57 AM [vite] (client) hmr update /src/main.tsx
+[2026-08-16T01:32:57.126Z] 1:32:57 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:32:57.126Z] 1:32:57 AM [vite] (client) page reload src/main.tsx
+[2026-08-16T01:33:41.583Z] 1:33:41 AM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-16T01:33:41.767Z] 1:33:41 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:33:41.767Z] 1:33:41 AM [vite] (client) page reload src/main.tsx
+[2026-08-16T01:33:47.249Z] 1:33:47 AM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-16T01:33:47.344Z] 1:33:47 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:33:47.344Z] 1:33:47 AM [vite] (client) page reload src/main.tsx
