@@ -593,3 +593,20 @@
 [2026-08-16T04:13:29.082Z] VITE v7.3.6  ready in 246 ms
 [2026-08-16T04:13:29.082Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T04:13:29.082Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T04:16:14.383Z] [ELIFECYCLE] Command failed.
+[2026-08-16T04:16:14.389Z] Dev server exited with code -1
+[2026-08-16T04:16:15.475Z] Starting dev server with command: pnpm run dev
+[2026-08-16T04:16:15.730Z] $ vite
+[2026-08-16T04:16:15.986Z] VITE v7.3.6  ready in 232 ms
+[2026-08-16T04:16:15.986Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T04:16:15.987Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T14:43:47.289Z] 2:43:47 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx
+[2026-08-16T14:44:21.196Z] 2:44:21 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T14:44:40.118Z] 2:44:40 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T14:45:07.236Z] [ELIFECYCLE] Command failed.
+[2026-08-16T14:45:07.241Z] Dev server exited with code -1
+[2026-08-16T14:45:08.328Z] Starting dev server with command: pnpm run dev
+[2026-08-16T14:45:08.598Z] $ vite
+[2026-08-16T14:45:08.860Z] VITE v7.3.6  ready in 236 ms
+[2026-08-16T14:45:08.860Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T14:45:08.860Z] ➜  Network: http://169.254.0.21:5173/

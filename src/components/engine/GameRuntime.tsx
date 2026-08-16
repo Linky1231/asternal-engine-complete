@@ -351,11 +351,48 @@ export function GameRuntime({
   // pressing JUMP while moving the joystick keeps both active.
   const btnSrc = useRef({ left: false, right: false, jump: false });
   const joySrc = useRef({ left: false, right: false, jump: false });
+  const keySrc = useRef({ left: false, right: false, jump: false });
   const recomputeInput = () => {
-    inputRef.current.left = btnSrc.current.left || joySrc.current.left;
-    inputRef.current.right = btnSrc.current.right || joySrc.current.right;
-    inputRef.current.jump = btnSrc.current.jump || joySrc.current.jump;
+    inputRef.current.left = btnSrc.current.left || joySrc.current.left || keySrc.current.left;
+    inputRef.current.right = btnSrc.current.right || joySrc.current.right || keySrc.current.right;
+    inputRef.current.jump = btnSrc.current.jump || joySrc.current.jump || keySrc.current.jump;
   };
+  useEffect(() => {
+    const keyFor = (event: KeyboardEvent): keyof RuntimeInput | null => {
+      if (event.code === "ArrowLeft" || event.code === "KeyA") return "left";
+      if (event.code === "ArrowRight" || event.code === "KeyD") return "right";
+      if (event.code === "ArrowUp" || event.code === "KeyW" || event.code === "Space") return "jump";
+      return null;
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      const key = keyFor(event);
+      if (!key) return;
+      keySrc.current[key] = true;
+      recomputeInput();
+      event.preventDefault();
+    };
+    const onKeyUp = (event: KeyboardEvent) => {
+      const key = keyFor(event);
+      if (!key) return;
+      keySrc.current[key] = false;
+      recomputeInput();
+      event.preventDefault();
+    };
+    const onBlur = () => {
+      keySrc.current.left = false;
+      keySrc.current.right = false;
+      keySrc.current.jump = false;
+      recomputeInput();
+    };
+    window.addEventListener("keydown", onKeyDown, { passive: false });
+    window.addEventListener("keyup", onKeyUp, { passive: false });
+    window.addEventListener("blur", onBlur);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("keyup", onKeyUp);
+      window.removeEventListener("blur", onBlur);
+    };
+  }, []);
   const press = (k: keyof RuntimeInput, v: boolean) => {
     btnSrc.current[k] = v;
     recomputeInput();

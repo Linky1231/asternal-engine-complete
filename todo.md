@@ -268,3 +268,13 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Separar el input de cámara del input de jugador y conectar el joystick al Controller ECS/player.
 - [x] Añadir una prueba de regresión que confirme movimiento del jugador sin desplazamiento de cámara.
 - [x] Ejecutar tests, build, validación visual/runtime y guardar checkpoint publicado.
+
+
+---
+
+# Bug de movimiento y salto del jugador
+
+- [x] Reproducir y localizar por qué teclado/joystick no generan movimiento ni salto en el personaje.
+- [x] Corregir el enrutamiento de input hacia la entidad Controller del jugador sin romper la cámara.
+- [x] Añadir pruebas de regresión para movimiento horizontal, salto y joystick.
+- [x] Ejecutar tests, build, validar runtime/preview y guardar checkpoint publicado.

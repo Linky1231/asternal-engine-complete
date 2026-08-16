@@ -67,3 +67,30 @@ describe("input and scripting regressions", () => {
 
     expect(state.cameraX).toBeCloseTo(entity.x - 160, 5);
   });
+
+
+it("jumps a controller player from the same jump input used by keyboard and joystick", () => {
+  const entity = player();
+  entity.y = 101;
+  const floor = addDefaultComponents({
+    id: "floor",
+    kind: "platform",
+    x: 0,
+    y: 132,
+    w: 640,
+    h: 32,
+    vx: 0,
+    vy: 0,
+    color: "#888",
+    solid: true,
+    gravity: false,
+    controllable: false,
+    collectible: false,
+    hazard: false,
+    goal: false,
+  });
+  const scene: Scene = { ...sceneOf(entity), gravity: 900, entities: [entity, floor] };
+  const state = newRuntimeState(scene);
+  stepScene(scene, { left: false, right: false, jump: true }, state, 1 / 60);
+  expect(entity.vy).toBeLessThan(0);
+});
