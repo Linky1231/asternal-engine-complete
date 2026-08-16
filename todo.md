@@ -1,3 +1,17 @@
+# Reparación visual de Feed y perfil
+
+Estado: completado.
+
+- [x] Auditar la estructura actual de Feed y ProfilePanel frente a la referencia móvil.
+- [x] Reducir el espacio vacío y recomponer avatar, nombre, usuario, código y acciones del perfil.
+- [x] Hacer visible la separación real entre publicaciones con superficies y canales contrastados.
+- [x] Validar responsive, overlays y compilación.
+- [x] Guardar un checkpoint y entregar.
+
+La corrección se aplicó al Feed real de Inicio (`src/routes/index.tsx`), que es la lista mostrada al pulsar Feed; la corrección previa solo alcanzaba la ruta aislada `/feed`. Cada publicación de Inicio ahora tiene un wrapper propio, canal de fondo, padding y 20 px de ritmo. ProfilePanel usa una cuadrícula responsive: avatar e identidad comparten la primera fila y las acciones pasan a una fila compacta en móvil, evitando el vacío vertical observado. `pnpm build` completó correctamente.
+
+---
+
 # Corrección estructural del Feed
 
 Estado: completado.

@@ -329,3 +329,16 @@
 [2026-08-16T01:41:09.783Z] 1:41:09 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
 [2026-08-16T01:41:09.783Z] 1:41:09 AM [vite] (client) page reload src/main.tsx
 [2026-08-16T01:41:14.398Z] 1:41:14 AM [vite] (client) hmr update /src/styles.css, /src/components/social/PostCard.tsx
+[2026-08-16T01:42:17.350Z] [ELIFECYCLE] Command failed.
+[2026-08-16T01:42:17.356Z] Dev server exited with code -1
+[2026-08-16T01:42:18.442Z] Starting dev server with command: pnpm run dev
+[2026-08-16T01:42:18.714Z] $ vite
+[2026-08-16T01:42:18.982Z] VITE v7.3.6  ready in 244 ms
+[2026-08-16T01:42:18.982Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T01:42:18.982Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T01:46:54.970Z] 1:46:54 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-16T01:47:06.661Z] 1:47:06 AM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
+[2026-08-16T01:47:06.766Z] 1:47:06 AM [vite] (client) hmr invalidate /src/routes/index.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:47:06.766Z] 1:47:06 AM [vite] (client) hmr update /src/main.tsx
+[2026-08-16T01:47:06.831Z] 1:47:06 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-16T01:47:06.831Z] 1:47:06 AM [vite] (client) page reload src/main.tsx

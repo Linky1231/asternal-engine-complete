@@ -297,19 +297,20 @@ export function ProfilePanel({
         </div>
 
         <div className="p-4 sm:p-5 space-y-4">
-          <div className="flex flex-wrap items-start gap-3 -mt-12">
-            {/* Avatar: marco de degradado ceñido a la foto (mismo lenguaje que PostCard),
-                en vez del anillo animado flotante que se veía como un borde roto. */}
-            {frameRing ? (
-              <div className="relative shrink-0 rounded-2xl p-[2px]" style={{ background: frameRing }}>
-                {avatarButton}
-              </div>
-            ) : (
-              avatarButton
-            )}
+          <div className="grid grid-cols-[80px_minmax(0,1fr)] sm:grid-cols-[80px_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 -mt-12">
+            {/* Cabecera compacta: avatar e identidad comparten la primera fila; las acciones
+                ocupan una fila propia en móvil y una columna propia en escritorio. */}
+            <div className="shrink-0">
+              {frameRing ? (
+                <div className="relative rounded-2xl p-[2px]" style={{ background: frameRing }}>
+                  {avatarButton}
+                </div>
+              ) : (
+                avatarButton
+              )}
+            </div>
 
-
-            <div className="flex-1 min-w-[calc(100%-5rem)] sm:min-w-0 pt-12">
+            <div className="min-w-0 self-center">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -329,15 +330,13 @@ export function ProfilePanel({
                   <div className="max-w-full truncate text-[11px] font-mono text-muted-foreground">
                     @{profile.username || userId.slice(0, 8)}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
-                  {!editing && (
-                    <button onClick={() => void copyCode()}
-                      className="mt-1 inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
-                      title="ID de usuario · toca para copiar">
-                      <Fingerprint size={10} className="text-primary-glow" />
-                      {userCode}
-                      {codeCopied ? <Check size={9} className="text-emerald-500" /> : <Copy size={9} className="opacity-60" />}
-                    </button>
-                  )}
+                  <button onClick={() => void copyCode()}
+                    className="mt-1 inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
+                    title="ID de usuario · toca para copiar">
+                    <Fingerprint size={10} className="text-primary-glow" />
+                    {userCode}
+                    {codeCopied ? <Check size={9} className="text-emerald-500" /> : <Copy size={9} className="opacity-60" />}
+                  </button>
                   {profile.custom_title && (
                     <div className="text-[11px] mt-0.5" style={{ color: profile.accent_color ?? "var(--primary)" }}>
                       {profile.custom_title}
@@ -347,30 +346,32 @@ export function ProfilePanel({
               )}
             </div>
 
-            {viewingOwn ? (
-              editing ? (
-                <button onClick={save} disabled={saving}
-                  className="w-full sm:w-auto sm:mt-12 h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60">
-                  {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
-                </button>
+            <div className="col-span-2 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:mt-12 flex flex-wrap items-center justify-start sm:justify-end gap-2">
+              {viewingOwn ? (
+                editing ? (
+                  <button onClick={save} disabled={saving}
+                    className="h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60">
+                    {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
+                  </button>
+                ) : (
+                  <>
+                    <button onClick={() => setEditing(true)}
+                      className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
+                    {qrButton}
+                    {shareMenu}
+                  </>
+                )
               ) : (
-                <div className="w-full sm:w-auto sm:mt-12 flex items-center justify-end gap-2">
-                  <button onClick={() => setEditing(true)}
-                    className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
+                <>
+                  <button onClick={toggleFollow} disabled={followBusy}
+                    className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
+                    {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
+                  </button>
                   {qrButton}
                   {shareMenu}
-                </div>
-              )
-            ) : (
-              <div className="w-full sm:w-auto sm:mt-12 flex items-center justify-end gap-2">
-                <button onClick={toggleFollow} disabled={followBusy}
-                  className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
-                  {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
-                </button>
-                {qrButton}
-                {shareMenu}
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Follow counts (tocables: muestran la lista de personas) */}
