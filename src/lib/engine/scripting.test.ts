@@ -81,3 +81,35 @@ describe("open scripting API", () => {
     log.mockRestore();
   });
 });
+
+
+describe("Scratch control blocks", () => {
+  it("executes if/else, repeat and variables in one deterministic tick", () => {
+    const self = entity("scratch", 0, 0);
+    const scene = sceneOf(self);
+    const runner = createScriptRunner();
+    runner.step(scene, state(), { left: false, right: false, jump: false }, { shake: () => undefined, restart: () => undefined }, 1 / 60);
+    self.scripts = [{
+      id: "scratch-control",
+      event: "onUpdate",
+      blocks: [
+        { id: "set", kind: "setVariable", variable: "coins", value: 2 },
+        { id: "repeat", kind: "repeat", repeat: 3, thenBlocks: [{ id: "change", kind: "changeVariable", variable: "coins", delta: 1 }] },
+        { id: "if", kind: "if", cond: "variable", variable: "coins", value: 5, thenBlocks: [{ id: "move", kind: "moveX", value: 24 }] },
+      ],
+    }];
+    runner.step(scene, state(), { left: false, right: false, jump: false }, { shake: () => undefined, restart: () => undefined }, 1 / 60);
+    expect(self.x).toBe(24);
+  });
+
+  it("routes broadcast messages to matching scripts", () => {
+    const sender = entity("sender");
+    const receiver = entity("receiver");
+    receiver.scripts = [{ id: "message", event: "onBroadcast", message: "go", blocks: [{ id: "move", kind: "moveY", value: -12 }] }];
+    sender.scripts = [{ id: "send", event: "onStart", blocks: [{ id: "broadcast", kind: "broadcast", message: "go" }] }];
+    const scene = sceneOf(sender, receiver);
+    const runner = createScriptRunner();
+    runner.step(scene, state(), { left: false, right: false, jump: false }, { shake: () => undefined, restart: () => undefined }, 1 / 60);
+    expect(receiver.y).toBe(-12);
+  });
+});

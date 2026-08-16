@@ -312,3 +312,15 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Retirar ComponentInspector, ecs.ts, contratos de componentes y referencias ECS obsoletas.
 - [x] Añadir migración/regresión para escenas antiguas y validar tests, build y preview.
 - [x] Guardar checkpoint publicado de la eliminación completa.
+
+
+---
+
+# Ampliación de bloques Scratch
+
+- [x] Auditar bloques actuales, contratos serializados e intérprete visual.
+- [x] Añadir categorías y bloques de eventos, control, operadores, datos, apariencia, movimiento, sonido, sensores y clones.
+- [x] Implementar ejecución real de `si`, `si no`, ciclos, variables, mensajes y operadores.
+- [x] Integrar los bloques nuevos en la paleta y canvas con anidamiento compatible.
+- [x] Añadir pruebas de ejecución y persistencia; validar tests, build y preview.
+- [x] Guardar checkpoint publicado de la ampliación.

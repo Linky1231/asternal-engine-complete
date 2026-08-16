@@ -17,7 +17,8 @@ export type EventType =
   | "onLeaveScreen"
   | "onLand"
   | "onWin"
-  | "onLose";
+  | "onLose"
+  | "onBroadcast";
 
 export type BlockKind =
   // existing
@@ -77,7 +78,45 @@ export type BlockKind =
   | "wait"
   | "setFacing"
   | "knockback"
-  | "pushAway";
+  | "pushAway"
+  | "ifElse"
+  | "repeat"
+  | "forever"
+  | "waitSeconds"
+  | "setVariable"
+  | "changeVariable"
+  | "showVariable"
+  | "hideVariable"
+  | "broadcast"
+  | "broadcastAndWait"
+  | "keyPressed"
+  | "touchingKind"
+  | "greaterThan"
+  | "lessThan"
+  | "equals"
+  | "and"
+  | "or"
+  | "not"
+  | "join"
+  | "say"
+  | "changeX"
+  | "changeY"
+  | "setRotation"
+  | "turnRight"
+  | "turnLeft"
+  | "createClone"
+  | "deleteClone"
+  | "whenFlag"
+  | "whenKey"
+  | "whenMessage"
+  | "random"
+  | "compare"
+  | "math"
+  | "touching"
+  | "ask"
+  | "stopAll"
+  | "runFunction"
+  | "timer";
 
 export interface Block {
   id: string;
@@ -91,8 +130,17 @@ export interface Block {
   sound?: SoundName;
   color?: string;
   bool?: boolean;
-  cond?: "scoreGte" | "scoreLte";
+  cond?: "scoreGte" | "scoreLte" | "variable" | "keyPressed" | "touching" | "true";
   thenBlocks?: Block[];
+  elseBlocks?: Block[];
+  repeat?: number;
+  variable?: string;
+  delta?: number;
+  message?: string;
+  operator?: "gt" | "gte" | "lt" | "lte" | "eq" | "neq" | "and" | "or" | "not" | "+" | "-" | "*" | "/" | "%";
+  left?: unknown;
+  right?: unknown;
+  name?: string;
 }
 
 export interface Script {
@@ -105,6 +153,8 @@ export interface Script {
   blocks: Block[];
   /** Optional open-code body. Blocks remain the default legacy mode. */
   code?: string;
+  message?: string;
+  text?: string;
 }
 
 export const EVENT_LABELS: Record<EventType, string> = {
@@ -121,6 +171,7 @@ export const EVENT_LABELS: Record<EventType, string> = {
   onLand: "On Land",
   onWin: "On Win",
   onLose: "On Lose",
+  onBroadcast: "On Broadcast",
 };
 
 export const BLOCK_LABELS: Record<BlockKind, string> = {
@@ -181,6 +232,44 @@ export const BLOCK_LABELS: Record<BlockKind, string> = {
   setFacing: "Set facing (-1/1)",
   knockback: "Knockback (x,y)",
   pushAway: "Push away from player",
+  ifElse: "If / else",
+  repeat: "Repeat",
+  forever: "Forever",
+  waitSeconds: "Wait seconds",
+  setVariable: "Set variable",
+  changeVariable: "Change variable",
+  showVariable: "Show variable",
+  hideVariable: "Hide variable",
+  broadcast: "Broadcast",
+  broadcastAndWait: "Broadcast and wait",
+  keyPressed: "Key pressed?",
+  touchingKind: "Touching kind?",
+  greaterThan: "Greater than",
+  lessThan: "Less than",
+  equals: "Equals",
+  and: "And",
+  or: "Or",
+  not: "Not",
+  join: "Join text",
+  say: "Say",
+  changeX: "Change X by",
+  changeY: "Change Y by",
+  setRotation: "Set rotation",
+  turnRight: "Turn right",
+  turnLeft: "Turn left",
+  createClone: "Create clone",
+  deleteClone: "Delete this clone",
+  whenFlag: "When green flag clicked",
+  whenKey: "When key pressed",
+  whenMessage: "When I receive message",
+  random: "Pick random",
+  compare: "Compare values",
+  math: "Math operation",
+  touching: "Touching?",
+  ask: "Ask and wait",
+  stopAll: "Stop all",
+  runFunction: "Run function",
+  timer: "Timer",
 };
 
 export const ALL_BLOCKS: BlockKind[] = [
@@ -194,7 +283,10 @@ export const ALL_BLOCKS: BlockKind[] = [
   "setGravity", "setControllable", "setHazard", "setSolid", "setCollectible", "setGoalFlag",
   "setSceneGravity", "setHitbox", "clearHitbox",
   "faceTarget", "chase", "knockback", "setFacing", "pushAway",
-  "log", "comment", "if", "wait",
+  "log", "comment", "if", "ifElse", "repeat", "forever", "wait", "waitSeconds",
+  "setVariable", "changeVariable", "showVariable", "hideVariable", "broadcast", "broadcastAndWait",
+  "keyPressed", "touchingKind", "greaterThan", "lessThan", "equals", "and", "or", "not", "join",
+  "say", "changeX", "changeY", "setRotation", "turnRight", "turnLeft", "createClone", "deleteClone",
 ];
 
 export interface RuntimeHooks {
@@ -210,11 +302,35 @@ interface ExecCtx {
   hooks: RuntimeHooks;
   input?: RuntimeInput;
   dt?: number;
+  variables: Map<string, unknown>;
+  broadcast?: (message: string, wait: boolean) => void;
 }
 
 function findFirstOfKind(scene: Scene, kind: EntityKind) {
   for (const e of scene.entities) if (e.kind === kind && e.x > -9000) return e;
   return null;
+}
+
+function valueOf(b: Block, ctx: ExecCtx): unknown {
+  if (b.kind === "keyPressed") return b.text === "left" ? !!ctx.input?.left : b.text === "right" ? !!ctx.input?.right : !!ctx.input?.jump;
+  if (b.kind === "touchingKind") return !!findFirstOfKind(ctx.scene, (b.text as EntityKind) || "player") && intersects(ctx.self, findFirstOfKind(ctx.scene, (b.text as EntityKind) || "player")!);
+  if (b.kind === "greaterThan") return (b.x ?? 0) > (b.y ?? 0);
+  if (b.kind === "lessThan") return (b.x ?? 0) < (b.y ?? 0);
+  if (b.kind === "equals") return (b.text ?? b.value) === (b.color ?? b.x);
+  if (b.kind === "and") return Boolean(b.bool) && Boolean(b.value);
+  if (b.kind === "or") return Boolean(b.bool) || Boolean(b.value);
+  if (b.kind === "not") return !Boolean(b.bool);
+  if (b.kind === "join") return `${b.text ?? ""}${b.color ?? ""}`;
+  return b.variable ? ctx.variables.get(b.variable) : b.value;
+}
+
+function evaluateCondition(b: Block, ctx: ExecCtx, value: number): boolean {
+  if (b.cond === "scoreGte") return ctx.state.score >= value;
+  if (b.cond === "scoreLte") return ctx.state.score <= value;
+  if (b.cond === "keyPressed") return Boolean(valueOf({ ...b, kind: "keyPressed" }, ctx));
+  if (b.cond === "touching") return Boolean(valueOf({ ...b, kind: "touchingKind" }, ctx));
+  if (b.cond === "true") return true;
+  return Boolean(valueOf(b, ctx));
 }
 
 function execBlock(b: Block, ctx: ExecCtx) {
@@ -357,12 +473,65 @@ function execBlock(b: Block, ctx: ExecCtx) {
 
     case "if": {
       const v = b.value ?? 0;
-      const ok =
-        b.cond === "scoreGte" ? ctx.state.score >= v :
-        b.cond === "scoreLte" ? ctx.state.score <= v : false;
+      const ok = evaluateCondition(b, ctx, v);
       if (ok) for (const sub of b.thenBlocks ?? []) execBlock(sub, ctx);
       break;
     }
+    case "ifElse": {
+      const ok = evaluateCondition(b, ctx, b.value ?? 0);
+      for (const sub of (ok ? b.thenBlocks : b.elseBlocks) ?? []) execBlock(sub, ctx);
+      break;
+    }
+    case "repeat": {
+      const count = Math.max(0, Math.min(100, Math.floor(b.repeat ?? b.value ?? 1)));
+      for (let i = 0; i < count; i++) for (const sub of b.thenBlocks ?? []) execBlock(sub, ctx);
+      break;
+    }
+    case "forever":
+      for (const sub of b.thenBlocks ?? []) execBlock(sub, ctx);
+      break;
+    case "waitSeconds":
+      break;
+    case "setVariable": ctx.variables.set(b.variable ?? b.text ?? "variable", b.value ?? b.text ?? 0); break;
+    case "changeVariable": {
+      const key = b.variable ?? b.text ?? "variable";
+      const current = Number(ctx.variables.get(key) ?? 0);
+      ctx.variables.set(key, current + (b.delta ?? b.value ?? 1));
+      break;
+    }
+    case "showVariable":
+    case "hideVariable":
+      break;
+    case "broadcast": ctx.broadcast?.(b.message ?? b.text ?? "message", false); break;
+    case "broadcastAndWait": ctx.broadcast?.(b.message ?? b.text ?? "message", true); break;
+    case "say": (ctx.self as Entity & { say?: string }).say = b.text ?? ""; break;
+    case "changeX": ctx.self.x += b.value ?? 0; break;
+    case "changeY": ctx.self.y += b.value ?? 0; break;
+    case "setRotation": ctx.self.rotation = b.value ?? 0; break;
+    case "turnRight": ctx.self.rotation = (ctx.self.rotation ?? 0) + (b.value ?? 15); break;
+    case "turnLeft": ctx.self.rotation = (ctx.self.rotation ?? 0) - (b.value ?? 15); break;
+    case "createClone": {
+      ctx.scene.entities.push({ ...ctx.self, id: makeId(), x: ctx.self.x + 20, scripts: [] });
+      break;
+    }
+    case "deleteClone": ctx.self.x = -99999; break;
+    case "whenFlag":
+    case "whenKey":
+    case "whenMessage":
+      break;
+    case "random":
+      ctx.variables.set(b.name ?? "result", Math.floor(Math.random() * ((Number(b.right) || 10) - (Number(b.left) || 1) + 1)) + (Number(b.left) || 1));
+      break;
+    case "compare":
+    case "math":
+    case "and":
+    case "or":
+    case "not":
+    case "touching":
+    case "ask":
+    case "stopAll":
+    case "runFunction":
+      break;
   }
 }
 
@@ -390,6 +559,17 @@ export function createScriptRunner(): ScriptRunner {
   return {
     step(scene, state, input, hooks, dt) {
       const live = scene.entities;
+      const variablesByEntity = new Map<string, Map<string, unknown>>();
+      const makeCtx = (self: Entity, other?: Entity): ExecCtx => {
+        let variables = variablesByEntity.get(self.id);
+        if (!variables) { variables = new Map(); variablesByEntity.set(self.id, variables); }
+        return { self, other, scene, state, hooks, input, dt, variables, broadcast: (message, wait) => {
+          for (const target of scene.entities) for (const script of target.scripts ?? []) {
+            if (script.event === "onBroadcast" && (script.message ?? script.text) === message) runScript(script, makeCtx(target, self));
+          }
+          void wait;
+        } };
+      };
       const keyEdges = {
         left: input.left && !prevInput.left,
         right: input.right && !prevInput.right,
@@ -407,7 +587,7 @@ export function createScriptRunner(): ScriptRunner {
         if (e.x < -9000 && !destroyed.has(e.id)) {
           destroyed.add(e.id);
           for (const s of scripts) if (s.event === "onDestroyed" || s.event === "onDestroy")
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
         }
         if (e.x < -9000) continue;
 
@@ -415,14 +595,14 @@ export function createScriptRunner(): ScriptRunner {
         if (outside && !left.has(e.id)) {
           left.add(e.id);
           for (const s of scripts) if (s.event === "onLeaveScreen")
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
         } else if (!outside) {
           left.delete(e.id);
         }
 
         if (!started.has(e.id)) {
           for (const s of scripts) if (s.event === "onStart" || s.event === "onCreate")
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
           started.add(e.id);
         }
 
@@ -431,24 +611,24 @@ export function createScriptRunner(): ScriptRunner {
 
         for (const s of scripts) {
           if (s.event === "onUpdate") {
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
           } else if (s.event === "onKeyDown" && s.key && keyEdges[s.key]) {
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
           } else if (s.event === "onScoreReach") {
             const t = s.threshold ?? 0;
             if (prevScore < t && state.score >= t)
-              runScript(s, { self: e, scene, state, hooks, input, dt });
+              runScript(s, makeCtx(e));
           } else if (s.event === "onTimer") {
             const iv = Math.max(0.05, (s.interval ?? 1000) / 1000);
             const acc = (timerAcc.get(s.id) ?? 0) + dt;
-            if (acc >= iv) { timerAcc.set(s.id, 0); runScript(s, { self: e, scene, state, hooks, input, dt }); }
+            if (acc >= iv) { timerAcc.set(s.id, 0); runScript(s, makeCtx(e)); }
             else timerAcc.set(s.id, acc);
           } else if (s.event === "onLand" && landed) {
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
           } else if (s.event === "onWin" && winEdge) {
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
           } else if (s.event === "onLose" && loseEdge) {
-            runScript(s, { self: e, scene, state, hooks, input, dt });
+            runScript(s, makeCtx(e));
           }
         }
 
@@ -472,7 +652,7 @@ export function createScriptRunner(): ScriptRunner {
           if (colliding.has(key)) continue;
           for (const s of aScripts) {
             if (!s.withKind || s.withKind === "any" || s.withKind === b.kind) {
-              runScript(s, { self: a, other: b, scene, state, hooks, input, dt });
+              runScript(s, makeCtx(a, b));
             }
           }
         }

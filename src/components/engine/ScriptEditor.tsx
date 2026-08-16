@@ -9,12 +9,15 @@ import { SOUND_NAMES, type SoundName, playSound } from "@/lib/engine/sfx";
 const KIND_OPTIONS: (EntityKind | "any")[] = ["any", "player", "platform", "enemy", "coin", "goal"];
 const KIND_ONLY: EntityKind[] = ["player", "platform", "enemy", "coin", "goal"];
 
-type BlockCategory = "events" | "motion" | "looks" | "control" | "game" | "sound" | "world";
+type BlockCategory = "events" | "motion" | "looks" | "control" | "data" | "operators" | "sensing" | "game" | "sound" | "world";
 const CATEGORY_META: Record<BlockCategory, { label: string; color: string; kinds: BlockKind[] }> = {
-  events: { label: "Eventos", color: "#f59e0b", kinds: [] },
+  events: { label: "Eventos", color: "#f59e0b", kinds: ["whenFlag", "whenKey", "broadcast", "whenMessage"] },
   motion: { label: "Movimiento", color: "#3b82f6", kinds: ["jump", "setVx", "setVy", "setX", "setY", "moveX", "moveY", "teleport", "impulse", "setSpeed", "stop", "flipVx", "flipVy", "bounceY", "setFacing", "knockback", "pushAway", "chase", "faceTarget", "wrapScreen"] },
   looks: { label: "Apariencia", color: "#8b5cf6", kinds: ["setColor", "setSize", "setOpacity", "setVisible", "setBg", "setHitbox", "clearHitbox"] },
-  control: { label: "Control", color: "#f97316", kinds: ["if", "wait", "comment"] },
+  control: { label: "Control", color: "#f97316", kinds: ["if", "ifElse", "repeat", "forever", "wait", "comment", "stopAll", "runFunction"] },
+  data: { label: "Datos", color: "#ef4444", kinds: ["setVariable", "changeVariable", "showVariable", "hideVariable"] },
+  operators: { label: "Operadores", color: "#22c55e", kinds: ["compare", "math", "and", "or", "not", "random"] },
+  sensing: { label: "Sensores", color: "#06b6d4", kinds: ["keyPressed", "touching", "ask", "timer"] },
   game: { label: "Juego", color: "#10b981", kinds: ["addScore", "setScore", "resetScore", "addLives", "setLives", "setGravity", "setSceneGravity", "setControllable", "setHazard", "setSolid", "setCollectible", "setGoalFlag", "hurtPlayer", "win", "lose", "restartScene", "spawnEntity", "cloneSelf", "destroySelf", "destroyOther", "removeAllOf"] },
   sound: { label: "Sonido", color: "#ec4899", kinds: ["playSound", "playRandomSound", "vibrate", "shake"] },
   world: { label: "Mundo", color: "#14b8a6", kinds: [] },
@@ -221,6 +224,25 @@ function defaultBlock(k: BlockKind): Block {
     case "setControllable": return { ...base, bool: true };
     case "setVisible": return { ...base, bool: true };
     case "if": return { ...base, cond: "scoreGte", value: 10, thenBlocks: [] };
+    case "ifElse": return { ...base, cond: "scoreGte", value: 10, thenBlocks: [], elseBlocks: [] };
+    case "repeat": return { ...base, value: 10, thenBlocks: [] };
+    case "forever": return { ...base, thenBlocks: [] };
+    case "setVariable": return { ...base, name: "score", value: 0 };
+    case "changeVariable": return { ...base, name: "score", value: 1 };
+    case "showVariable":
+    case "hideVariable": return { ...base, name: "score" };
+    case "compare": return { ...base, left: 0, operator: "gt", right: 0 };
+    case "math": return { ...base, left: 0, operator: "+", right: 1 };
+    case "and":
+    case "or": return { ...base, left: true, right: false };
+    case "not": return { ...base, bool: false };
+    case "random": return { ...base, x: 1, y: 10 };
+    case "whenKey": return { ...base, text: "space" };
+    case "broadcast":
+    case "whenMessage": return { ...base, text: "message1" };
+    case "keyPressed": return { ...base, text: "space" };
+    case "touching": return { ...base, text: "enemy" };
+    case "ask": return { ...base, text: "What's your name?" };
     // new
     case "setX": return { ...base, value: 100 };
     case "setY": return { ...base, value: 100 };
@@ -390,17 +412,53 @@ function BlockFields({ block, onChange }: { block: Block; onChange: (p: Partial<
       );
 
     case "if":
+    case "ifElse":
       return (
         <div className="grid grid-cols-2 gap-2">
           <select value={block.cond ?? "scoreGte"} onChange={e => onChange({ cond: e.target.value as Block["cond"] })}
             className="bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono">
             <option value="scoreGte">score ≥</option>
             <option value="scoreLte">score ≤</option>
+            <option value="variable">variable</option>
+            <option value="keyPressed">tecla pulsada</option>
+            <option value="touching">tocando</option>
+            <option value="true">verdadero</option>
           </select>
           <input type="number" value={block.value ?? 0} onChange={e => num("value", e.target.value)}
             className="bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" />
+          <div className="col-span-2 text-[10px] text-muted-foreground">Los bloques anidados se ejecutan en la rama correspondiente.</div>
         </div>
       );
+
+    case "repeat":
+      return <input type="number" min={1} value={block.value ?? 10} onChange={e => num("value", e.target.value)} className="w-full bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" />;
+    case "forever":
+      return <div className="text-[10px] text-muted-foreground">Los bloques anidados se repiten mientras la entidad exista.</div>;
+    case "setVariable":
+    case "changeVariable":
+      return <div className="grid grid-cols-2 gap-2"><input value={block.name ?? "score"} onChange={e => onChange({ name: e.target.value })} placeholder="variable" className="bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" /><input type="number" value={block.value ?? 0} onChange={e => num("value", e.target.value)} className="bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" /></div>;
+    case "showVariable":
+    case "hideVariable":
+      return <input value={block.name ?? "score"} onChange={e => onChange({ name: e.target.value })} placeholder="variable" className="w-full bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" />;
+    case "compare":
+    case "math":
+      return <div className="grid grid-cols-3 gap-1.5"><input value={String(block.left ?? 0)} onChange={e => onChange({ left: Number(e.target.value) || 0 })} className="bg-input/60 border border-border rounded px-1.5 py-1 text-xs font-mono" /><select value={block.operator ?? (block.kind === "math" ? "+" : "gt")} onChange={e => onChange({ operator: e.target.value as Block["operator"] })} className="bg-input/60 border border-border rounded px-1.5 py-1 text-xs font-mono">{(block.kind === "math" ? ["+", "-", "*", "/", "%"] : ["gt", "gte", "lt", "lte", "eq", "neq"]).map(op => <option key={op} value={op}>{op}</option>)}</select><input value={String(block.right ?? 0)} onChange={e => onChange({ right: Number(e.target.value) || 0 })} className="bg-input/60 border border-border rounded px-1.5 py-1 text-xs font-mono" /></div>;
+    case "and":
+    case "or":
+      return <div className="grid grid-cols-2 gap-2"><button onClick={() => onChange({ left: !Boolean(block.left) })} className="rounded border border-border px-2 py-1 text-xs">A: {String(Boolean(block.left))}</button><button onClick={() => onChange({ right: !Boolean(block.right) })} className="rounded border border-border px-2 py-1 text-xs">B: {String(Boolean(block.right))}</button></div>;
+    case "not":
+      return <button onClick={() => onChange({ bool: !block.bool })} className="rounded border border-border px-2 py-1 text-xs">{String(Boolean(block.bool))}</button>;
+    case "random":
+      return <div className="grid grid-cols-2 gap-2"><input type="number" value={block.x ?? 1} onChange={e => num("x", e.target.value)} className="bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" /><input type="number" value={block.y ?? 10} onChange={e => num("y", e.target.value)} className="bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" /></div>;
+    case "whenKey":
+    case "keyPressed":
+      return <input value={block.text ?? "space"} onChange={e => onChange({ text: e.target.value })} placeholder="tecla" className="w-full bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" />;
+    case "broadcast":
+    case "whenMessage":
+    case "ask":
+      return <input value={block.text ?? "message1"} onChange={e => onChange({ text: e.target.value })} placeholder="mensaje" className="w-full bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono" />;
+    case "touching":
+      return <select value={block.text ?? "enemy"} onChange={e => onChange({ text: e.target.value })} className="w-full bg-input/60 border border-border rounded px-2 py-1 text-sm font-mono">{KIND_ONLY.map(k => <option key={k} value={k}>{k}</option>)}</select>;
 
     // no fields
     default:

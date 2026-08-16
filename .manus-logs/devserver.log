@@ -639,3 +639,10 @@
 [2026-08-16T15:42:18.566Z] VITE v7.3.6  ready in 241 ms
 [2026-08-16T15:42:18.566Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T15:42:18.566Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T22:41:49.349Z] 10:41:49 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T22:42:12.731Z] 10:42:12 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T22:42:29.398Z] 10:42:29 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T22:43:51.629Z] 10:43:51 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T22:44:32.131Z] 10:44:32 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T22:44:56.451Z] 10:44:56 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T22:45:35.868Z] 10:45:35 PM [vite] (client) hmr update /src/styles.css
