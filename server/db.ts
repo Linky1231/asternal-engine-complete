@@ -1,6 +1,16 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import {
+  CloudAsset,
+  CloudRecord,
+  InsertCloudAsset,
+  InsertCloudRecord,
+  cloudAssets,
+  cloudRecords,
+  cloudSyncCursors,
+  InsertUser,
+  users,
+} from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +99,73 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+
+export async function upsertCloudRecord(record: InsertCloudRecord): Promise<CloudRecord | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db.insert(cloudRecords).values(record).onDuplicateKeyUpdate({
+    set: {
+      ownerOpenId: record.ownerOpenId ?? null,
+      payload: record.payload,
+      contentHash: record.contentHash,
+      sourceUpdatedAt: record.sourceUpdatedAt ?? null,
+      syncedAt: new Date(),
+      deletedAt: record.deletedAt ?? null,
+    },
+  });
+  const rows = await db.select().from(cloudRecords)
+    .where(eq(cloudRecords.sourceTable, record.sourceTable));
+  return rows.find((row) => row.sourceId === record.sourceId);
+}
+
+export async function listCloudRecords(sourceTable: string, ownerOpenId?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  const rows = await db.select().from(cloudRecords).where(eq(cloudRecords.sourceTable, sourceTable));
+  return ownerOpenId ? rows.filter((row) => row.ownerOpenId === ownerOpenId) : rows;
+}
+
+export async function upsertCloudAsset(asset: InsertCloudAsset): Promise<CloudAsset | undefined> {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db.insert(cloudAssets).values(asset).onDuplicateKeyUpdate({
+    set: {
+      manusKey: asset.manusKey,
+      contentType: asset.contentType ?? null,
+      byteSize: asset.byteSize ?? null,
+      contentHash: asset.contentHash ?? null,
+      sourceUpdatedAt: asset.sourceUpdatedAt ?? null,
+      syncedAt: new Date(),
+    },
+  });
+  const rows = await db.select().from(cloudAssets).where(eq(cloudAssets.sourceBucket, asset.sourceBucket));
+  return rows.find((row) => row.sourcePath === asset.sourcePath);
+}
+
+export async function saveCloudSyncCursor(scope: string, cursor: string | null, status: "pending" | "running" | "complete" | "failed", details?: unknown) {
+  const db = await getDb();
+  if (!db) return undefined;
+  await db.insert(cloudSyncCursors).values({
+    scope,
+    cursor,
+    status,
+    details: details === undefined ? null : JSON.stringify(details),
+  }).onDuplicateKeyUpdate({
+    set: {
+      cursor,
+      status,
+      details: details === undefined ? null : JSON.stringify(details),
+      updatedAt: new Date(),
+    },
+  });
+  const rows = await db.select().from(cloudSyncCursors).where(eq(cloudSyncCursors.scope, scope));
+  return rows[0];
+}
+
+export async function getCloudSyncCursor(scope: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const rows = await db.select().from(cloudSyncCursors).where(eq(cloudSyncCursors.scope, scope)).limit(1);
+  return rows[0];
+}
+

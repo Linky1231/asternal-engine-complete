@@ -761,7 +761,7 @@ function AuthPage() {
                       </p>
                       <button type="button" onClick={resetConnection}
                         className="mt-2 w-full text-center text-[10px] text-muted-foreground/30 hover:text-primary transition-colors underline underline-offset-2">
-                        ¿Problemas de conexión? Restablecer Supabase
+                        ¿Problemas de sincronización? Revisar Manus
                       </button>
                     </div>
                   </div>

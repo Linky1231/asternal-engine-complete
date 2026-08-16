@@ -1,5 +1,6 @@
 // @ts-nocheck — Local DB adapter (types differ from Supabase generics)
 import { supabase, isSchemaMissing } from "@/integrations/supabase/client";
+import { listManusRecords, syncManusRecord } from "@/lib/manus-sync";
 
 export type SocialLinks = {
   youtube?: string;
@@ -972,41 +973,45 @@ export type CloudProject = {
 };
 
 export async function cloudListProjects(): Promise<CloudProject[]> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-  const { data, error } = await supabase.from("user_projects").select("id,user_id,name,data,published_post_id,created_at,updated_at").eq("user_id", user.id).order("updated_at", { ascending: false });
-  if (error) throw error;
-  // La biblioteca de assets del editor vive en una fila reservada de esta tabla
-  // (data.__kind = "asset-library"): no es un proyecto y no debe listarse como
-  // juego ni importarse como tal en otros dispositivos.
-  return ((data ?? []) as CloudProject[]).filter(r => {
-    const d = r.data as { __kind?: string } | null;
-    return !d || d.__kind !== "asset-library";
-  });
+  const rows = await listManusRecords("user_projects");
+  return rows
+    .filter(row => {
+      const data = row.data as { __kind?: string; __deleted?: boolean } | null;
+      return !data?.__deleted && data?.__kind !== "asset-library";
+    })
+    .map(row => {
+      const envelope = row.data as { name?: string; data?: unknown } | null;
+      return {
+        id: row.id,
+        user_id: "manus",
+        name: row.name || envelope?.name || row.id,
+        data: envelope?.data ?? row.data,
+        published_post_id: null,
+        created_at: row.updated_at,
+        updated_at: row.updated_at,
+      };
+    });
 }
 
 export async function cloudSaveProject(input: { id?: string; name: string; data: unknown }): Promise<CloudProject> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-  if (input.id) {
-    const { data, error } = await supabase.from("user_projects")
-      .update({ name: input.name, data: input.data as never })
-      .eq("id", input.id).eq("user_id", user.id)
-      .select().single();
-    if (error) throw error;
-    return data as CloudProject;
-  }
-  const { data, error } = await supabase.from("user_projects")
-    .insert({ user_id: user.id, name: input.name, data: input.data as never })
-    .select().single();
-  if (error) throw error;
-  return data as CloudProject;
+  const id = input.id || crypto.randomUUID();
+  const now = new Date().toISOString();
+  const payload = { name: input.name, data: input.data };
+  const ok = await syncManusRecord({ sourceTable: "user_projects", sourceId: id, payload, sourceUpdatedAt: now });
+  if (!ok) throw new Error("No se pudo sincronizar el proyecto con Manus; quedó en cola local");
+  return {
+    id,
+    user_id: "manus",
+    name: input.name,
+    data: input.data,
+    published_post_id: null,
+    created_at: now,
+    updated_at: now,
+  };
 }
 
 export async function cloudDeleteProject(id: string): Promise<void> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return;
-  await supabase.from("user_projects").delete().eq("id", id).eq("user_id", user.id);
+  await syncManusRecord({ sourceTable: "user_projects", sourceId: id, payload: { __deleted: true }, sourceUpdatedAt: new Date().toISOString() });
 }
 
 // ---------- Admin ----------

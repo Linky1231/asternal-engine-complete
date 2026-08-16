@@ -646,3 +646,58 @@
 [2026-08-16T22:44:32.131Z] 10:44:32 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
 [2026-08-16T22:44:56.451Z] 10:44:56 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
 [2026-08-16T22:45:35.868Z] 10:45:35 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T23:13:39.833Z] [ELIFECYCLE] Command failed.
+[2026-08-16T23:13:39.839Z] Dev server exited with code -1
+[2026-08-16T23:13:40.926Z] Starting dev server with command: pnpm run dev
+[2026-08-16T23:13:41.179Z] $ vite
+[2026-08-16T23:13:41.435Z] VITE v7.3.6  ready in 232 ms
+[2026-08-16T23:13:41.435Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T23:13:41.435Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T23:16:49.183Z] [ELIFECYCLE] Command failed.
+[2026-08-16T23:16:49.187Z] Dev server exited with code -1
+[2026-08-16T23:16:50.275Z] Starting dev server with command: pnpm run dev
+[2026-08-16T23:16:50.536Z] $ vite
+[2026-08-16T23:16:50.826Z] VITE v7.3.6  ready in 265 ms
+[2026-08-16T23:16:50.827Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T23:16:50.827Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T23:17:45.980Z] [ELIFECYCLE] Command failed.
+[2026-08-16T23:17:45.984Z] Dev server exited with code -1
+[2026-08-16T23:17:47.072Z] Starting dev server with command: pnpm run dev
+[2026-08-16T23:17:47.338Z] $ vite
+[2026-08-16T23:17:47.612Z] 11:17:47 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-16T23:17:47.628Z] VITE v7.3.6  ready in 267 ms
+[2026-08-16T23:17:47.628Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T23:17:47.628Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T23:18:15.059Z] [ELIFECYCLE] Command failed.
+[2026-08-16T23:18:15.064Z] Dev server exited with code -1
+[2026-08-16T23:18:16.150Z] Starting dev server with command: pnpm run dev
+[2026-08-16T23:18:16.426Z] $ vite
+[2026-08-16T23:18:16.738Z] 11:18:16 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-16T23:18:16.758Z] VITE v7.3.6  ready in 306 ms
+[2026-08-16T23:18:16.758Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T23:18:16.758Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T23:47:18.537Z] 11:47:18 PM [vite] (client) hmr update /src/styles.css, /src/routes/reset-password.tsx, /src/routes/profile.tsx, /src/routes/plus.tsx, /src/routes/feed.tsx, /src/routes/search.tsx, /src/routes/profile.$userId.tsx, /src/routes/admin.tsx, /src/routes/index.tsx, /src/routes/orbes.tsx, /src/routes/auth.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/ForumSection.tsx, /src/components/social/UserName.tsx, /src/components/social/PostCard.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GamesHome.tsx, /src/components/social/GallerySection.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx
+[2026-08-16T23:47:29.292Z] [ELIFECYCLE] Command failed.
+[2026-08-16T23:47:29.296Z] Dev server exited with code -1
+[2026-08-16T23:47:30.384Z] Starting dev server with command: pnpm run dev
+[2026-08-16T23:47:30.727Z] $ vite
+[2026-08-16T23:47:31.000Z] 11:47:31 PM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-16T23:47:31.018Z] VITE v7.3.6  ready in 267 ms
+[2026-08-16T23:47:31.018Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T23:47:31.018Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T23:47:55.219Z] 11:47:55 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T23:48:11.031Z] 11:48:11 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T23:48:23.282Z] 11:48:23 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T23:49:33.820Z] 11:49:33 PM [vite] (client) hmr update /src/styles.css
+[2026-08-16T23:49:51.413Z] 11:49:51 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-16T23:52:13.896Z] 11:52:13 PM [vite] (client) hmr update /src/styles.css, /src/routes/profile.tsx, /src/routes/feed.tsx, /src/routes/profile.$userId.tsx, /src/routes/admin.tsx, /src/routes/plus.tsx, /src/routes/index.tsx, /src/routes/orbes.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/ChatSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/social/UserName.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/GallerySection.tsx, /src/components/social/EventsSection.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx
+[2026-08-16T23:52:41.797Z] 11:52:41 PM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-16T23:53:23.833Z] 11:53:23 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ChatSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/WorkChatPanel.tsx
+[2026-08-16T23:53:28.122Z] 11:53:28 PM [vite] (client) hmr update /src/styles.css, /src/routes/admin.tsx, /src/components/social/ChatSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/WorkChatPanel.tsx
+[2026-08-16T23:54:14.278Z] [ELIFECYCLE] Command failed.
+[2026-08-16T23:54:14.282Z] Dev server exited with code -1
+[2026-08-16T23:54:15.369Z] Starting dev server with command: pnpm run dev
+[2026-08-16T23:54:15.631Z] $ vite
+[2026-08-16T23:54:15.882Z] VITE v7.3.6  ready in 227 ms
+[2026-08-16T23:54:15.882Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T23:54:15.882Z] ➜  Network: http://169.254.0.21:5173/

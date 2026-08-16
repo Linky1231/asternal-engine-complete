@@ -14,8 +14,8 @@
   "experiments": null,
   "git_remote": {
     "repo_url": "https://7f0548f6b28a1758d9bf7be630d36cb4.artifacts.cloudflare.net/git/prod/DVLQmNYeSdpuhYJbkDTM8B.git",
-    "expiration": "2026-08-17T00:09:31.300Z",
-    "token": "art_v2_x_b0e9bcaa4e9baa9ccb1442ad8ea49a7260b78701?expires=1786925371",
+    "expiration": "2026-08-17T22:40:49.390Z",
+    "token": "art_v2_x_a3e38f4718b4e412f4c6d2b6c615fa94d21b1e05?expires=1787006449",
     "backend": "GIT_BACKEND_ARTIFACTS"
   },
   "name": "asternal-engine",
@@ -28,6 +28,8 @@
     "OAUTH_SERVER_URL": "https://api.manus.im",
     "OWNER_NAME": "Josue Gutierrez",
     "OWNER_OPEN_ID": "mwj8EyWuYihKacFyKEKQSy",
+    "SUPABASE_SERVICE_ROLE_KEY": "sb_secret_puL6g7Y_ON3Lmafw43q81w_Tv_jqC5t",
+    "SUPABASE_URL": "https://gxpgczwkovertezeydkt.supabase.co",
     "VITE_ANALYTICS_ENDPOINT": "https://manus-analytics.com",
     "VITE_ANALYTICS_WEBSITE_ID": "3c0b6ae2-77dc-4544-bbf8-4cda355efb22",
     "VITE_APP_ID": "DVLQmNYeSdpuhYJbkDTM8B",

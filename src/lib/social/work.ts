@@ -1,4 +1,6 @@
 // ───── Chats de trabajo: tareas, archivos e hilos ─────
+import { syncManusRecord } from "@/lib/manus-sync";
+
 // Funcionalidad guardada en este dispositivo (localStorage, mismo prefijo que
 // el adaptador local del resto de la app) para los "chats de trabajo":
 // gestor de tareas asignables por el administrador/moderadores, gestor de
@@ -80,6 +82,12 @@ function save(table: string, list: unknown[]): void {
   } catch {
     /* sin espacio (modo local): se ignora */
   }
+  void syncManusRecord({
+    sourceTable: `local_${table}`,
+    sourceId: "collection",
+    payload: list,
+    sourceUpdatedAt: new Date().toISOString(),
+  });
 }
 
 function uid(): string {

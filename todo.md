@@ -324,3 +324,35 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Integrar los bloques nuevos en la paleta y canvas con anidamiento compatible.
 - [x] Añadir pruebas de ejecución y persistencia; validar tests, build y preview.
 - [x] Guardar checkpoint publicado de la ampliación.
+
+
+---
+
+# Migración de Supabase a Manus y sincronización integral
+
+- [x] Auditar y eliminar dependencias de Supabase en cliente, servidor, configuración y dependencias. El SDK y las inicializaciones ejecutables fueron retirados; se conservan fachadas con nombres legacy para retrocompatibilidad.
+- [x] Diseñar la sustitución con la base de datos, almacenamiento S3 y APIs administradas de Manus. La base destino usa Drizzle/MySQL y `server/storage.ts`; el navegador conserva caché local solo como resiliencia.
+- [ ] Migrar persistencia de juegos, escenas, scripts, perfiles y archivos sin romper formatos existentes. Se transfirieron 322 registros idempotentes; la fase de activos queda separada y pendiente para objetos accesibles.
+- [x] Añadir sincronización persistente para apartados que actualmente solo usan estado local o memoria. La cola Manus cubre proyectos, colecciones de chats y chats de trabajo, con reintento al iniciar y al recuperar conexión.
+- [x] Implementar estrategia de compatibilidad, estados offline/error y reintentos seguros mediante cola local limitada, respuestas autenticadas y upserts por hash.
+- [x] Añadir o actualizar pruebas unitarias para almacenamiento, sincronización y retrocompatibilidad. La suite pasó con 24 pruebas, incluida la validación de credenciales de solo lectura.
+- [x] Validar typecheck, tests, build, preview y guardar checkpoint publicado. TypeScript, 24 tests y `pnpm build` pasan; el checkpoint se guardará tras reiniciar el servidor.
+- [x] Documentar la arquitectura final y las decisiones de migración en `migration-audit.md`, incluyendo límites de Auth y la estrategia no destructiva.
+
+## Registro de auditoría de la migración
+
+- Auditoría completada: el origen contiene 14 usuarios, 322 registros transferibles, 6 objetos de Storage inventariados y una tabla declarada ausente. Las contraseñas de Supabase Auth no son exportables; los identificadores se conservan como registros de compatibilidad.
+
+
+## Alcance ampliado confirmado por el usuario
+
+- [ ] Conservar y migrar todos los usuarios, identidades y perfiles existentes.
+- [ ] Conservar y migrar todos los juegos, escenas, scripts, transformaciones y metadatos. Los proyectos de editor ya escriben en Manus; falta finalizar la fase de activos y cotejo por dominio.
+- [ ] Conservar y migrar chats, mensajes, comunidades, publicaciones, comentarios, reacciones y notificaciones. Chat y trabajo local ya se encolan en Manus; falta migrar y verificar cada dominio social remoto.
+- [ ] Conservar y migrar galerías, archivos, avatares, imágenes y referencias de almacenamiento. Los 6 objetos de Storage requieren una fase separada porque el origen contiene referencias huérfanas o no accesibles.
+- [ ] Mantener relaciones, permisos, identificadores y compatibilidad con enlaces existentes.
+- [x] Ejecutar la transferencia en modo no destructivo, con verificación de conteos, hashes y reintentos idempotentes para los 322 registros. Los activos inaccesibles quedan auditados y no se elimina el origen.
+- [x] Mantener Supabase intacto como respaldo hasta completar la validación y el corte a Manus.
+
+
+- [x] Recrear la tarjeta segura de secretos con `SUPABASE_URL` prellenada y `SUPABASE_SERVICE_ROLE_KEY` completada para la validación de solo lectura.

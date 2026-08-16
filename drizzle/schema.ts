@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { bigint, index, int, mysqlEnum, mysqlTable, text, timestamp, uniqueIndex, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -25,4 +25,57 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+/**
+ * Generic compatibility envelope for records imported from Supabase.
+ * Original table/id values remain intact so legacy relationships can be rebuilt.
+ */
+export const cloudRecords = mysqlTable("cloud_records", {
+  id: int("id").autoincrement().primaryKey(),
+  sourceTable: varchar("sourceTable", { length: 128 }).notNull(),
+  sourceId: varchar("sourceId", { length: 191 }).notNull(),
+  ownerOpenId: varchar("ownerOpenId", { length: 64 }),
+  payload: text("payload").notNull(),
+  contentHash: varchar("contentHash", { length: 128 }).notNull(),
+  sourceUpdatedAt: timestamp("sourceUpdatedAt"),
+  syncedAt: timestamp("syncedAt").defaultNow().notNull(),
+  deletedAt: timestamp("deletedAt"),
+}, (table) => ({
+  sourceRecordUnique: uniqueIndex("cloud_records_source_unique").on(table.sourceTable, table.sourceId),
+  sourceTableIndex: index("cloud_records_table_idx").on(table.sourceTable),
+  ownerIndex: index("cloud_records_owner_idx").on(table.ownerOpenId),
+}));
+export type CloudRecord = typeof cloudRecords.$inferSelect;
+export type InsertCloudRecord = typeof cloudRecords.$inferInsert;
+
+/** Metadata for files transferred from Supabase Storage into Manus storage. */
+export const cloudAssets = mysqlTable("cloud_assets", {
+  id: int("id").autoincrement().primaryKey(),
+  sourceBucket: varchar("sourceBucket", { length: 128 }).notNull(),
+  sourcePath: varchar("sourcePath", { length: 512 }).notNull(),
+  manusKey: varchar("manusKey", { length: 512 }).notNull(),
+  contentType: varchar("contentType", { length: 255 }),
+  byteSize: bigint("byteSize", { mode: "number" }),
+  contentHash: varchar("contentHash", { length: 128 }),
+  sourceUpdatedAt: timestamp("sourceUpdatedAt"),
+  syncedAt: timestamp("syncedAt").defaultNow().notNull(),
+}, (table) => ({
+  sourceAssetUnique: uniqueIndex("cloud_assets_source_unique").on(table.sourceBucket, table.sourcePath),
+  manusKeyUnique: uniqueIndex("cloud_assets_manus_key_unique").on(table.manusKey),
+}));
+export type CloudAsset = typeof cloudAssets.$inferSelect;
+export type InsertCloudAsset = typeof cloudAssets.$inferInsert;
+
+/** Resumable cursor/audit record for idempotent migration and client sync. */
+export const cloudSyncCursors = mysqlTable("cloud_sync_cursors", {
+  id: int("id").autoincrement().primaryKey(),
+  scope: varchar("scope", { length: 191 }).notNull(),
+  cursor: varchar("cursor", { length: 512 }),
+  status: mysqlEnum("status", ["pending", "running", "complete", "failed"]).default("pending").notNull(),
+  details: text("details"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  scopeUnique: uniqueIndex("cloud_sync_scope_unique").on(table.scope),
+}));
+export type CloudSyncCursor = typeof cloudSyncCursors.$inferSelect;
+
+// TODO: Add feature queries here

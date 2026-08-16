@@ -6,9 +6,12 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider } from "@tanstack/react-router";
 import { getRouter } from "./router";
 import "./styles.css";
+import { initManusSync } from "./lib/manus-sync";
 
 // Initialize the router with query client
 const router = getRouter();
+const disposeManusSync = initManusSync();
+if (import.meta.hot) import.meta.hot.dispose(disposeManusSync);
 
 /** Silent error boundary — if VlyToolbar crashes it renders nothing instead of
  *  crashing the whole app (e.g. hook errors in WebContainer environment). */

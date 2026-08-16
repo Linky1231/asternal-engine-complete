@@ -6,8 +6,6 @@
  * lives in the browser via localStorage.
  */
 
-import { createClient } from "@supabase/supabase-js";
-import type { Database } from './types';
 
 // ───── Types ─────
 
@@ -809,18 +807,8 @@ export function isSchemaMissing(err: unknown): boolean {
 }
 
 function createSupabaseClient(): LocalClient {
-  const url = getSupabaseUrl();
-  const anonKey = getSupabaseAnonKey();
-  if (url && anonKey) {
-    try {
-      // Real Supabase: auth, data, storage and RPC all work against the cloud.
-      return createClient<Database>(url, anonKey, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
-      }) as unknown as LocalClient;
-    } catch (e) {
-      console.warn('[supabase] Error creando el cliente real, usando modo local:', e);
-    }
-  }
+  // Mantener el nombre exportado por retrocompatibilidad, pero usar siempre la
+  // fachada local sincronizable con Manus. No se inicializa ningún SDK Supabase.
   return createLocalClient();
 }
 

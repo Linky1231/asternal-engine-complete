@@ -2,11 +2,14 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
+import { createHash } from "node:crypto";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { listCloudRecords, upsertCloudRecord } from "../db";
+import { sdk } from "./sdk";
 import { serveStatic, setupVite } from "./vite";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -36,6 +39,43 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+
+  // Manus sync bridge. It stores only the authenticated user's records in the
+  // generic cloud envelope, preserving legacy ids and payloads.
+  app.get("/api/manus/sync", async (req, res) => {
+    const user = await sdk.authenticateRequest(req).catch(() => null);
+    if (!user) return res.status(401).json({ error: "Authentication required" });
+    const sourceTable = String(req.query.sourceTable || "").trim();
+    if (!sourceTable) return res.status(400).json({ error: "sourceTable is required" });
+    const rows = await listCloudRecords(sourceTable, user.openId);
+    return res.json(rows.map(row => ({
+      id: row.sourceId,
+      name: (() => { try { return JSON.parse(row.payload)?.name || row.sourceId; } catch { return row.sourceId; } })(),
+      data: (() => { try { return JSON.parse(row.payload)?.data ?? JSON.parse(row.payload); } catch { return null; } })(),
+      updated_at: row.syncedAt,
+    })));
+  });
+
+  app.post("/api/manus/sync", async (req, res) => {
+    const user = await sdk.authenticateRequest(req).catch(() => null);
+    if (!user) return res.status(401).json({ error: "Authentication required" });
+    const { sourceTable, sourceId, payload, sourceUpdatedAt } = req.body ?? {};
+    if (!sourceTable || !sourceId || payload === undefined) {
+      return res.status(400).json({ error: "sourceTable, sourceId and payload are required" });
+    }
+    const serialized = typeof payload === "string" ? payload : JSON.stringify(payload);
+    const contentHash = createHash("sha256").update(serialized).digest("hex");
+    const row = await upsertCloudRecord({
+      sourceTable: String(sourceTable).slice(0, 128),
+      sourceId: String(sourceId).slice(0, 191),
+      ownerOpenId: user.openId,
+      payload: serialized,
+      contentHash,
+      sourceUpdatedAt: sourceUpdatedAt ? new Date(sourceUpdatedAt) : null,
+    });
+    return res.json({ ok: true, id: row?.sourceId ?? String(sourceId), contentHash });
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

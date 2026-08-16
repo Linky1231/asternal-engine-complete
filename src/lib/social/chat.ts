@@ -1,6 +1,7 @@
 // @ts-nocheck — Chat adapter (same Supabase client + helpers as api.ts)
 import { supabase, hasSupabaseConfig, isSchemaMissing } from "@/integrations/supabase/client";
 import { signMediaUrls, uploadMedia } from "@/lib/social/api";
+import { syncManusRecord } from "@/lib/manus-sync";
 import type { Profile } from "@/lib/social/api";
 
 export type ChatMessage = {
@@ -104,6 +105,12 @@ function localSave(table: string, rows: unknown[]): void {
   } catch {
     /* sin espacio (modo local): se ignora */
   }
+  void syncManusRecord({
+    sourceTable: `local_${table}`,
+    sourceId: "collection",
+    payload: rows,
+    sourceUpdatedAt: new Date().toISOString(),
+  });
 }
 
 function localStorePath(path: string): string | null {
