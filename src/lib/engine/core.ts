@@ -223,6 +223,8 @@ export interface Entity {
   texture?: string | null;
   animations?: AnimationClip[];
   scripts?: Script[];
+  /** Optional open-code scripts; blocks remain supported for legacy projects. */
+  codeScripts?: Script[];
   hitbox?: Hitbox | null;
   // advanced behaviors
   value?: number;

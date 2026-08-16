@@ -234,3 +234,15 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Integrar presets ECS explícitos en la biblioteca de creación y persistencia del editor, no solo botones locales.
 - [x] Hacer que los sistemas runtime lean datos desde componentes ECS como fuente principal, dejando campos legacy como fallback.
 - [x] Validar el arranque de producción después de estos cambios y guardar checkpoint final.
+
+
+---
+
+# Sistema de scripting abierto
+
+- [x] Auditar el runtime de scripts, el sandbox actual, el ciclo de vida y las capacidades ECS disponibles.
+- [x] Definir una API pública para object, physics, audio, camera, animation, scene, input y ui.
+- [x] Implementar un contexto/proxy de scripting seguro y extensible con acceso a objetos, componentes y jerarquías.
+- [x] Integrar la API con el runtime, persistencia, editor visual y scripts legacy.
+- [x] Añadir pruebas de API, compatibilidad, aislamiento y ejemplos ejecutables.
+- [x] Verificar tests, build, runtime de producción y guardar checkpoint publicado.

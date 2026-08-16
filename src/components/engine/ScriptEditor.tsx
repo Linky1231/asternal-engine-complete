@@ -135,6 +135,18 @@ export function ScriptEditor({ entity, onChange, onClose }: Props) {
                     )}
                   </div>
 
+                  <label className="block text-[10px] font-display tracking-widest text-muted-foreground">
+                    OPEN API CODE
+                    <textarea
+                      value={s.code ?? ""}
+                      onChange={e => updateScript(s.id, { code: e.target.value || undefined })}
+                      placeholder={'object.position = { ...object.position, x: object.position.x + 40 };\nphysics.addForce(0, -240);'}
+                      spellCheck={false}
+                      className="mt-1 min-h-28 w-full resize-y rounded-md bg-input/60 border border-primary/30 px-2 py-2 text-xs font-mono text-foreground"
+                    />
+                    <span className="mt-1 block normal-case tracking-normal text-muted-foreground/70">Usa object, physics, audio, camera, animation, scene, input y ui. Los bloques debajo siguen funcionando para proyectos legacy.</span>
+                  </label>
+
                   <div className="space-y-1.5">
                     {s.blocks.map(b => (
                       <BlockRow

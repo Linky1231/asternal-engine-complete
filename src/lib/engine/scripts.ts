@@ -2,6 +2,7 @@
 import type { Entity, EntityKind, RuntimeInput, RuntimeState, Scene } from "./core";
 import { intersects, KIND_PRESETS, uid as makeId } from "./core";
 import { playSound, vibrate, type SoundName, SOUND_NAMES } from "./sfx";
+import { executeScriptCode } from "./scripting";
 
 export type EventType =
   | "onStart"
@@ -102,6 +103,8 @@ export interface Script {
   threshold?: number;                     // onScoreReach
   interval?: number;                      // onTimer (ms)
   blocks: Block[];
+  /** Optional open-code body. Blocks remain the default legacy mode. */
+  code?: string;
 }
 
 export const EVENT_LABELS: Record<EventType, string> = {
@@ -205,6 +208,8 @@ interface ExecCtx {
   scene: Scene;
   state: RuntimeState;
   hooks: RuntimeHooks;
+  input?: RuntimeInput;
+  dt?: number;
 }
 
 function findFirstOfKind(scene: Scene, kind: EntityKind) {
@@ -362,6 +367,7 @@ function execBlock(b: Block, ctx: ExecCtx) {
 }
 
 function runScript(s: Script, ctx: ExecCtx) {
+  if (s.code) executeScriptCode(s.code, { self: ctx.self, other: ctx.other, scene: ctx.scene, state: ctx.state, input: ctx.input ?? { left: false, right: false, jump: false }, hooks: ctx.hooks, dt: ctx.dt ?? 0 });
   for (const b of s.blocks) execBlock(b, ctx);
 }
 
@@ -401,7 +407,7 @@ export function createScriptRunner(): ScriptRunner {
         if (e.x < -9000 && !destroyed.has(e.id)) {
           destroyed.add(e.id);
           for (const s of scripts) if (s.event === "onDestroyed" || s.event === "onDestroy")
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
         }
         if (e.x < -9000) continue;
 
@@ -409,14 +415,14 @@ export function createScriptRunner(): ScriptRunner {
         if (outside && !left.has(e.id)) {
           left.add(e.id);
           for (const s of scripts) if (s.event === "onLeaveScreen")
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
         } else if (!outside) {
           left.delete(e.id);
         }
 
         if (!started.has(e.id)) {
           for (const s of scripts) if (s.event === "onStart" || s.event === "onCreate")
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
           started.add(e.id);
         }
 
@@ -425,24 +431,24 @@ export function createScriptRunner(): ScriptRunner {
 
         for (const s of scripts) {
           if (s.event === "onUpdate") {
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
           } else if (s.event === "onKeyDown" && s.key && keyEdges[s.key]) {
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
           } else if (s.event === "onScoreReach") {
             const t = s.threshold ?? 0;
             if (prevScore < t && state.score >= t)
-              runScript(s, { self: e, scene, state, hooks });
+              runScript(s, { self: e, scene, state, hooks, input, dt });
           } else if (s.event === "onTimer") {
             const iv = Math.max(0.05, (s.interval ?? 1000) / 1000);
             const acc = (timerAcc.get(s.id) ?? 0) + dt;
-            if (acc >= iv) { timerAcc.set(s.id, 0); runScript(s, { self: e, scene, state, hooks }); }
+            if (acc >= iv) { timerAcc.set(s.id, 0); runScript(s, { self: e, scene, state, hooks, input, dt }); }
             else timerAcc.set(s.id, acc);
           } else if (s.event === "onLand" && landed) {
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
           } else if (s.event === "onWin" && winEdge) {
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
           } else if (s.event === "onLose" && loseEdge) {
-            runScript(s, { self: e, scene, state, hooks });
+            runScript(s, { self: e, scene, state, hooks, input, dt });
           }
         }
 
@@ -466,7 +472,7 @@ export function createScriptRunner(): ScriptRunner {
           if (colliding.has(key)) continue;
           for (const s of aScripts) {
             if (!s.withKind || s.withKind === "any" || s.withKind === b.kind) {
-              runScript(s, { self: a, other: b, scene, state, hooks });
+              runScript(s, { self: a, other: b, scene, state, hooks, input, dt });
             }
           }
         }
