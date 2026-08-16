@@ -138,7 +138,9 @@ export function ProfilePanel({
   };
 
   // ─── Compartir perfil: enlace directo + compartir en el chat grupal ───
-  const shareLink = typeof window !== "undefined" ? window.location.origin + "/profile/" + userId : "";
+  const profileLink = typeof window !== "undefined" ? window.location.origin + "/profile/" + userId : "";
+  const qrLink = profileLink ? `${profileLink}?source=qr` : "";
+  const shareLink = profileLink;
   const shareToChat = () => {
     setShareOpen(false);
     try { sessionStorage.setItem("asternal_chat_share", shareLink); } catch { /* noop */ }
@@ -154,7 +156,7 @@ export function ProfilePanel({
     setQrOpen(true);
     setQrDataUrl(null);
     try {
-      const dataUrl = await QRCode.toDataURL(shareLink, {
+      const dataUrl = await QRCode.toDataURL(qrLink, {
         width: 420,
         margin: 2,
         errorCorrectionLevel: "M",

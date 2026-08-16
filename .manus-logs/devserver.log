@@ -279,3 +279,22 @@
 [2026-08-16T00:58:56.151Z] VITE v7.3.6  ready in 219 ms
 [2026-08-16T00:58:56.151Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T00:58:56.152Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T01:02:44.854Z] 1:02:44 AM [vite] (client) hmr update /src/routes/profile.$userId.tsx, /src/styles.css
+[2026-08-16T01:02:48.905Z] 1:02:48 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-16T01:02:57.654Z] 1:02:57 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-16T01:03:29.046Z] [ELIFECYCLE] Command failed.
+[2026-08-16T01:03:29.050Z] Dev server exited with code -1
+[2026-08-16T01:03:30.138Z] Starting dev server with command: pnpm run dev
+[2026-08-16T01:03:30.400Z] $ vite
+[2026-08-16T01:03:30.673Z] VITE v7.3.6  ready in 247 ms
+[2026-08-16T01:03:30.673Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T01:03:30.673Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T01:03:49.909Z] 1:03:49 AM [vite] vite.config.ts changed, restarting server...
+[2026-08-16T01:03:49.925Z] 1:03:49 AM [vite] server restarted.
+[2026-08-16T01:03:52.363Z] [ELIFECYCLE] Command failed.
+[2026-08-16T01:03:52.369Z] Dev server exited with code -1
+[2026-08-16T01:03:53.456Z] Starting dev server with command: pnpm run dev
+[2026-08-16T01:03:53.715Z] $ vite
+[2026-08-16T01:03:53.978Z] VITE v7.3.6  ready in 239 ms
+[2026-08-16T01:03:53.979Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T01:03:53.979Z] ➜  Network: http://169.254.0.21:5173/

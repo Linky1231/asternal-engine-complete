@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
+import { consumePendingQrProfile, getPendingQrProfile } from "@/lib/auth-redirect";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
   Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw,
@@ -401,14 +402,20 @@ function AuthPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
   const [showPw, setShowPw] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [pendingQrProfile, setPendingQrProfile] = useState<string | null>(() => getPendingQrProfile());
   const [loaded, setLoaded] = useState(false);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const pendingDestination = getPendingQrProfile();
+    setPendingQrProfile(pendingDestination);
     supabase.auth.getSession().then(({ data }) => {
-      if (data?.session) navigate({ to: "/" });
+      if (data?.session) {
+        if (pendingDestination) window.location.assign(pendingDestination);
+        else navigate({ to: "/" });
+      }
     });
     requestAnimationFrame(() => setLoaded(true));
   }, [navigate]);
@@ -420,6 +427,15 @@ function AuthPage() {
   const resetConnection = () => {
     clearSupabaseCredentials();
     window.location.reload();
+  };
+
+  const finishAuthentication = () => {
+    const destination = consumePendingQrProfile();
+    if (destination) {
+      window.location.assign(destination);
+      return;
+    }
+    navigate({ to: "/" });
   };
 
   const switchMode = (m: "signin" | "signup") => {
@@ -472,14 +488,14 @@ function AuthPage() {
         });
         if (error) throw error;
         setSuccessMsg("Cuenta creada correctamente");
-        setTimeout(() => navigate({ to: "/" }), 1000);
+        setTimeout(finishAuthentication, 1000);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: resolveLoginEmail(email.value),
           password: password.value,
         });
         if (error) throw error;
-        navigate({ to: "/" });
+        finishAuthentication();
       }
     } catch (e) {
       const msg = (e as Error).message;
@@ -731,6 +747,13 @@ function AuthPage() {
                         </div>
                       )}
                     </form>
+
+                    {pendingQrProfile && (
+                      <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-primary/15 bg-primary/[0.045] px-3.5 py-3 text-xs text-primary/80 animate-[scale-in_220ms_ease-out]">
+                        <ArrowRight size={14} className="mt-0.5 shrink-0" />
+                        <p>You must log in to view this profile</p>
+                      </div>
+                    )}
 
                     <div className="mt-5 pt-4 border-t border-border/40">
                       <p className="text-[10px] text-muted-foreground/30 text-center font-mono tracking-wider">
