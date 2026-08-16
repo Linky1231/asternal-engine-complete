@@ -362,7 +362,7 @@ export function AsternalEditor() {
                     updateScene({ ...activeScene, entities: [...activeScene.entities, copy] });
                     setSelectedId(copy.id);
                   }}
-                  className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-ink-2 hover:text-primary hover:border-primary/40 active:scale-90 transition grid place-items-center"
+                  className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-foreground hover:text-foreground hover:border-foreground/35 active:scale-90 transition grid place-items-center"
                   title="Duplicar asset (Ctrl+D)"
                   aria-label="Duplicar"
                 ><Copy size={18} /></button>
@@ -371,15 +371,15 @@ export function AsternalEditor() {
                 onClick={() => setLayersOpen(o => !o)}
                 className={`pointer-events-auto w-11 h-11 rounded-xl grid place-items-center active:scale-90 transition shadow-md ${
                   layersOpen
-                    ? "bg-primary text-primary-foreground border border-primary"
-                    : "bg-card border border-line-strong text-ink-2 hover:text-primary hover:border-primary/40"
+                    ? "bg-muted text-foreground border border-line-strong"
+                    : "bg-card border border-line-strong text-foreground hover:text-foreground hover:border-foreground/35"
                 }`}
                 title="Capas de la escena"
                 aria-label="Capas"
               ><Layers size={18} /></button>
               <button
                 onClick={() => setLibraryOpen(true)}
-                className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-ink-2 hover:text-primary hover:border-primary/40 active:scale-90 transition grid place-items-center"
+                className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-foreground hover:text-foreground hover:border-foreground/35 active:scale-90 transition grid place-items-center"
                 title={t("library.title")}
                 aria-label="Librería de assets"
               ><LibraryBig size={18} /></button>
@@ -617,7 +617,7 @@ function LibrarySheet({
 function Logo() {
   return (
     <a href="/" title="Volver al menú principal" className="relative w-9 h-9 rounded-lg grad-brand grid place-items-center shadow-sm ring-1 ring-white/25 ring-inset active:scale-95 transition">
-      <span className="font-display text-lg text-primary-foreground">A</span>
+      <span className="font-display text-lg font-black leading-none text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.22)]">A</span>
     </a>
   );
 }
