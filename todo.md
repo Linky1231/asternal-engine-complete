@@ -1,3 +1,19 @@
+# Mejora de coincidencias de perfiles en Buscar
+
+# Mejora de coincidencias de perfiles en Buscar
+
+Estado: completado.
+
+- [x] Auditar la consulta compartida de perfiles y el modo local.
+- [x] Buscar por username, nombre visible y coincidencias parciales normalizadas.
+- [x] Incluir de forma fiable la cuenta activa en los resultados cuando coincida.
+- [x] Validar búsquedas como "Linky", variaciones de mayúsculas y fragmentos.
+- [x] Guardar un checkpoint y entregar.
+
+La búsqueda de perfiles ya no usa una única expresión `or` compartida, que se comportaba de forma inconsistente con el modo local. Ahora consulta de forma independiente por `username` y `display_name`, elimina `@`, normaliza mayúsculas y acentos, deduplica y ordena coincidencias exactas y por prefijo antes de parciales. Si la cuenta activa coincide, su perfil se incorpora explícitamente. `pnpm build` completó correctamente.
+
+---
+
 # Reparación visual de Feed y perfil
 
 Estado: completado.
