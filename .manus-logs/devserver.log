@@ -231,3 +231,13 @@
 [2026-08-16T00:32:33.089Z] VITE v7.3.6  ready in 210 ms
 [2026-08-16T00:32:33.090Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T00:32:33.090Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T00:37:02.693Z] 12:37:02 AM [vite] (client) hmr update /src/styles.css
+[2026-08-16T00:37:09.217Z] 12:37:09 AM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
+[2026-08-16T00:38:25.056Z] 12:38:25 AM [vite] (client) hmr update /src/styles.css
+[2026-08-16T00:38:47.232Z] [ELIFECYCLE] Command failed.
+[2026-08-16T00:38:47.237Z] Dev server exited with code -1
+[2026-08-16T00:38:48.324Z] Starting dev server with command: pnpm run dev
+[2026-08-16T00:38:48.578Z] $ vite
+[2026-08-16T00:38:48.857Z] VITE v7.3.6  ready in 256 ms
+[2026-08-16T00:38:48.857Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T00:38:48.857Z] ➜  Network: http://169.254.0.21:5173/

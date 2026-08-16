@@ -417,23 +417,23 @@ function HomePage() {
             </button>
             {/* Categoría: SOCIAL */}
             <CategoryHeader label="SOCIAL" />
-            <MenuItem icon={<MessageCircle size={16} className="text-primary-glow"/>} label="Chats" onClick={() => { setChatOpen(true); closeMenu(); }} />
-            <MenuItem icon={<Bot size={16} className="text-primary-glow"/>} label="Asistencia · Orión" onClick={() => { setOrionOpen(true); closeMenu(); }} />
-            <MenuItem icon={<Search size={16}/>} label="Buscar" onClick={() => { setShowSearch(s => !s); closeMenu(); }} />
-            <MenuItem icon={<Bell size={16}/>} label="Notificaciones" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} />
+            <MenuItem icon={<MessageCircle />} label="Chats" onClick={() => { setChatOpen(true); closeMenu(); }} />
+            <MenuItem icon={<Bot />} label="Asistencia · Orión" onClick={() => { setOrionOpen(true); closeMenu(); }} />
+            <MenuItem icon={<Search />} label="Buscar" onClick={() => { setShowSearch(s => !s); closeMenu(); }} />
+            <MenuItem icon={<Bell />} label="Notificaciones" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} />
 
             {/* Categoría: COMUNIDAD */}
             <CategoryHeader label="COMUNIDAD" />
-            <MenuLink icon={<BarChart3 size={16} className="text-primary-glow"/>} label="Historial" to="/history" onClick={closeMenu} />
-            <MenuLink icon={<Megaphone size={16} className="text-primary"/>} label="Panel de Orbes" to="/orbes" onClick={closeMenu} />
+            <MenuLink icon={<BarChart3 />} label="Historial" to="/history" onClick={closeMenu} />
+            <MenuLink icon={<Megaphone />} label="Panel de Orbes" to="/orbes" onClick={closeMenu} />
             {(mod || admin) && (
-              <MenuLink icon={<ShieldCheck size={16} className="text-primary-glow"/>} label="Moderación" to="/admin" onClick={closeMenu} />
+              <MenuLink icon={<ShieldCheck />} label="Moderación" to="/admin" onClick={closeMenu} />
             )}
 
             {/* Categoría: CREACIÓN */}
             <CategoryHeader label="CREACIÓN" />
-            <MenuLink icon={<Wrench size={16} className="text-primary-glow"/>} label="Editor" to="/editor" onClick={closeMenu} />
-            <MenuLink icon={<Star size={16} fill="currentColor" style={{ color: "var(--plus)" }}/>} label="Centro Plus" to="/plus" onClick={closeMenu} />
+            <MenuLink icon={<Wrench />} label="Editor" to="/editor" onClick={closeMenu} />
+            <MenuLink icon={<Star fill="currentColor" />} label="Centro Plus" to="/plus" onClick={closeMenu} />
 
             <div className="flex-1 min-h-4" />
             <button onClick={() => { logout(); closeMenu(); }}
@@ -491,7 +491,7 @@ function MenuLink({ icon, label, to, onClick }: { icon: React.ReactNode; label: 
   return (
     <Link to={to} onClick={onClick}
       className="flex items-center gap-3 px-3 h-10 rounded-lg text-ink hover:bg-muted/60 active:scale-[0.98] transition">
-      {icon} <span className="text-sm font-medium">{label}</span>
+      <span className="menu-icon">{icon}</span><span className="text-sm font-medium">{label}</span>
     </Link>
   );
 }
@@ -500,7 +500,7 @@ function MenuItem({ icon, label, onClick, children }: { icon: React.ReactNode; l
   return (
     <button onClick={onClick}
       className="flex items-center gap-3 px-3 h-10 rounded-lg text-ink hover:bg-muted/60 active:scale-[0.98] transition w-full text-left">
-      {icon} <span className="text-sm font-medium flex-1">{label}</span>
+      <span className="menu-icon">{icon}</span><span className="text-sm font-medium flex-1">{label}</span>
       {children}
     </button>
   );
