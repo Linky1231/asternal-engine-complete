@@ -54,3 +54,16 @@ describe("input and scripting regressions", () => {
     expect(entity.x).toBe(128);
   });
 });
+
+  it("follows the controller player instead of another entity", () => {
+    const entity = player();
+    entity.x = 300;
+    const cameraLikeEntity = { ...player(), id: "camera-like", controllable: false, x: 20, y: 20 };
+    const scene = sceneOf(entity);
+    scene.entities.push(cameraLikeEntity);
+    const state = newRuntimeState(scene);
+
+    stepScene(scene, { left: false, right: false, jump: false }, state, 1 / 60);
+
+    expect(state.cameraX).toBeCloseTo(entity.x - 160, 5);
+  });

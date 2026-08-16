@@ -258,3 +258,13 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Corregir el flujo de scripts visuales y de código abierto desde entidad hasta runtime.
 - [x] Añadir pruebas de regresión para joystick y scripting, validar UI, tests y build.
 - [x] Guardar checkpoint publicado con ambas correcciones.
+
+
+---
+
+# Corrección de enrutamiento joystick-jugador
+
+- [x] Reproducir y localizar por qué el joystick termina aplicándose a la cámara en lugar del jugador.
+- [x] Separar el input de cámara del input de jugador y conectar el joystick al Controller ECS/player.
+- [x] Añadir una prueba de regresión que confirme movimiento del jugador sin desplazamiento de cámara.
+- [x] Ejecutar tests, build, validación visual/runtime y guardar checkpoint publicado.

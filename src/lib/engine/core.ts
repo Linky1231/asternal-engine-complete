@@ -927,10 +927,16 @@ export function stepScene(scene: Scene, input: RuntimeInput, state: RuntimeState
         }
       }
     }
-    // camera follow
-    state.cameraX = Math.max(0, Math.min(scene.width - 360, e.x - 160));
-  }
+    }
 
+  // Follow only the player/controller. Keeping this outside the interaction
+  // loop prevents the last iterated entity from hijacking the viewport.
+  const cameraTarget = scene.entities.find((candidate) =>
+    hasEntityComponent(candidate, "controller", candidate.controllable),
+  );
+  if (cameraTarget) {
+    state.cameraX = Math.max(0, Math.min(scene.width - 360, cameraTarget.x - 160));
+  }
   state.jumpPrev = input.jump;
 }
 
