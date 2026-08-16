@@ -207,3 +207,11 @@
 [2026-08-16T00:12:58.892Z] VITE v7.3.6  ready in 308 ms
 [2026-08-16T00:12:58.892Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T00:12:58.892Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T00:18:53.672Z] [ELIFECYCLE] Command failed.
+[2026-08-16T00:18:53.679Z] Dev server exited with code -1
+[2026-08-16T00:18:54.764Z] Starting dev server with command: pnpm run dev
+[2026-08-16T00:18:55.038Z] $ vite
+[2026-08-16T00:18:55.293Z] 12:18:55 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-16T00:18:55.307Z] VITE v7.3.6  ready in 244 ms
+[2026-08-16T00:18:55.307Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T00:18:55.307Z] ➜  Network: http://169.254.0.21:5173/

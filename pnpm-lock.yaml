@@ -107,6 +107,9 @@ importers:
       '@vly-ai/integrations':
         specifier: ^0.6.12
         version: 0.6.12
+      '@zumer/snapdom':
+        specifier: ^2.24.1
+        version: 2.24.1
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -149,6 +152,9 @@ importers:
       react-resizable-panels:
         specifier: ^3.0.6
         version: 3.0.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react-router:
+        specifier: ^8.3.0
+        version: 8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       recharts:
         specifier: ^2.15.4
         version: 2.15.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -1863,6 +1869,9 @@ packages:
     resolution: {integrity: sha512-8iXWxFczNTzW/1u7AounN/V/adz5x1O9OFbJAm5y0c2ITDOda756bhdhue/mj7ya/BDhCArDJeiSfNdrkvlr8A==}
     engines: {node: '>=18'}
 
+  '@zumer/snapdom@2.24.1':
+    resolution: {integrity: sha512-COYwb8hczQeevjyOSsTVT4P7CtKYtitXirmMbe/q4bkkULZdMHFFqmNDrlzeWPi5XBmk8+/ZBkNPWV/NX9LqtA==}
+
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
     peerDependencies:
@@ -2585,6 +2594,16 @@ packages:
     peerDependencies:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
+  react-router@8.3.0:
+    resolution: {integrity: sha512-qyPMvW83jGIct3yiieisxdk9M745anqhpIMKN5m1t6yBMfgVPpt77aHOqs5fUlEJRMCGffg9BaQLH9oPVOL7xQ==}
+    engines: {node: '>=22.22.0'}
+    peerDependencies:
+      react: '>=19.2.7'
+      react-dom: '>=19.2.7'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
 
   react-smooth@4.0.4:
     resolution: {integrity: sha512-gnGKTpYwqL0Iii09gHobNolvX4Kiq4PKx6eWBCYYix+8cdw+cGo3do906l1NBPKkSWx1DghC1dlWG9L2uGd61Q==}
@@ -4312,6 +4331,8 @@ snapshots:
       html2canvas: 1.4.1
       zod: 3.25.76
 
+  '@zumer/snapdom@2.24.1': {}
+
   acorn-jsx@5.3.2(acorn@8.18.0):
     dependencies:
       acorn: 8.18.0
@@ -4979,6 +5000,13 @@ snapshots:
   react-resizable-panels@3.0.6(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+
+  react-router@8.3.0(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+    dependencies:
+      cookie-es: 3.1.1
+      react: 19.2.8
+    optionalDependencies:
       react-dom: 19.2.8(react@19.2.8)
 
   react-smooth@4.0.4(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
