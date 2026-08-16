@@ -574,3 +574,13 @@
 [2026-08-16T03:45:25.016Z] 3:45:25 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/PaintEditor.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/routes/index.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GameCard.tsx, /src/components/engine/SceneEditor.tsx, /src/components/engine/GameRuntime.tsx, /src/components/engine/AnimationEditor.tsx, /src/components/engine/UIEditor.tsx, /src/components/engine/TransformInspector.tsx, /src/components/social/GalleryCanvasPanel.tsx, /src/components/engine/ScriptEditor.tsx
 [2026-08-16T03:45:32.608Z] 3:45:32 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
 [2026-08-16T03:45:38.431Z] 3:45:38 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T04:06:56.607Z] 4:06:56 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T04:07:26.662Z] 4:07:26 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-16T04:07:39.860Z] 4:07:39 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx
+[2026-08-16T04:08:21.114Z] [ELIFECYCLE] Command failed.
+[2026-08-16T04:08:21.119Z] Dev server exited with code -1
+[2026-08-16T04:08:22.207Z] Starting dev server with command: pnpm run dev
+[2026-08-16T04:08:22.466Z] $ vite
+[2026-08-16T04:08:22.744Z] VITE v7.3.6  ready in 253 ms
+[2026-08-16T04:08:22.744Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T04:08:22.744Z] ➜  Network: http://169.254.0.21:5173/

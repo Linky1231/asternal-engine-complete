@@ -368,7 +368,7 @@ function execBlock(b: Block, ctx: ExecCtx) {
 
 function runScript(s: Script, ctx: ExecCtx) {
   if (s.code) executeScriptCode(s.code, { self: ctx.self, other: ctx.other, scene: ctx.scene, state: ctx.state, input: ctx.input ?? { left: false, right: false, jump: false }, hooks: ctx.hooks, dt: ctx.dt ?? 0 });
-  for (const b of s.blocks) execBlock(b, ctx);
+  for (const b of s.blocks ?? []) execBlock(b, ctx);
 }
 
 export interface ScriptRunner {

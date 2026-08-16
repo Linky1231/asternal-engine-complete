@@ -246,3 +246,15 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Integrar la API con el runtime, persistencia, editor visual y scripts legacy.
 - [x] Añadir pruebas de API, compatibilidad, aislamiento y ejemplos ejecutables.
 - [x] Verificar tests, build, runtime de producción y guardar checkpoint publicado.
+
+
+---
+
+# Corrección de joystick y scripting
+
+- [x] Reproducir y diagnosticar por qué el joystick no controla o no se asigna al jugador.
+- [x] Corregir la creación, asignación, eventos táctiles y entrada del joystick en el runtime.
+- [x] Reproducir y diagnosticar por qué los scripts no ejecutan o no persisten desde el editor.
+- [x] Corregir el flujo de scripts visuales y de código abierto desde entidad hasta runtime.
+- [x] Añadir pruebas de regresión para joystick y scripting, validar UI, tests y build.
+- [x] Guardar checkpoint publicado con ambas correcciones.

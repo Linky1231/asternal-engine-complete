@@ -148,8 +148,8 @@ export function executeScriptCode(code: string, context: ScriptApiContext): void
   }
   try {
     const api = createScriptApi(context);
-    const runner = new Function("api", `"use strict"; const { object, other, physics, audio, camera, animation, scene, input, ui, state, dt, log } = api; return (async () => { ${code}\n })();`);
-    void runner(api);
+    const runner = new Function("api", `"use strict"; const { object, other, physics, audio, camera, animation, scene, input, ui, state, dt, log } = api; return (() => { ${code}\n })();`);
+    runner(api);
   } catch (error) {
     console.error("[script:error]", error);
   }

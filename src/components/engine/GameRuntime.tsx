@@ -367,7 +367,9 @@ export function GameRuntime({
   const hasCustomInput = (act: "left" | "right" | "jump") =>
     uiButtons.some(b => b.action === act) || (act !== "jump" && uiJoysticks.length > 0);
   const hasAnyCustomInput = uiButtons.some(b => ["left","right","jump"].includes(b.action ?? "")) || uiJoysticks.length > 0;
-  const showDefaultTouch = touchControls && !hasAnyCustomInput;
+  // Keep fallback controls for actions that a custom layout does not provide.
+  // A joystick replaces horizontal buttons, but must not hide the jump fallback.
+  const showDefaultTouch = touchControls && (!hasAnyCustomInput || !hasCustomInput("jump"));
 
   type JoyDrag = { kind: "btn"; el: UIElement } | { kind: "joy"; el: UIElement; cx: number; cy: number; r: number };
   const activePointers = useRef<Map<number, JoyDrag>>(new Map());
@@ -405,10 +407,12 @@ export function GameRuntime({
     const ny = len > max ? (dy / len) * max : dy;
     joyKnobs.current.set(id, { dx: nx, dy: ny });
     const ax = nx / max;
-    void ny;
+    const ay = ny / max;
     joySrc.current.left = ax < -0.25;
     joySrc.current.right = ax > 0.25;
-    // Joystick is for movement only — jumping is bound to the JUMP button.
+    // Up on the joystick is a held jump input; the runtime edge detector
+    // turns the transition into one jump and supports coyote/buffer timing.
+    joySrc.current.jump = ay < -0.45;
     recomputeInput();
   };
   const releaseJoystick = (id: string) => {
@@ -432,7 +436,7 @@ export function GameRuntime({
     const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top;
     const b = hitUIButton(sx, sy);
     if (b) {
-      (ev.target as Element).setPointerCapture(ev.pointerId);
+      (ev.currentTarget as HTMLCanvasElement).setPointerCapture(ev.pointerId);
       activePointers.current.set(ev.pointerId, { kind: "btn", el: b });
       handleButton(b, true);
       ev.preventDefault();
@@ -440,7 +444,7 @@ export function GameRuntime({
     }
     const j = hitJoystick(sx, sy);
     if (j) {
-      (ev.target as Element).setPointerCapture(ev.pointerId);
+      (ev.currentTarget as HTMLCanvasElement).setPointerCapture(ev.pointerId);
       activePointers.current.set(ev.pointerId, { kind: "joy", el: j.el, cx: j.cx, cy: j.cy, r: j.r });
       applyJoystick(j.el.id, sx - j.cx, sy - j.cy, j.r);
       ev.preventDefault();
@@ -449,6 +453,7 @@ export function GameRuntime({
   const onCanvasMove = (ev: React.PointerEvent) => {
     const d = activePointers.current.get(ev.pointerId);
     if (!d || d.kind !== "joy") return;
+    ev.preventDefault();
     const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
     const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top;
     applyJoystick(d.el.id, sx - d.cx, sy - d.cy, d.r);
@@ -456,6 +461,7 @@ export function GameRuntime({
   const onCanvasUp = (ev: React.PointerEvent) => {
     const d = activePointers.current.get(ev.pointerId);
     if (!d) return;
+    ev.preventDefault();
     if (d.kind === "btn") handleButton(d.el, false);
     else releaseJoystick(d.el.id);
     activePointers.current.delete(ev.pointerId);
