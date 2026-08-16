@@ -297,12 +297,12 @@ export function ProfilePanel({
         </div>
 
         <div className="p-4 sm:p-5 space-y-4">
-          <div className="grid grid-cols-[80px_minmax(0,1fr)] sm:grid-cols-[80px_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 -mt-12">
+          <div className="relative z-10 grid grid-cols-[88px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 -mt-12">
             {/* Cabecera compacta: avatar e identidad comparten la primera fila; las acciones
                 ocupan una fila propia en móvil y una columna propia en escritorio. */}
-            <div className="shrink-0">
+            <div className="relative z-10 flex h-[84px] w-[84px] shrink-0 items-center justify-center">
               {frameRing ? (
-                <div className="relative rounded-2xl p-[2px]" style={{ background: frameRing }}>
+                <div className="relative rounded-[18px] p-[2px] shadow-[0_10px_24px_-14px_oklch(0.50_0.13_250/0.55)]" style={{ background: frameRing }}>
                   {avatarButton}
                 </div>
               ) : (
@@ -346,7 +346,7 @@ export function ProfilePanel({
               )}
             </div>
 
-            <div className="col-span-2 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:mt-12 flex flex-wrap items-center justify-start sm:justify-end gap-2">
+            <div className="col-span-2 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:mt-12 flex min-w-0 flex-wrap items-center justify-start sm:justify-end gap-2">
               {viewingOwn ? (
                 editing ? (
                   <button onClick={save} disabled={saving}

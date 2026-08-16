@@ -42,6 +42,20 @@ El selector del Feed ya no comprime ni corta sus etiquetas en móvil: las pesta�
 
 ---
 
+# Perfil estable y panel de Orbes coherente
+
+Estado: completado.
+
+- [x] Auditar el solapamiento entre avatar e identidad de perfil.
+- [x] Localizar los azules ajenos a la paleta dentro del panel de Orbes.
+- [x] Reorganizar el layout móvil y aplicar tokens del degradado actual.
+- [x] Validar contraste, scroll y responsive.
+- [x] Guardar un checkpoint y entregar.
+
+El avatar del perfil ahora dispone de una celda de 84 px con nivel de apilamiento propio y separación estable respecto a identidad, evitando invadir el nombre o el código. En Orbes se unificaron los chips de juegos, las barras de la gráfica y las superficies de saldo bajo tokens del degradado azul de marca; también se volvió responsive el encabezado de “Juegos involucrados” para que el texto no desborde. `pnpm build` y las rutas móviles se verificaron correctamente.
+
+---
+
 # Reparación visual de Feed y perfil
 
 Estado: completado.
