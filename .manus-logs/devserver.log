@@ -251,3 +251,12 @@
 [2026-08-16T00:43:31.148Z] VITE v7.3.6  ready in 241 ms
 [2026-08-16T00:43:31.148Z] ➜  Local:   http://localhost:5173/
 [2026-08-16T00:43:31.148Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-16T00:47:49.257Z] 12:47:49 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/AsternalEditor.tsx
+[2026-08-16T00:48:00.301Z] 12:48:00 AM [vite] (client) hmr update /src/styles.css
+[2026-08-16T00:48:21.112Z] [ELIFECYCLE] Command failed.
+[2026-08-16T00:48:21.118Z] Dev server exited with code -1
+[2026-08-16T00:48:22.202Z] Starting dev server with command: pnpm run dev
+[2026-08-16T00:48:22.464Z] $ vite
+[2026-08-16T00:48:22.727Z] VITE v7.3.6  ready in 238 ms
+[2026-08-16T00:48:22.727Z] ➜  Local:   http://localhost:5173/
+[2026-08-16T00:48:22.727Z] ➜  Network: http://169.254.0.21:5173/

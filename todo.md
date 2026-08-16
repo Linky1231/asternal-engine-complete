@@ -1,9 +1,9 @@
-# Nueva identidad de degradados azules
+# Azul global con Plus independiente
 
-- [x] Auditar todos los degradados, halos, sombras y usos de color azul.
-- [x] Investigar referencias de color, contraste y degradados perceptualmente equilibrados.
-- [x] Elegir un azul luminoso, vivo y con suficiente profundidad para texto blanco.
-- [x] Aplicar el sistema elegido a tokens, botones, hero, banners, tarjetas y editor.
-- [x] Eliminar variantes antiguas apagadas o demasiado agresivas.
-- [x] Verificar portada, autenticación, editor y menú móvil en escritorio y responsive.
-- [ ] Guardar un checkpoint y entregar la versión actualizada.
+- [x] Auditar degradados y tokens usados por el editor.
+- [x] Auditar degradados y tokens exclusivos del apartado Plus.
+- [x] Separar explícitamente la identidad azul general de la identidad Plus.
+- [x] Aplicar el azul eléctrico–cobalto–azur al editor y superficies generales.
+- [x] Mantener Plus sin el azul degradado de marca.
+- [x] Verificar editor, portada, navegación y Plus en escritorio y móvil.
+- [ ] Guardar un checkpoint y entregar la actualización.
