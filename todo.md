@@ -356,3 +356,14 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 
 
 - [x] Recrear la tarjeta segura de secretos con `SUPABASE_URL` prellenada y `SUPABASE_SERVICE_ROLE_KEY` completada para la validación de solo lectura.
+
+
+---
+
+# Botón Continuar con Google
+
+- [x] Auditar el formulario de acceso y el flujo OAuth Manus existente.
+- [x] Implementar el botón Continuar con Google usando el portal OAuth de Manus, con callback Manus único, nonce host-only y retorno dinámico.
+- [x] Añadir estados de carga, error, accesibilidad y compatibilidad con el retorno pendiente de QR.
+- [x] Añadir pruebas y validar typecheck, tests, build, preview y retrocompatibilidad. TypeScript, 24 tests, build y captura de `/auth` pasan; el intercambio OAuth real requiere una cuenta Google.
+- [x] Guardar checkpoint publicado.

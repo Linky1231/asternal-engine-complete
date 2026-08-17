@@ -2,9 +2,10 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
 import { consumePendingQrProfile, getPendingQrProfile } from "@/lib/auth-redirect";
+import { startGoogleLogin } from "@/lib/manus-oauth";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw,
+  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw, Chrome,
 } from "lucide-react";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
@@ -444,6 +445,18 @@ function AuthPage() {
     setMode(m);
   };
 
+  const handleGoogleLogin = () => {
+    clearErrors();
+    setSuccessMsg(null);
+    setBusy(true);
+    try {
+      startGoogleLogin();
+    } catch (error) {
+      setBusy(false);
+      setErr(error instanceof Error ? error.message : "No se pudo iniciar el acceso con Google.");
+    }
+  };
+
   /** Normaliza un nombre de usuario a la forma segura (minúsculas, a-z0-9_). */
   const cleanUsername = (v: string) => v.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
 
@@ -643,6 +656,23 @@ function AuthPage() {
                           {m === "signin" ? "ACCEDER" : "REGISTRARSE"}
                         </button>
                       ))}
+                    </div>
+
+                    {/* Google OAuth */}
+                    <button
+                      type="button"
+                      onClick={handleGoogleLogin}
+                      disabled={busy}
+                      className="w-full flex items-center justify-center gap-2.5 rounded-xl border border-border/70 bg-white/80 py-2.5 text-sm font-display font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-primary/30 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                      aria-label="Continuar con Google"
+                    >
+                      {busy ? <Loader2 size={15} className="animate-spin" /> : <Chrome size={15} className="text-primary" />}
+                      {busy ? "Conectando con Google…" : "Continuar con Google"}
+                    </button>
+
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/50" /></div>
+                      <div className="relative flex justify-center text-[10px] uppercase tracking-wider"><span className="bg-white/85 px-2 text-muted-foreground/50">o usa tu cuenta</span></div>
                     </div>
 
                     {/* Form */}
