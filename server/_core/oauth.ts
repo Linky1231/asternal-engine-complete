@@ -14,9 +14,17 @@ export function registerOAuthRoutes(app: Express) {
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
+    const providerError = getQueryParam(req, "error");
+
+    // Providers may return here after cancellation or when a stale callback URL
+    // is opened manually. Never expose raw JSON to the user in those cases.
+    if (providerError) {
+      res.redirect(302, "/auth?oauth=cancelled");
+      return;
+    }
 
     if (!code || !state) {
-      res.status(400).json({ error: "code and state are required" });
+      res.redirect(302, "/auth?oauth=missing");
       return;
     }
 
@@ -64,7 +72,7 @@ export function registerOAuthRoutes(app: Express) {
       res.redirect(302, "/auth?oauth=success");
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
-      res.status(500).json({ error: "OAuth callback failed" });
+      res.redirect(302, "/auth?oauth=error");
     }
   });
 }

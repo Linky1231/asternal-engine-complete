@@ -30,9 +30,10 @@ describe("Manus OAuth social login", () => {
     startGoogleLogin();
 
     const url = new URL(assign.mock.calls[0]?.[0]);
-    expect(url.pathname).toBe("/app-auth");
+    expect(url.pathname).toBe("/login");
     expect(url.searchParams.get("provider")).toBe("google");
-    expect(url.searchParams.get("redirectUri")).toBe(
+    expect(url.searchParams.get("app_id")).toBe("asternal-test");
+    expect(url.searchParams.get("redirect_url")).toBe(
       "https://asternaleng-dvlqmnye.manus.space/api/oauth/callback",
     );
 

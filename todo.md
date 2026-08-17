@@ -400,3 +400,9 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Auditar la ruta de inicio real y el fallback de TanStack Router tras `/api/oauth/callback`.
 - [x] Corregir la redirección OAuth y asegurar que `/` resuelva a la pantalla de inicio en producción.
 - [x] Validar el flujo en móvil, pruebas y build antes de publicar.
+
+# Corrección del callback OAuth sin parámetros
+
+- [x] Auditar el launcher de Google, la URL de autorización y la validación del callback.
+- [x] Evitar que un callback incompleto muestre JSON crudo y devolver una salida segura hacia Auth.
+- [x] Probar el callback incompleto, el flujo normal y publicar la corrección.

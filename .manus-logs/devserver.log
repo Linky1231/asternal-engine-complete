@@ -762,3 +762,9 @@
 [2026-08-17T01:34:04.618Z] VITE v7.3.6  ready in 279 ms
 [2026-08-17T01:34:04.618Z] ➜  Local:   http://localhost:5173/
 [2026-08-17T01:34:04.618Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-17T12:50:29.163Z] 12:50:29 PM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
+[2026-08-17T12:50:29.252Z] 12:50:29 PM [vite] (client) hmr invalidate /src/routes/auth.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T12:50:29.252Z] 12:50:29 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T12:50:29.347Z] 12:50:29 PM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T12:50:29.347Z] 12:50:29 PM [vite] (client) page reload src/main.tsx
+[2026-08-17T12:50:40.186Z] 12:50:40 PM [vite] (client) hmr update /src/styles.css
