@@ -406,3 +406,15 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Auditar el launcher de Google, la URL de autorización y la validación del callback.
 - [x] Evitar que un callback incompleto muestre JSON crudo y devolver una salida segura hacia Auth.
 - [x] Probar el callback incompleto, el flujo normal y publicar la corrección.
+
+# Autenticación Google independiente
+
+- [x] Evaluar la integración OAuth de Google independiente y las credenciales necesarias.
+- [x] Retirar el flujo Manus del botón Google para no mostrar una identidad ajena como si fuera Google.
+- [x] Implementar la alternativa aprobada y validar que la sesión permanezca dentro de Asternal.
+
+# Validación final Google OAuth
+
+- [ ] Confirmar que la URL de autorización usa el callback registrado de Asternal.
+- [ ] Verificar el retorno autenticado y la hidratación de sesión sin navegación hacia Manus.
+- [ ] Publicar la integración validada y documentar la prueba final para el usuario.

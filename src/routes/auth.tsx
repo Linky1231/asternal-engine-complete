@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
 import { consumePendingQrProfile, getPendingQrProfile } from "@/lib/auth-redirect";
-import { startGoogleLogin } from "@/lib/manus-oauth";
+import { startGoogleLogin } from "@/lib/google-oauth";
 import { GoogleOfficialMark } from "@/components/GoogleOfficialMark";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,

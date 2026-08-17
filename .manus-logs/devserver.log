@@ -768,3 +768,36 @@
 [2026-08-17T12:50:29.347Z] 12:50:29 PM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
 [2026-08-17T12:50:29.347Z] 12:50:29 PM [vite] (client) page reload src/main.tsx
 [2026-08-17T12:50:40.186Z] 12:50:40 PM [vite] (client) hmr update /src/styles.css
+[2026-08-17T22:03:45.292Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:03:45.299Z] Dev server exited with code -1
+[2026-08-17T22:03:46.379Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:03:46.651Z] $ vite
+[2026-08-17T22:03:46.921Z] VITE v7.3.6  ready in 244 ms
+[2026-08-17T22:03:46.921Z] ➜  Local:   http://localhost:5173/
+[2026-08-17T22:03:46.921Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-17T22:07:37.497Z] 10:07:37 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-17T22:07:37.499Z] 10:07:37 PM [vite] (client) hmr update /src/styles.css, /src/routes/reset-password.tsx, /src/routes/profile.tsx, /src/routes/search.tsx, /src/routes/admin.tsx, /src/routes/feed.tsx, /src/routes/profile.$userId.tsx, /src/routes/orbes.tsx, /src/routes/plus.tsx, /src/routes/index.tsx, /src/routes/auth.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/UserName.tsx, /src/components/social/PostCard.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/GallerySection.tsx, /src/components/social/EventsSection.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx, /src/components/social/ForumSection.tsx
+[2026-08-17T22:07:37.796Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/auth.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.797Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.965Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/reset-password.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.965Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.965Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/profile.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.965Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/search.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/admin.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/feed.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/profile.$userId.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/orbes.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/plus.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.966Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:37.967Z] 10:07:37 PM [vite] (client) hmr invalidate /src/routes/index.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:37.967Z] 10:07:37 PM [vite] (client) hmr update /src/main.tsx
+[2026-08-17T22:07:38.032Z] 10:07:38 PM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-17T22:07:38.032Z] 10:07:38 PM [vite] (client) page reload src/main.tsx
+[2026-08-17T22:07:47.105Z] 10:07:47 PM [vite] (client) page reload src/lib/manus-oauth.ts
+[2026-08-17T22:07:47.105Z] 10:07:47 PM [vite] (client) hmr update /src/styles.css

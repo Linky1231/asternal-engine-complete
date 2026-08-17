@@ -4,7 +4,7 @@ import { createServer } from "http";
 import net from "net";
 import { createHash } from "node:crypto";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { registerOAuthRoutes } from "./oauth";
+import { registerGoogleOAuthRoutes } from "./googleOAuth";
 import { getSessionCookieOptions } from "./cookies";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
@@ -42,10 +42,10 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
-  registerOAuthRoutes(app);
+  registerGoogleOAuthRoutes(app);
 
   // Compatibility bridge for the legacy Asternal frontend. The active UI still
-  // consumes a Supabase-shaped session object, so expose the Manus cookie through
+  // consumes a Supabase-shaped session object, so expose the server session through
   // a small same-origin endpoint instead of leaking or parsing the JWT in React.
   app.get("/api/auth/session", async (req, res) => {
     const user = await sdk.authenticateRequest(req).catch(() => null);
@@ -53,7 +53,7 @@ async function startServer() {
     return res.json({
       session: {
         user: { id: user.openId, email: user.email ?? null },
-        access_token: "manus-cookie-session",
+        access_token: "asternal-cookie-session",
         expires_at: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
       },
     });

@@ -148,7 +148,7 @@ function saveSession(user: LocalUser): LocalSession {
 }
 function clearSession(): void { localStorage.removeItem('_local_auth_session'); }
 
-async function hydrateManusSession(): Promise<LocalSession | null> {
+async function hydrateServerSession(): Promise<LocalSession | null> {
   try {
     const response = await fetch('/api/auth/session', { credentials: 'include' });
     if (!response.ok) return null;
@@ -158,7 +158,7 @@ async function hydrateManusSession(): Promise<LocalSession | null> {
     const session: LocalSession = {
       userId: user.id,
       email: user.email ?? `${user.id}@manus.local`,
-      accessToken: 'manus-cookie-session',
+      accessToken: 'asternal-cookie-session',
       expiresAt: new Date((payload.session?.expires_at ?? (Date.now() / 1000 + 365 * 86400)) * 1000).toISOString(),
     };
     localStorage.setItem('_local_auth_session', JSON.stringify(session));
@@ -213,7 +213,7 @@ function makeSignInResult(u: LocalUser, s: LocalSession) {
 
 const localAuth = {
   getSession: async () => {
-    const s = getSession() ?? await hydrateManusSession();
+    const s = getSession() ?? await hydrateServerSession();
     return { data: { session: s ? { user: { id: s.userId, email: s.email }, access_token: s.accessToken, expires_at: new Date(s.expiresAt).getTime() / 1000 } : null }, error: null };
   },
   getUser: async () => {
