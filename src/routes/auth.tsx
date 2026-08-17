@@ -2,11 +2,11 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
 import { consumePendingQrProfile, getPendingQrProfile } from "@/lib/auth-redirect";
-import { startGoogleLogin, startTikTokLogin } from "@/lib/manus-oauth";
+import { startGoogleLogin } from "@/lib/manus-oauth";
 import { GoogleOfficialMark } from "@/components/GoogleOfficialMark";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw, Music2,
+  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw,
 } from "lucide-react";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
@@ -458,18 +458,6 @@ function AuthPage() {
     }
   };
 
-  const handleTikTokLogin = () => {
-    clearErrors();
-    setSuccessMsg(null);
-    setBusy(true);
-    try {
-      startTikTokLogin();
-    } catch (error) {
-      setBusy(false);
-      setErr(error instanceof Error ? error.message : "No se pudo iniciar el acceso con TikTok.");
-    }
-  };
-
   /** Normaliza un nombre de usuario a la forma segura (minúsculas, a-z0-9_). */
   const cleanUsername = (v: string) => v.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
 
@@ -672,7 +660,7 @@ function AuthPage() {
                     </div>
 
                     {/* Social OAuth */}
-                    <div className="grid gap-2 sm:grid-cols-2">
+                    <div>
                       <button
                         type="button"
                         onClick={handleGoogleLogin}
@@ -686,16 +674,6 @@ function AuthPage() {
                         {busy ? "Conectando…" : "Continuar con Google"}
                       </button>
 
-                      <button
-                        type="button"
-                        onClick={handleTikTokLogin}
-                        disabled={busy}
-                        className="w-full flex items-center justify-center gap-2.5 rounded-xl border border-border/70 bg-white/80 py-2.5 text-sm font-display font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-foreground/20 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-                        aria-label="Continuar con TikTok"
-                      >
-                        {busy ? <Loader2 size={15} className="animate-spin" /> : <Music2 size={16} className="text-foreground" aria-hidden="true" />}
-                        {busy ? "Conectando…" : "Continuar con TikTok"}
-                      </button>
                     </div>
 
                     <div className="relative my-4">
@@ -788,22 +766,6 @@ function AuthPage() {
                         </button>
                       </div>
 
-                      {mode === "signin" && (
-                        <div className="text-center pt-1">
-                          <button type="button" onClick={async () => {
-                            if (!email.value.trim()) { setFieldErrors({ email: "Escribe tu usuario o correo primero" }); return; }
-                            setBusy(true); clearErrors(); setSuccessMsg(null);
-                            try {
-                              const { error } = await supabase.auth.resetPasswordForEmail(resolveLoginEmail(email.value));
-                              if (error) throw error;
-                              setSuccessMsg("Revisa tu bandeja de entrada (o si usaste solo usuario, tu correo @asternal.app)");
-                            } catch (e) { setErr(friendlyAuthError((e as Error).message)); }
-                            finally { setBusy(false); }
-                          }} className="text-[12px] text-muted-foreground/50 hover:text-primary transition-colors">
-                            ¿Olvidaste tu contraseña?
-                          </button>
-                        </div>
-                      )}
                     </form>
 
                     {pendingQrProfile && (
@@ -813,15 +775,6 @@ function AuthPage() {
                       </div>
                     )}
 
-                    <div className="mt-5 pt-4 border-t border-border/40">
-                      <p className="text-[10px] text-muted-foreground/30 text-center font-mono tracking-wider">
-                        Tus creaciones se sincronizan en la nube
-                      </p>
-                      <button type="button" onClick={resetConnection}
-                        className="mt-2 w-full text-center text-[10px] text-muted-foreground/30 hover:text-primary transition-colors underline underline-offset-2">
-                        ¿Problemas de sincronización? Revisar Manus
-                      </button>
-                    </div>
                   </div>
                 </div>
             </div>

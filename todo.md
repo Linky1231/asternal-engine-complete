@@ -378,3 +378,13 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Añadir Continuar con TikTok mediante el proveedor `tiktok` del portal Manus OAuth, compartiendo nonce, callback y retorno seguro; la disponibilidad final depende de que TikTok esté habilitado para la aplicación OAuth.
 - [x] Validar estados, accesibilidad, pruebas, build y preview. TypeScript, 24 tests, `pnpm build` y `/auth` en escritorio pasan.
 - [x] Guardar checkpoint publicado.
+
+---
+
+# Corrección de retorno Google y limpieza del acceso
+
+- [x] Auditar el callback OAuth y el destino posterior para resolver el retorno detenido tras Google. El fallo era que la publicación estática no atendía `/api/oauth/callback`.
+- [x] Corregir la redirección post-OAuth preservando el retorno QR seguro y la sesión Manus. El artefacto publicado incorpora ahora el servidor Manus OAuth y el callback responde con la validación esperada de `code` y `state`.
+- [x] Eliminar el botón Continuar con TikTok y el código de proveedor que quede sin uso.
+- [x] Eliminar el bloque bajo ACCEDER: recuperación de contraseña, aviso de sincronización y enlace de soporte.
+- [x] Validar flujo, accesibilidad, pruebas, build, preview móvil y guardar checkpoint publicado. El servidor de producción inicia, `/api/oauth/callback` responde 400 sin parámetros —comportamiento esperado—, 25 tests pasan y el diseño móvil fue revisado.

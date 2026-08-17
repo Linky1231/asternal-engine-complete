@@ -707,3 +707,15 @@
 [2026-08-17T00:17:32.452Z] 12:17:32 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-17T00:18:34.052Z] 12:18:34 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-17T00:19:35.399Z] 12:19:35 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-17T00:27:51.591Z] 12:27:51 AM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
+[2026-08-17T00:27:52.058Z] 12:27:52 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-17T00:30:16.699Z] 12:30:16 AM [vite] vite.config.ts changed, restarting server...
+[2026-08-17T00:30:16.724Z] 12:30:16 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-17T00:30:16.738Z] 12:30:16 AM [vite] server restarted.
+[2026-08-17T00:32:31.690Z] [ELIFECYCLE] Command failed.
+[2026-08-17T00:32:31.696Z] Dev server exited with code -1
+[2026-08-17T00:32:32.783Z] Starting dev server with command: pnpm run dev
+[2026-08-17T00:32:33.063Z] $ vite
+[2026-08-17T00:32:33.337Z] VITE v7.3.6  ready in 248 ms
+[2026-08-17T00:32:33.337Z] ➜  Local:   http://localhost:5173/
+[2026-08-17T00:32:33.337Z] ➜  Network: http://169.254.0.21:5173/

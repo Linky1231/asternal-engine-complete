@@ -1,6 +1,6 @@
 import { encodeOAuthState, OAUTH_STATE_COOKIE } from "../../shared/const";
 
-export type ManusOAuthProvider = "google" | "tiktok";
+export type ManusOAuthProvider = "google";
 
 /**
  * Starts a provider-specific Manus OAuth flow from the legacy auth screen.
@@ -32,8 +32,4 @@ export function startProviderLogin(provider: ManusOAuthProvider): void {
 
 export function startGoogleLogin(): void {
   startProviderLogin("google");
-}
-
-export function startTikTokLogin(): void {
-  startProviderLogin("tiktok");
 }
