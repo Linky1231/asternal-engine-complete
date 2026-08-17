@@ -367,3 +367,14 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Añadir estados de carga, error, accesibilidad y compatibilidad con el retorno pendiente de QR.
 - [x] Añadir pruebas y validar typecheck, tests, build, preview y retrocompatibilidad. TypeScript, 24 tests, build y captura de `/auth` pasan; el intercambio OAuth real requiere una cuenta Google.
 - [x] Guardar checkpoint publicado.
+
+
+---
+
+# Google oficial y Continuar con TikTok
+
+- [x] Auditar proveedores disponibles en Manus OAuth y las directrices oficiales de marca de Google y TikTok; las fuentes quedaron documentadas en `oauth-brand-audit.md`.
+- [x] Sustituir el icono genérico por el logotipo oficial multicolor de Google, sin recolorearlo de azul. La preview confirma que el componente oficial inline carga correctamente.
+- [x] Añadir Continuar con TikTok mediante el proveedor `tiktok` del portal Manus OAuth, compartiendo nonce, callback y retorno seguro; la disponibilidad final depende de que TikTok esté habilitado para la aplicación OAuth.
+- [x] Validar estados, accesibilidad, pruebas, build y preview. TypeScript, 24 tests, `pnpm build` y `/auth` en escritorio pasan.
+- [x] Guardar checkpoint publicado.

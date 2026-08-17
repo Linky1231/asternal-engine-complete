@@ -2,10 +2,11 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
 import { consumePendingQrProfile, getPendingQrProfile } from "@/lib/auth-redirect";
-import { startGoogleLogin } from "@/lib/manus-oauth";
+import { startGoogleLogin, startTikTokLogin } from "@/lib/manus-oauth";
+import { GoogleOfficialMark } from "@/components/GoogleOfficialMark";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw, Chrome,
+  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw, Music2,
 } from "lucide-react";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
@@ -457,6 +458,18 @@ function AuthPage() {
     }
   };
 
+  const handleTikTokLogin = () => {
+    clearErrors();
+    setSuccessMsg(null);
+    setBusy(true);
+    try {
+      startTikTokLogin();
+    } catch (error) {
+      setBusy(false);
+      setErr(error instanceof Error ? error.message : "No se pudo iniciar el acceso con TikTok.");
+    }
+  };
+
   /** Normaliza un nombre de usuario a la forma segura (minúsculas, a-z0-9_). */
   const cleanUsername = (v: string) => v.trim().toLowerCase().replace(/[^a-z0-9_]/g, "");
 
@@ -658,17 +671,32 @@ function AuthPage() {
                       ))}
                     </div>
 
-                    {/* Google OAuth */}
-                    <button
-                      type="button"
-                      onClick={handleGoogleLogin}
-                      disabled={busy}
-                      className="w-full flex items-center justify-center gap-2.5 rounded-xl border border-border/70 bg-white/80 py-2.5 text-sm font-display font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-primary/30 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-                      aria-label="Continuar con Google"
-                    >
-                      {busy ? <Loader2 size={15} className="animate-spin" /> : <Chrome size={15} className="text-primary" />}
-                      {busy ? "Conectando con Google…" : "Continuar con Google"}
-                    </button>
+                    {/* Social OAuth */}
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={busy}
+                        className="w-full flex items-center justify-center gap-2.5 rounded-xl border border-border/70 bg-white/80 py-2.5 text-sm font-display font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-primary/30 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Continuar con Google"
+                      >
+                        {busy ? <Loader2 size={15} className="animate-spin" /> : (
+                          <GoogleOfficialMark size={18} />
+                        )}
+                        {busy ? "Conectando…" : "Continuar con Google"}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleTikTokLogin}
+                        disabled={busy}
+                        className="w-full flex items-center justify-center gap-2.5 rounded-xl border border-border/70 bg-white/80 py-2.5 text-sm font-display font-semibold text-foreground shadow-sm transition-all duration-200 hover:border-foreground/20 hover:bg-white hover:shadow-md active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Continuar con TikTok"
+                      >
+                        {busy ? <Loader2 size={15} className="animate-spin" /> : <Music2 size={16} className="text-foreground" aria-hidden="true" />}
+                        {busy ? "Conectando…" : "Continuar con TikTok"}
+                      </button>
+                    </div>
 
                     <div className="relative my-4">
                       <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/50" /></div>

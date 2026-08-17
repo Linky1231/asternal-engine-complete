@@ -703,3 +703,7 @@
 [2026-08-16T23:54:15.882Z] ➜  Network: http://169.254.0.21:5173/
 [2026-08-16T23:58:17.515Z] 11:58:17 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GamesHome.tsx
 [2026-08-17T00:07:41.671Z] 12:07:41 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-17T00:17:21.329Z] 12:17:21 AM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
+[2026-08-17T00:17:32.452Z] 12:17:32 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-17T00:18:34.052Z] 12:18:34 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-17T00:19:35.399Z] 12:19:35 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
