@@ -58,7 +58,10 @@ export function registerOAuthRoutes(app: Express) {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
-      res.redirect(302, "/");
+      // Return through the known Auth route first. The SPA hydrates the Manus
+      // cookie there and then performs a client-side navigation to the real home
+      // route, avoiding a production 404 during a direct server redirect.
+      res.redirect(302, "/auth?oauth=success");
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
       res.status(500).json({ error: "OAuth callback failed" });

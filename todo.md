@@ -394,3 +394,9 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Corregir retorno de Google: confiar en proxy, alinear cookies y conectar la sesión Manus con la autenticación activa del frontend.
 - [x] Verificar redirección OAuth en una ruta válida de TanStack Router y cubrirla con regresiones.
 - [x] Ejecutar pruebas, build y revisión end-to-end del login Google.
+
+# Corrección del 404 tras login Google
+
+- [x] Auditar la ruta de inicio real y el fallback de TanStack Router tras `/api/oauth/callback`.
+- [x] Corregir la redirección OAuth y asegurar que `/` resuelva a la pantalla de inicio en producción.
+- [x] Validar el flujo en móvil, pruebas y build antes de publicar.
