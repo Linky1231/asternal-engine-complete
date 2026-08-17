@@ -388,3 +388,9 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Eliminar el botón Continuar con TikTok y el código de proveedor que quede sin uso.
 - [x] Eliminar el bloque bajo ACCEDER: recuperación de contraseña, aviso de sincronización y enlace de soporte.
 - [x] Validar flujo, accesibilidad, pruebas, build, preview móvil y guardar checkpoint publicado. El servidor de producción inicia, `/api/oauth/callback` responde 400 sin parámetros —comportamiento esperado—, 25 tests pasan y el diseño móvil fue revisado.
+
+# Reparación del retorno OAuth de Google
+
+- [x] Corregir retorno de Google: confiar en proxy, alinear cookies y conectar la sesión Manus con la autenticación activa del frontend.
+- [x] Verificar redirección OAuth en una ruta válida de TanStack Router y cubrirla con regresiones.
+- [x] Ejecutar pruebas, build y revisión end-to-end del login Google.

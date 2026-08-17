@@ -148,6 +148,27 @@ function saveSession(user: LocalUser): LocalSession {
 }
 function clearSession(): void { localStorage.removeItem('_local_auth_session'); }
 
+async function hydrateManusSession(): Promise<LocalSession | null> {
+  try {
+    const response = await fetch('/api/auth/session', { credentials: 'include' });
+    if (!response.ok) return null;
+    const payload = await response.json() as { session?: { user?: { id?: string; email?: string | null }; expires_at?: number } | null };
+    const user = payload.session?.user;
+    if (!user?.id) return null;
+    const session: LocalSession = {
+      userId: user.id,
+      email: user.email ?? `${user.id}@manus.local`,
+      accessToken: 'manus-cookie-session',
+      expiresAt: new Date((payload.session?.expires_at ?? (Date.now() / 1000 + 365 * 86400)) * 1000).toISOString(),
+    };
+    localStorage.setItem('_local_auth_session', JSON.stringify(session));
+    ensureProfileExists(session.userId, session.email);
+    return session;
+  } catch {
+    return null;
+  }
+}
+
 function ensureProfileExists(userId: string, email: string, username?: string): void {
   const profiles = getTableData('profiles');
   if (profiles.find(p => (p as Record<string, unknown>).id === userId)) return;
@@ -192,7 +213,7 @@ function makeSignInResult(u: LocalUser, s: LocalSession) {
 
 const localAuth = {
   getSession: async () => {
-    const s = getSession();
+    const s = getSession() ?? await hydrateManusSession();
     return { data: { session: s ? { user: { id: s.userId, email: s.email }, access_token: s.accessToken, expires_at: new Date(s.expiresAt).getTime() / 1000 } : null }, error: null };
   },
   getUser: async () => {
@@ -218,7 +239,12 @@ const localAuth = {
     return makeSignInResult(user, session) as { data: { user: Record<string, unknown>; session: Record<string, unknown> }; error: null };
   },
   signInWithOAuth: async () => ({ data: null, error: new Error('OAuth no disponible en modo local') }),
-  signOut: async () => { clearSession(); notifyAuth('SIGNED_OUT', null); return { error: null }; },
+  signOut: async () => {
+    clearSession();
+    try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch { /* local logout remains effective */ }
+    notifyAuth('SIGNED_OUT', null);
+    return { error: null };
+  },
   resetPasswordForEmail: async (email: string) => {
     const users = getAuthUsers();
     const user = users.find(u => u.email === email.toLowerCase());

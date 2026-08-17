@@ -754,3 +754,11 @@
 [2026-08-17T01:31:22.772Z] VITE v7.3.6  ready in 251 ms
 [2026-08-17T01:31:22.772Z] ➜  Local:   http://localhost:5173/
 [2026-08-17T01:31:22.772Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-17T01:33:36.509Z] 1:33:36 AM [vite] (client) hmr update /src/styles.css, /src/routes/search.tsx, /src/routes/reset-password.tsx, /src/routes/profile.tsx, /src/routes/profile.$userId.tsx, /src/routes/feed.tsx, /src/routes/index.tsx, /src/routes/orbes.tsx, /src/routes/admin.tsx, /src/routes/plus.tsx, /src/routes/auth.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/GallerySection.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/UserName.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/engine/PublishGameDialog.tsx, /src/components/social/CommentSection.tsx, /src/components/social/ForumSection.tsx
+[2026-08-17T01:34:02.963Z] [ELIFECYCLE] Command failed.
+[2026-08-17T01:34:02.968Z] Dev server exited with code -1
+[2026-08-17T01:34:04.055Z] Starting dev server with command: pnpm run dev
+[2026-08-17T01:34:04.314Z] $ vite
+[2026-08-17T01:34:04.618Z] VITE v7.3.6  ready in 279 ms
+[2026-08-17T01:34:04.618Z] ➜  Local:   http://localhost:5173/
+[2026-08-17T01:34:04.618Z] ➜  Network: http://169.254.0.21:5173/

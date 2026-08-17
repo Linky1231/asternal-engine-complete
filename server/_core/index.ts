@@ -5,6 +5,7 @@ import net from "net";
 import { createHash } from "node:crypto";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
+import { getSessionCookieOptions } from "./cookies";
 import { registerStorageProxy } from "./storageProxy";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
@@ -33,12 +34,35 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 
 async function startServer() {
   const app = express();
+  // Production runs behind Manus's HTTPS reverse proxy. Trust the first hop so
+  // req.protocol and secure cookie handling reflect the public request scheme.
+  app.set("trust proxy", 1);
   const server = createServer(app);
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+
+  // Compatibility bridge for the legacy Asternal frontend. The active UI still
+  // consumes a Supabase-shaped session object, so expose the Manus cookie through
+  // a small same-origin endpoint instead of leaking or parsing the JWT in React.
+  app.get("/api/auth/session", async (req, res) => {
+    const user = await sdk.authenticateRequest(req).catch(() => null);
+    if (!user) return res.json({ session: null });
+    return res.json({
+      session: {
+        user: { id: user.openId, email: user.email ?? null },
+        access_token: "manus-cookie-session",
+        expires_at: Math.floor(Date.now() / 1000) + 365 * 24 * 60 * 60,
+      },
+    });
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    res.clearCookie("app_session_id", getSessionCookieOptions(req));
+    return res.json({ ok: true });
+  });
 
   // Manus sync bridge. It stores only the authenticated user's records in the
   // generic cloud envelope, preserving legacy ids and payloads.
