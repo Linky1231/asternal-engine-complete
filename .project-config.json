@@ -25,6 +25,7 @@
     "BUILT_IN_FORGE_API_KEY": "ABWbrGxC74XWpCski9dxuS",
     "BUILT_IN_FORGE_API_URL": "https://forge.manus.ai",
     "JWT_SECRET": "k9wiCh5fcW5M8hsniH3Zfn",
+    "OAUTH_COOKIE_FIX_NOTE": "local-validation-only",
     "OAUTH_SERVER_URL": "https://api.manus.im",
     "OWNER_NAME": "Josue Gutierrez",
     "OWNER_OPEN_ID": "mwj8EyWuYihKacFyKEKQSy",
