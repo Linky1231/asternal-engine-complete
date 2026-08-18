@@ -434,3 +434,9 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Eliminar el botón, mensajes y launcher de Google de la pantalla de acceso.
 - [x] Eliminar rutas, verificación y pruebas OAuth de Google sin afectar el inicio local por usuario/correo y contraseña.
 - [x] Ejecutar pruebas, build y verificación visual del formulario de acceso simplificado.
+
+# Rediseño del panel de notificaciones
+
+- [x] Auditar la estructura, estados, interacción y coherencia visual del panel de notificaciones actual.
+- [x] Rediseñar la cabecera, filtros, grupos, tarjetas, estados vacíos y acciones con la paleta de Asternal.
+- [x] Validar responsividad, accesibilidad, pruebas y build antes de publicar.

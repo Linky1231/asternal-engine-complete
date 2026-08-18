@@ -916,3 +916,11 @@
 [2026-08-18T03:29:26.647Z] $ NODE_ENV=development tsx watch server/_core/index.ts
 [2026-08-18T03:29:27.354Z] [OAuth] Initialized with baseURL: https://api.manus.im
 [2026-08-18T03:29:27.447Z] Server running on http://localhost:3000/
+[2026-08-18T03:41:18.353Z] 3:41:18 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationBell.tsx
+[2026-08-18T03:41:18.354Z] 3:41:18 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationsPanel.tsx
+[2026-08-18T03:41:54.534Z] [ELIFECYCLE] Command failed.
+[2026-08-18T03:41:54.574Z] Dev server exited with code -1
+[2026-08-18T03:41:55.626Z] Starting dev server with command: pnpm run dev
+[2026-08-18T03:41:55.881Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-18T03:41:56.558Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-18T03:41:56.657Z] Server running on http://localhost:3000/

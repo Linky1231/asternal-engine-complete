@@ -48,7 +48,10 @@ export function NotificationBell() {
       <button
         onClick={() => setOpen(true)}
         title="Notificaciones"
-        className="relative w-10 h-10 rounded-lg border border-line-strong bg-card grid place-items-center active:scale-95 transition text-ink-2 hover:bg-muted/60 hover:text-foreground shrink-0"
+        aria-label={unread > 0 ? `Notificaciones, ${unread} sin leer` : "Notificaciones"}
+        className={`relative grid h-10 w-10 shrink-0 place-items-center rounded-xl border transition active:scale-95 ${
+          unread > 0 ? "border-primary/30 bg-primary/8 text-primary shadow-sm shadow-primary/10 hover:bg-primary hover:text-primary-foreground" : "border-line-strong bg-card text-ink-2 hover:bg-muted/60 hover:text-foreground"
+        }`}
       >
         <Bell size={16} />
         {unread > 0 && (

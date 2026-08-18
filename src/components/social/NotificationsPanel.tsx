@@ -2,10 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { Avatar } from "./Avatar";
 import { Link } from "@tanstack/react-router";
 import {
-  Bell, MessageSquare, Reply, Heart, Star, Repeat, AtSign, UserPlus,
-  Gamepad2, CheckCheck, Inbox, X, TrendingUp, Loader2,
+  AtSign, Bell, CheckCheck, ChevronRight, Gamepad2, Heart, Inbox, Loader2,
+  MessageSquare, Repeat, Reply, Sparkles, Star, UserPlus, X,
 } from "lucide-react";
 import { fetchAllNotifications, markNotificationsRead, type Profile } from "@/lib/social/api";
+import { groupNotificationsByRecency } from "@/lib/social/notifications-view";
 
 type Notif = {
   id: string;
@@ -20,37 +21,39 @@ type Notif = {
 
 type Cat = "todas" | "interacciones" | "seguidores" | "juegos";
 
-/* Icono por tipo: insignia SÓLIDA con icono blanco. La versión anterior usaba
-   un tinte al 12% con el icono del mismo color: sobre el blanco del panel el
-   icono quedaba casi invisible (parecía un círculo vacío). */
-const TYPE_META: Record<string, { icon: typeof Heart; label: string; cat: Exclude<Cat, "todas">; badge: string }> = {
-  comment: { icon: MessageSquare, label: "comentó tu post", cat: "interacciones", badge: "grad-brand" },
-  reply: { icon: Reply, label: "respondió tu comentario", cat: "interacciones", badge: "grad-brand" },
-  reaction: { icon: Heart, label: "reaccionó a tu contenido", cat: "interacciones", badge: "grad-brand" },
-  like: { icon: Heart, label: "le gustó tu contenido", cat: "interacciones", badge: "grad-brand" },
-  favorite: { icon: Star, label: "guardó tu contenido como favorito", cat: "interacciones", badge: "grad-brand" },
-  repost: { icon: Repeat, label: "reposteó tu post", cat: "interacciones", badge: "grad-brand" },
-  mention: { icon: AtSign, label: "te mencionó", cat: "interacciones", badge: "grad-brand" },
-  follow: { icon: UserPlus, label: "te siguió", cat: "seguidores", badge: "grad-brand" },
-  game: { icon: Gamepad2, label: "publicó un juego", cat: "juegos", badge: "grad-brand" },
+const TYPE_META: Record<string, {
+  icon: typeof Heart;
+  label: string;
+  shortLabel: string;
+  cat: Exclude<Cat, "todas">;
+}> = {
+  comment: { icon: MessageSquare, label: "comentó tu publicación", shortLabel: "Comentario", cat: "interacciones" },
+  reply: { icon: Reply, label: "respondió a tu comentario", shortLabel: "Respuesta", cat: "interacciones" },
+  reaction: { icon: Heart, label: "reaccionó a tu contenido", shortLabel: "Reacción", cat: "interacciones" },
+  like: { icon: Heart, label: "indicó que le gusta tu contenido", shortLabel: "Me gusta", cat: "interacciones" },
+  favorite: { icon: Star, label: "guardó tu contenido", shortLabel: "Favorito", cat: "interacciones" },
+  repost: { icon: Repeat, label: "reposteó tu publicación", shortLabel: "Repost", cat: "interacciones" },
+  mention: { icon: AtSign, label: "te mencionó", shortLabel: "Mención", cat: "interacciones" },
+  follow: { icon: UserPlus, label: "empezó a seguirte", shortLabel: "Nuevo seguidor", cat: "seguidores" },
+  game: { icon: Gamepad2, label: "publicó un juego", shortLabel: "Juego", cat: "juegos" },
 };
 
-const CATS: { id: Cat; label: string; icon: typeof Heart; tone: string }[] = [
-  { id: "todas", label: "Todas", icon: Inbox, tone: "text-primary bg-primary/10" },
-  { id: "interacciones", label: "Interacciones", icon: Heart, tone: "text-primary bg-primary/10" },
-  { id: "seguidores", label: "Seguidores", icon: UserPlus, tone: "text-primary bg-primary/10" },
-  { id: "juegos", label: "Juegos", icon: Gamepad2, tone: "text-primary bg-primary/10" },
+const CATS: { id: Cat; label: string; icon: typeof Heart }[] = [
+  { id: "todas", label: "Todas", icon: Inbox },
+  { id: "interacciones", label: "Actividad", icon: Heart },
+  { id: "seguidores", label: "Seguidores", icon: UserPlus },
+  { id: "juegos", label: "Juegos", icon: Gamepad2 },
 ];
 
 function timeAgo(iso: string) {
-  const s = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
-  if (s < 60) return "ahora";
-  if (s < 3600) return `hace ${Math.floor(s / 60)}m`;
-  if (s < 86400) return `hace ${Math.floor(s / 3600)}h`;
-  return `hace ${Math.floor(s / 86400)}d`;
+  const seconds = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
+  if (seconds < 60) return "Ahora";
+  if (seconds < 3600) return `Hace ${Math.floor(seconds / 60)} min`;
+  if (seconds < 86400) return `Hace ${Math.floor(seconds / 3600)} h`;
+  return `Hace ${Math.floor(seconds / 86400)} d`;
 }
 
-function catOf(type: string): Exclude<Cat, "todas"> {
+function categoryOf(type: string): Exclude<Cat, "todas"> {
   return TYPE_META[type]?.cat ?? "interacciones";
 }
 
@@ -64,83 +67,33 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
     try {
       setItems((await fetchAllNotifications()) as Notif[]);
     } catch {
-      /* Esquema sin crear o red caída: el panel se muestra vacío sin romperse. */
+      // En modo local o sin conexión, la bandeja permanece disponible con estado vacío.
     } finally {
       setLoading(false);
     }
   };
 
-  // Carga inicial + refresco periódico (los totales del panel son reales).
   useEffect(() => {
-    reload();
-    const t = setInterval(reload, 45000);
-    return () => clearInterval(t);
+    void reload();
+    const interval = window.setInterval(() => void reload(), 45000);
+    return () => window.clearInterval(interval);
   }, []);
 
-  const unread = items.filter(i => !i.read).length;
-  const readPct = items.length ? Math.round(((items.length - unread) / items.length) * 100) : 100;
-
-  // Totales por categoría (interacciones · seguidores · juegos).
-  const stats = useMemo(() => {
-    const perCat: Record<Exclude<Cat, "todas">, { total: number; unread: number }> = {
-      interacciones: { total: 0, unread: 0 },
-      seguidores: { total: 0, unread: 0 },
-      juegos: { total: 0, unread: 0 },
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
     };
-    for (const n of items) {
-      const c = catOf(n.type);
-      perCat[c].total += 1;
-      if (!n.read) perCat[c].unread += 1;
-    }
-    return perCat;
-  }, [items]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
-  // Por periodo: hoy · últimos 7 días · últimos 30 días.
-  const periods = useMemo(() => {
-    const now = Date.now();
-    const startToday = new Date(); startToday.setHours(0, 0, 0, 0);
-    const weekAgo = now - 7 * 864e5;
-    const monthAgo = now - 30 * 864e5;
-    const mk = () => ({ received: 0, unread: 0 });
-    const today = mk(), week = mk(), month = mk();
-    for (const n of items) {
-      const ts = new Date(n.created_at).getTime();
-      if (ts >= startToday.getTime()) {
-        today.received += 1;
-        if (!n.read) today.unread += 1;
-      }
-      if (ts >= weekAgo) {
-        week.received += 1;
-        if (!n.read) week.unread += 1;
-      }
-      if (ts >= monthAgo) {
-        month.received += 1;
-        if (!n.read) month.unread += 1;
-      }
-    }
-    return { today, week, month };
-  }, [items]);
-
-  // Actividad de los últimos 7 días para la mini gráfica.
-  const last7 = useMemo(() => {
-    const days: { label: string; count: number }[] = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setHours(0, 0, 0, 0);
-      d.setDate(d.getDate() - i);
-      const start = d.getTime();
-      let count = 0;
-      for (const n of items) {
-        const ts = new Date(n.created_at).getTime();
-        if (ts >= start && ts < start + 864e5) count += 1;
-      }
-      days.push({ label: d.toLocaleDateString("es", { weekday: "narrow" }), count });
-    }
-    return days;
-  }, [items]);
-  const max7 = Math.max(1, ...last7.map(d => d.count));
-
-  const filtered = cat === "todas" ? items : items.filter(n => catOf(n.type) === cat);
+  const unread = items.filter(item => !item.read).length;
+  const filtered = useMemo(
+    () => cat === "todas" ? items : items.filter(item => categoryOf(item.type) === cat),
+    [cat, items],
+  );
+  const groups = useMemo(() => groupNotificationsByRecency(filtered), [filtered]);
+  const categoryCount = (id: Cat) => id === "todas" ? items.length : items.filter(item => categoryOf(item.type) === id).length;
 
   const markAll = async () => {
     setMarking(true);
@@ -152,255 +105,166 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const who = (n: Notif) => n.actor?.display_name ?? n.actor?.username ?? "Alguien";
-
   return (
-    <div className="fixed inset-0 z-[90] bg-background flex flex-col">
-      {/* Franja de identidad (mismo lenguaje que el chat) */}
-      <div className="h-[3px] shrink-0 grad-brand" />
-
-      {/* Cabecera */}
-      <header className="shrink-0 border-b border-border/60 bg-background/95 backdrop-blur-md px-3 sm:px-4 py-2.5 flex items-center gap-2.5">
-        <button
-          onClick={onClose}
-          aria-label="Cerrar notificaciones"
-          className="w-9 h-9 rounded-lg border border-line-strong bg-card text-ink-2 grid place-items-center hover:bg-muted/60 hover:text-foreground active:scale-95 transition shrink-0"
-        >
-          <X size={16} />
-        </button>
-        <div className="flex-1 min-w-0">
-          <div className="font-display text-sm font-semibold flex items-center gap-2">
-            <Bell size={14} className="text-primary shrink-0" />
-            <span className="truncate">NOTIFICACIONES</span>
+    <div className="fixed inset-0 z-[90] overflow-y-auto bg-background text-foreground" role="dialog" aria-modal="true" aria-label="Panel de notificaciones">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-72 overflow-hidden">
+        <div className="absolute -top-24 left-[18%] h-64 w-64 rounded-full bg-primary/12 blur-3xl" />
+        <div className="absolute -top-32 right-[12%] h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
+      </div>
+      <div className="relative min-h-full">
+        <div className="h-[3px] grad-brand" />
+        <header className="sticky top-0 z-20 border-b border-border/65 bg-background/88 backdrop-blur-xl">
+          <div className="mx-auto flex h-16 max-w-3xl items-center gap-3 px-4 sm:px-6">
+            <button
+              onClick={onClose}
+              aria-label="Cerrar notificaciones"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-border/70 bg-card/90 text-ink-2 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/35 hover:text-primary active:scale-95"
+            >
+              <X size={17} />
+            </button>
+            <div className="min-w-0 flex-1">
+              <p className="font-mono text-[9px] font-medium uppercase tracking-[0.18em] text-primary">Centro de actividad</p>
+              <h1 className="truncate font-display text-base font-semibold tracking-tight">Notificaciones</h1>
+            </div>
+            {unread > 0 && (
+              <button
+                onClick={() => void markAll()}
+                disabled={marking}
+                className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-primary/25 bg-primary/8 px-3 text-[10px] font-display font-semibold uppercase tracking-wide text-primary transition hover:bg-primary hover:text-primary-foreground active:scale-[0.97] disabled:opacity-60"
+              >
+                {marking ? <Loader2 size={13} className="animate-spin" /> : <CheckCheck size={13} />}
+                <span className="hidden sm:inline">Marcar leídas</span><span className="sm:hidden">Leídas</span>
+              </button>
+            )}
           </div>
-          <div className="text-[10px] font-mono text-muted-foreground truncate mt-0.5">
-            {items.length} notificación{items.length !== 1 ? "es" : ""} · {unread} sin leer
-          </div>
-        </div>
-        {items.length > 0 && (
-          <button
-            onClick={markAll}
-            disabled={marking || unread === 0}
-            className="flex items-center gap-1.5 px-2.5 sm:px-3 h-8 rounded-lg border border-border/60 text-[10px] font-display text-muted-foreground hover:text-primary hover:border-primary/40 active:scale-95 transition shrink-0 disabled:opacity-40"
-          >
-            {marking ? <Loader2 size={12} className="animate-spin" /> : <CheckCheck size={12} />}
-            <span className="sm:hidden">LEÍDAS</span><span className="hidden sm:inline">MARCAR LEÍDAS</span>
-          </button>
-        )}
-      </header>
+        </header>
 
-      {/* Contenido */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto w-full px-3 py-3 pb-12 space-y-3">
-          {/* Tarjeta hero: sin leer */}
-          <section className="relative overflow-hidden rounded-2xl border border-primary/30 grad-brand-soft p-4 shadow-sm">
-            <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-primary/15 blur-2xl" />
-            <div className="relative flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-xl bg-primary text-primary-foreground grid place-items-center shadow-lg shrink-0">
-                <Bell size={20} />
+        <main className="mx-auto w-full max-w-3xl px-4 pb-12 pt-5 sm:px-6 sm:pt-7">
+          <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-card/85 p-5 shadow-[0_18px_50px_-28px_rgba(27,103,210,0.55)] sm:p-6">
+            <div className="absolute inset-x-0 top-0 h-1 grad-brand" />
+            <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
+            <div className="relative flex items-center gap-4">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl grad-brand text-primary-foreground shadow-lg shadow-primary/20">
+                <Bell size={23} />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="text-[10px] font-display tracking-[0.2em] text-muted-foreground">SIN LEER</div>
-                <div className="text-3xl font-display font-bold tabular-nums leading-tight">
-                  {loading ? <span className="opacity-40">···</span> : unread}
-                </div>
-                <div className="text-[11px] text-muted-foreground mt-0.5">
-                  {items.length - unread} leídas de {items.length} totales · {readPct}% al día
-                </div>
+              <div className="min-w-0 flex-1">
+                <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Tu bandeja</p>
+                <h2 className="mt-0.5 font-display text-xl font-semibold tracking-tight sm:text-2xl">
+                  {loading ? "Actualizando actividad…" : unread > 0 ? `${unread} novedad${unread !== 1 ? "es" : ""} para ti` : "Todo está al día"}
+                </h2>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {loading ? "Recopilamos interacciones recientes." : unread > 0 ? "Revisa lo nuevo y retoma la conversación donde la dejaste." : "No tienes actividad pendiente por revisar."}
+                </p>
               </div>
-              <TrendingUp size={22} className="text-primary/40 shrink-0" />
-            </div>
-            {/* Progreso de leídas */}
-            <div className="relative mt-3 h-1.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-500"
-                style={{ width: `${readPct}%` }}
-              />
+              <div className="hidden rounded-2xl border border-border/60 bg-background/65 px-4 py-2 text-right sm:block">
+                <div className="font-display text-lg font-semibold tabular-nums">{items.length}</div>
+                <div className="font-mono text-[9px] uppercase tracking-wider text-muted-foreground">Total</div>
+              </div>
             </div>
           </section>
 
-          {/* Totales por categoría */}
-          <section className="grid grid-cols-1 min-[360px]:grid-cols-3 gap-2">
-            <StatCard label="Interacciones" value={stats.interacciones.total} unread={stats.interacciones.unread} Icon={Heart} />
-            <StatCard label="Seguidores" value={stats.seguidores.total} unread={stats.seguidores.unread} Icon={UserPlus} />
-            <StatCard label="Juegos" value={stats.juegos.total} unread={stats.juegos.unread} Icon={Gamepad2} />
-          </section>
-
-          {/* Desglose por categoría (filtro) */}
-          <section className="rounded-lg border border-border/70 bg-surface p-3 space-y-2">
-            <div className="flex items-center justify-between px-0.5 gap-2">
-              <h2 className="font-display text-[11px] tracking-widest text-muted-foreground flex items-center gap-1.5">
-                <Inbox size={12} className="text-primary-glow" />
-                POR CATEGORÍA
-              </h2>
-              <span className="text-[9px] font-mono text-muted-foreground/60 shrink-0">toca para filtrar la lista</span>
+          <section className="mt-5" aria-label="Filtrar notificaciones">
+            <div className="mb-2 flex items-center justify-between gap-3 px-1">
+              <h2 className="font-display text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">Ver actividad</h2>
+              <span className="font-mono text-[10px] text-muted-foreground">{filtered.length} resultado{filtered.length !== 1 ? "s" : ""}</span>
             </div>
-            {CATS.map(c => {
-              const id = c.id;
-              const isAll = id === "todas";
-              const total = isAll ? items.length : stats[id].total;
-              const un = isAll ? unread : stats[id].unread;
-              const active = cat === c.id;
-              const share = items.length ? Math.round((total / items.length) * 100) : 0;
-              const Icon = c.icon;
-              return (
-                <button
-                  key={c.id}
-                  onClick={() => setCat(c.id)}
-                  className={`w-full text-left rounded-xl border px-2.5 py-2 transition active:scale-[0.99] ${
-                    active ? "border-primary/40 bg-primary/8" : "border-border/50 hover:border-primary/25 hover:bg-muted/30"
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className={`w-8 h-8 rounded-lg grid place-items-center shrink-0 ${c.tone}`}>
-                      <Icon size={14} />
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[12px] font-display font-medium truncate">{c.label}</span>
-                        {un > 0 && (
-                          <span className="shrink-0 min-w-[16px] h-4 px-1 rounded-full grad-brand text-primary-foreground text-[9px] font-display grid place-items-center">
-                            {un}
-                          </span>
-                        )}
-                      </div>
-                      <div className="text-[9px] font-mono text-muted-foreground/60 mt-0.5">{total} notificación{total !== 1 ? "es" : ""} · {share}% del total</div>
-                    </div>
-                    <span className="text-[10px] font-mono text-muted-foreground/50 shrink-0">{share}%</span>
-                  </div>
-                  <div className="mt-1.5 h-1 rounded-full bg-muted/40 overflow-hidden">
-                    <div className="h-full rounded-full bg-primary" style={{ width: `${share}%` }} />
-                  </div>
-                </button>
-              );
-            })}
-          </section>
-
-          {/* Estadísticas por periodo */}
-          <section className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="font-display text-sm tracking-widest flex items-center gap-1.5">
-                <TrendingUp size={13} className="text-primary-glow" />
-                POR PERIODO
-              </h2>
-              <span className="text-[10px] font-mono text-muted-foreground">hoy · 7 días · 30 días</span>
-            </div>
-            <div className="grid grid-cols-3 gap-2">
-              <PeriodCard label="HOY" {...periods.today} />
-              <PeriodCard label="7 DÍAS" {...periods.week} />
-              <PeriodCard label="30 DÍAS" {...periods.month} />
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0" role="tablist" aria-label="Categorías de notificaciones">
+              {CATS.map(category => {
+                const active = category.id === cat;
+                const Icon = category.icon;
+                const count = categoryCount(category.id);
+                return (
+                  <button
+                    key={category.id}
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setCat(category.id)}
+                    className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border px-3 text-xs font-display font-medium transition active:scale-[0.97] ${
+                      active ? "border-transparent grad-brand text-primary-foreground shadow-md shadow-primary/15" : "border-border/65 bg-card/75 text-muted-foreground hover:border-primary/25 hover:bg-primary/5 hover:text-primary"
+                    }`}
+                  >
+                    <Icon size={14} />
+                    {category.label}
+                    {count > 0 && <span className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] ${active ? "bg-white/18" : "bg-muted text-muted-foreground"}`}>{count}</span>}
+                  </button>
+                );
+              })}
             </div>
           </section>
 
-          {/* Mini gráfica de actividad */}
-          <section className="rounded-lg border border-border/70 bg-surface p-3">
-            <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mb-1.5">
-              Actividad · últimos 7 días
-            </div>
-            <div className="flex items-end gap-1 h-12">
-              {last7.map((d, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
-                  <div
-                    className="w-full rounded-md bg-primary/80 transition-colors hover:bg-primary"
-                    style={{ height: `${Math.max(6, (d.count / max7) * 100)}%`, minHeight: 4 }}
-                    title={`${d.label}: ${d.count} notificación${d.count !== 1 ? "es" : ""}`}
-                  />
-                  <span className="text-[7px] font-mono text-muted-foreground/60 truncate w-full text-center">{d.label}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Lista filtrada */}
-          <section className="space-y-2">
-            <div className="flex items-center justify-between px-1">
-              <h2 className="font-display text-sm tracking-widest flex items-center gap-1.5">
-                <Bell size={13} className="text-primary-glow" />
-                {cat === "todas" ? "TODAS" : CATS.find(c => c.id === cat)?.label.toUpperCase()}
-              </h2>
-              <span className="text-[10px] font-mono text-muted-foreground">{filtered.length} notificación{filtered.length !== 1 ? "es" : ""}</span>
-            </div>
+          <section className="mt-5" aria-live="polite">
             {loading && items.length === 0 ? (
-              <div className="space-y-1.5">
-                {[0, 1, 2, 3].map(i => <div key={i} className="h-14 rounded-xl anim-shimmer" />)}
+              <div className="space-y-3">
+                {[0, 1, 2, 3].map(index => <div key={index} className="h-[88px] rounded-2xl anim-shimmer" />)}
               </div>
             ) : filtered.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center">
-                <Inbox size={22} className="mx-auto mb-2 text-muted-foreground/40" />
-                <div className="text-xs text-muted-foreground">Sin notificaciones aquí</div>
+              <div className="rounded-3xl border border-dashed border-border/80 bg-card/65 px-6 py-14 text-center shadow-sm">
+                <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary/10 text-primary"><Inbox size={21} /></div>
+                <h2 className="mt-4 font-display text-base font-semibold">Tu bandeja está tranquila</h2>
+                <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-muted-foreground">
+                  {cat === "todas" ? "Cuando alguien interactúe contigo, aparecerá aquí." : "No hay actividad de esta categoría por ahora."}
+                </p>
               </div>
             ) : (
-              <ul className="space-y-2">
-                {filtered.map(n => {
-                  const meta = TYPE_META[n.type] ?? TYPE_META.comment;
-                  const Icon = meta.icon;
-                  const unseen = !n.read;
-                  return (
-                    <li key={n.id} className={`flex items-start gap-3 rounded-xl border px-3 py-3 shadow-xs transition-colors ${unseen ? "border-primary/25 bg-primary/5" : "border-border/70 bg-surface hover:border-primary/25 hover:bg-muted/30"}`}>
-                      <Link to="/profile/$userId" params={{ userId: n.actor_id ?? "" }}
-                        onClick={e => { if (!n.actor_id) e.preventDefault(); }}
-                        className="relative shrink-0">
-                        <Avatar p={n.actor} size={36} />
-                        <span className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full grid place-items-center border-2 border-background text-white shadow-sm ${meta.badge}`}>
-                          <Icon size={10} strokeWidth={2.5} />
-                        </span>
-                      </Link>
-                      <div className="flex-1 min-w-0 pt-0.5">
-                        <div className="text-[12px] leading-snug text-foreground/90">
-                          <Link to="/profile/$userId" params={{ userId: n.actor_id ?? "" }}
-                            onClick={e => { if (!n.actor_id) e.preventDefault(); }}
-                            className="font-display font-semibold hover:text-primary transition-colors">
-                            {who(n)}
-                          </Link>{" "}
-                          <span className="text-muted-foreground/90">{meta.label}</span>
-                        </div>
-                        <div className="text-[10px] font-mono text-muted-foreground/60 mt-0.5">{timeAgo(n.created_at)}</div>
-                      </div>
-                      {unseen && <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />}
-                    </li>
-                  );
-                })}
-              </ul>
+              <div className="space-y-6">
+                {groups.map(group => (
+                  <section key={group.label}>
+                    <div className="mb-2.5 flex items-center gap-3 px-1">
+                      <h2 className="font-display text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">{group.label}</h2>
+                      <div className="h-px flex-1 bg-border/60" />
+                      <span className="font-mono text-[10px] text-muted-foreground/70">{group.items.length}</span>
+                    </div>
+                    <ul className="space-y-2.5">
+                      {group.items.map(notification => {
+                        const meta = TYPE_META[notification.type] ?? TYPE_META.comment;
+                        const Icon = meta.icon;
+                        const unseen = !notification.read;
+                        const actorName = notification.actor?.display_name ?? notification.actor?.username ?? "Alguien";
+                        return (
+                          <li key={notification.id}>
+                            <Link
+                              to="/profile/$userId"
+                              params={{ userId: notification.actor_id ?? "" }}
+                              onClick={event => { if (!notification.actor_id) event.preventDefault(); }}
+                              className={`group relative flex items-center gap-3 overflow-hidden rounded-2xl border p-3.5 transition duration-200 ${
+                                unseen ? "border-primary/25 bg-primary/[0.055] shadow-[0_12px_28px_-22px_rgba(27,103,210,0.58)] hover:border-primary/45 hover:bg-primary/[0.085]" : "border-border/65 bg-card/75 hover:-translate-y-0.5 hover:border-primary/25 hover:bg-card"
+                              }`}
+                            >
+                              {unseen && <span className="absolute inset-y-3 left-0 w-1 rounded-r-full grad-brand" aria-hidden="true" />}
+                              <div className="relative ml-1 shrink-0">
+                                <Avatar p={notification.actor} size={42} />
+                                <span className="absolute -bottom-1 -right-1 grid h-5 w-5 place-items-center rounded-full border-2 border-card grad-brand text-primary-foreground shadow-sm">
+                                  <Icon size={10} strokeWidth={2.6} />
+                                </span>
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="truncate font-display text-[13px] font-semibold text-foreground group-hover:text-primary">{actorName}</span>
+                                  {unseen && <span className="rounded-md bg-primary/10 px-1.5 py-0.5 font-mono text-[8px] font-semibold uppercase tracking-wide text-primary">Nuevo</span>}
+                                </div>
+                                <p className="mt-0.5 truncate text-xs text-muted-foreground">{meta.label}</p>
+                                <div className="mt-2 flex items-center gap-2 font-mono text-[9px] uppercase tracking-wide text-muted-foreground/70">
+                                  <span>{meta.shortLabel}</span><span className="h-1 w-1 rounded-full bg-border" /><span>{timeAgo(notification.created_at)}</span>
+                                </div>
+                              </div>
+                              <ChevronRight size={16} className="shrink-0 text-muted-foreground/45 transition group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden="true" />
+                            </Link>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </section>
+                ))}
+              </div>
             )}
           </section>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-function StatCard({ label, value, unread, Icon }: {
-  label: string; value: number; unread: number;
-  Icon: React.ComponentType<{ size?: number; className?: string }>;
-}) {
-  return (
-    <div className="rounded-lg border border-border/70 bg-surface p-3 flex flex-col items-start gap-1 min-w-0 transition-transform hover:scale-[1.02]">
-      <div className="w-7 h-7 rounded-lg grad-brand grid place-items-center shadow-sm">
-        <Icon size={13} className="text-primary-foreground" />
-      </div>
-      <div className="text-lg font-display font-semibold tabular-nums leading-none mt-1">{value.toLocaleString()}</div>
-      <div className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider truncate w-full">{label}</div>
-      {unread > 0 && <div className="text-[9px] font-mono text-primary-glow truncate">{unread} sin leer</div>}
-    </div>
-  );
-}
-
-function PeriodCard({ label, received, unread }: { label: string; received: number; unread: number }) {
-  const read = received - unread;
-  return (
-    <div className="rounded-lg border border-border/70 bg-surface p-3 space-y-1.5">
-      <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider truncate">{label}</div>
-      <div className="flex items-center justify-between gap-1">
-        <span className="text-[10px] text-muted-foreground shrink-0">Recibidas</span>
-        <span className="text-xs font-display font-semibold tabular-nums">{received}</span>
-      </div>
-      <div className="flex items-center justify-between gap-1">
-        <span className="text-[10px] text-muted-foreground shrink-0">Sin leer</span>
-        <span className={`text-xs font-display font-semibold tabular-nums ${unread > 0 ? "text-primary" : "text-muted-foreground"}`}>{unread}</span>
-      </div>
-      <div className="flex items-center justify-between gap-1 pt-1.5 border-t border-border/40">
-        <span className="text-[10px] text-muted-foreground shrink-0">Leídas</span>
-        <span className="text-xs font-display font-semibold tabular-nums text-muted-foreground">{read}</span>
+          {!loading && items.length > 0 && unread === 0 && (
+            <div className="mt-7 flex items-center justify-center gap-2 pb-2 text-xs text-muted-foreground">
+              <Sparkles size={14} className="text-primary" /> Todo revisado por ahora
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );
