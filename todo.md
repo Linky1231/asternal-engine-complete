@@ -440,3 +440,10 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Auditar la estructura, estados, interacción y coherencia visual del panel de notificaciones actual.
 - [x] Rediseñar la cabecera, filtros, grupos, tarjetas, estados vacíos y acciones con la paleta de Asternal.
 - [x] Validar responsividad, accesibilidad, pruebas y build antes de publicar.
+
+# Rediseño integral del buscador
+
+- [x] Auditar la pantalla Buscar, sus consultas, filtros, estados y problemas de interfaz actuales.
+- [x] Reestructurar la experiencia de descubrimiento: cabecera, buscador, filtros, secciones y tarjetas de resultados.
+- [x] Refinar estados de inicio, carga, vacío y error, además de accesibilidad y comportamiento móvil.
+- [x] Validar resultados reales, pruebas, build y revisión visual antes de publicar.

@@ -18,6 +18,9 @@ import {
   type WorkFile,
 } from "./work";
 import { supabase } from "@/integrations/supabase/client";
+import { messagePreview } from "./search-utils";
+
+export { messagePreview } from "./search-utils";
 
 export type SearchScope = "all" | "community" | "work";
 
@@ -111,19 +114,6 @@ function matchDate(iso: string, from: string, to: string): boolean {
     if (isFinite(d) && t > d) return false;
   }
   return true;
-}
-
-/** Etiqueta legible de un mensaje según su contenido/media. */
-export function messagePreview(m: Pick<SearchMessage, "kind" | "media_type" | "content">): string {
-  const media = (m.media_type ?? "").toLowerCase();
-  if (media.startsWith("video")) return "🎬 Vídeo";
-  if (media === "audio") return "🎤 Audio de voz";
-  if (media === "sticker") return "🖼️ Sticker";
-  if (media.startsWith("image")) return "🖼️ Foto";
-  if (m.kind === "poll") return `📊 Encuesta: ${m.content ?? ""}`;
-  if (m.kind === "gift") return `🎁 Paquete de regalos: ${m.content ?? ""}`;
-  if (m.kind === "announcement") return `📢 Aviso: ${m.content ?? ""}`;
-  return m.content ?? "";
 }
 
 /** Busca mensajes en todos los chats (y en los hilos de los chats de trabajo). */

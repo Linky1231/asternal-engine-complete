@@ -924,3 +924,16 @@
 [2026-08-18T03:41:55.881Z] $ NODE_ENV=development tsx watch server/_core/index.ts
 [2026-08-18T03:41:56.558Z] [OAuth] Initialized with baseURL: https://api.manus.im
 [2026-08-18T03:41:56.657Z] Server running on http://localhost:3000/
+[2026-08-18T03:44:18.511Z] [Auth] Missing session cookie
+[2026-08-18T03:44:18.630Z] [Auth] Missing session cookie
+[2026-08-18T03:44:18.759Z] [Auth] Missing session cookie
+[2026-08-18T03:44:18.861Z] [Auth] Missing session cookie
+[2026-08-18T03:44:20.364Z] [Auth] Missing session cookie
+[2026-08-18T03:44:20.495Z] [Auth] Missing session cookie
+[2026-08-18T03:44:21.882Z] [Auth] Missing session cookie
+[2026-08-18T03:44:21.987Z] [Auth] Missing session cookie
+[2026-08-18T03:44:22.090Z] [Auth] Missing session cookie
+[2026-08-18T03:44:22.231Z] [Auth] Missing session cookie
+[2026-08-18T03:45:18.965Z] 3:45:18 AM [vite] (client) hmr update /src/styles.css, /src/routes/search.tsx
+[2026-08-18T03:45:18.976Z] 3:45:18 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
+[2026-08-18T03:46:45.668Z] 3:46:45 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
