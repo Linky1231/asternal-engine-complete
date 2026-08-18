@@ -31,6 +31,7 @@ import { UserName } from "./UserName";
 import { Avatar } from "./Avatar";
 import { SegmentedControl } from "@/components/ui/segmented";
 import { getUserCode } from "@/lib/social/avatar";
+import { profileIdentity } from "@/lib/social/profile-identity";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -247,6 +248,7 @@ export function ProfilePanel({
 
   const interestsList = (profile.interests ?? []).filter(Boolean);
   const userCode = profile.user_code || getUserCode(profile.id);
+  const identity = profileIdentity(profile.display_name, profile.username, userId.slice(0, 8));
   const copyCode = async () => {
     try { await navigator.clipboard.writeText(userCode); } catch { /* noop */ }
     setCodeCopied(true);
@@ -297,9 +299,9 @@ export function ProfilePanel({
         </div>
 
         <div className="p-4 sm:p-5 space-y-4">
-          <div className="relative z-10 grid grid-cols-[88px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 -mt-12">
-            {/* Cabecera compacta: avatar e identidad comparten la primera fila; las acciones
-                ocupan una fila propia en móvil y una columna propia en escritorio. */}
+          <div className="relative z-10 grid grid-cols-[88px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 -mt-10">
+            {/* El avatar es el único elemento que cruza la portada. La identidad queda
+                enteramente dentro del contenido para evitar choques con el fondo. */}
             <div className="relative z-10 flex h-[84px] w-[84px] shrink-0 items-center justify-center">
               {frameRing ? (
                 <div className="relative rounded-[18px] p-[2px] shadow-[0_10px_24px_-14px_oklch(0.50_0.13_250/0.55)]" style={{ background: frameRing }}>
@@ -310,7 +312,7 @@ export function ProfilePanel({
               )}
             </div>
 
-            <div className="min-w-0 self-center">
+            <div className="min-w-0 self-start pt-11 sm:pt-10">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -321,14 +323,14 @@ export function ProfilePanel({
               ) : (
                 <>
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <UserName p={profile} size="lg" showBadge={false} className="max-w-full" />
+                    {identity.displayName && <UserName p={profile} size="lg" showBadge={false} className="max-w-full" />}
                     {isPlusActive(profile) && profile.show_plus_badge !== false && (
                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-display font-bold text-white shrink-0"
                         style={{ background: "var(--gradient-plus)" }}>PLUS</span>
                     )}
                   </div>
-                  <div className="max-w-full truncate text-[11px] font-mono text-muted-foreground">
-                    @{profile.username || userId.slice(0, 8)}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
+                  <div className={`max-w-full truncate font-mono text-muted-foreground ${identity.displayName ? "text-[11px]" : "pt-0.5 text-sm font-medium text-foreground"}`}>
+                    {identity.handle}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
                   <button onClick={() => void copyCode()}
                     className="mt-1 inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"

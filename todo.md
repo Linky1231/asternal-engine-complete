@@ -447,3 +447,10 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Reestructurar la experiencia de descubrimiento: cabecera, buscador, filtros, secciones y tarjetas de resultados.
 - [x] Refinar estados de inicio, carga, vacío y error, además de accesibilidad y comportamiento móvil.
 - [x] Validar resultados reales, pruebas, build y revisión visual antes de publicar.
+
+# Corrección de perfil y navegación de Inicio
+
+- [x] Auditar el solapamiento de avatar, nombre, usuario y código en la cabecera de perfil señalada.
+- [x] Reorganizar la identidad del perfil para separar portada, avatar, acciones y metadatos con una jerarquía estable.
+- [x] Mejorar la navegación principal de Inicio para priorizar destinos, estado activo y adaptación móvil.
+- [x] Validar interacción, responsividad, pruebas y build antes de publicar.

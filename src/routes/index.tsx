@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Avatar } from "@/components/social/Avatar";
 import { Component, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot } from "lucide-react";
+import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, Compass } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { fetchFeed, fetchGames, getMyProfile, isMod, isAdmin, type PostWithMeta, type Profile } from "@/lib/social/api";
@@ -207,9 +207,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">
-      {/* Header */}
-      {/* bg casi opaco + blur reducido: el backdrop-blur-xl sobre un header
-          sticky obligaba a re-desenfocar el fondo en cada frame de scroll → lag. */}
+      {/* Navegación de Inicio: identidad, acciones prioritarias y destinos principales. */}
       <header className="app-header sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/70">
         <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5">
           <button onClick={() => navigate({ to: "/profile" })} title="Mi perfil"
@@ -217,8 +215,8 @@ function HomePage() {
             <Avatar p={me} className="w-full h-full" />
           </button>
           <div className="flex-1 min-w-0 header-name">
-            <div className="font-display text-[13px] sm:text-sm font-semibold text-foreground leading-none truncate">Asternal</div>
-            <div className="text-[10px] sm:text-[11px] text-ink-3 truncate mt-1">@{me?.username ?? "…"}</div>
+            <div className="font-display text-[13px] sm:text-sm font-semibold text-foreground leading-none truncate">Inicio</div>
+            <div className="text-[10px] sm:text-[11px] text-ink-3 truncate mt-1">Tu espacio en Asternal</div>
           </div>
           {typeof me?.orbes === "number" && me?.show_orbes !== false && (
             <Link
@@ -230,28 +228,17 @@ function HomePage() {
               <span className="text-[11px] sm:text-xs font-display font-semibold tabular-nums">{me.orbes}</span>
             </Link>
           )}
-          <button onClick={() => setMenuOpen(true)} title="Menú"
-            className="w-9 h-9 rounded-lg border border-line-strong bg-card text-ink-2 grid place-items-center hover:bg-muted/60 hover:text-foreground active:scale-95 transition shrink-0">
+          <Link to="/search" title="Buscar"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-line-strong bg-card text-ink-2 transition hover:bg-muted/60 hover:text-primary active:scale-95">
+            <Search size={16} />
+          </Link>
+          <NotificationBell />
+          <button onClick={() => setMenuOpen(true)} title="Más opciones" aria-label="Más opciones"
+            className="w-9 h-9 rounded-xl border border-line-strong bg-card text-ink-2 grid place-items-center hover:bg-muted/60 hover:text-foreground active:scale-95 transition shrink-0">
             <Menu size={16} />
           </button>
         </div>
-
-
-
-        {/* Tabs principales */}
-        <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 pb-2.5">
-          <SegmentedControl
-            items={[
-              { id: "games", label: <span className="hidden min-[380px]:inline">JUEGOS</span>, icon: <Gamepad2 size={14} className="shrink-0" />, title: "Juegos" },
-              { id: "feed", label: <span className="hidden min-[380px]:inline">FEED</span>, icon: <Newspaper size={14} className="shrink-0" />, title: "Feed" },
-              { id: "gallery", label: <span className="hidden min-[380px]:inline">GALERÍA</span>, icon: <Palette size={14} className="shrink-0" />, title: "Galería" },
-              { id: "events", label: <span className="hidden min-[380px]:inline">EVENTOS</span>, icon: <Trophy size={14} className="shrink-0" />, title: "Eventos" },
-              { id: "profile", label: <span className="hidden min-[380px]:inline">PERFIL</span>, icon: <User size={14} className="shrink-0" />, title: "Perfil" },
-            ]}
-            value={tab}
-            onChange={setTab}
-          />
-        </div>
+        <HomeNavigation value={tab} onChange={setTab} />
       </header>
 
       {/* Content */}
@@ -454,6 +441,31 @@ function HomePage() {
       {notifOpen && <NotificationsPanel onClose={() => setNotifOpen(false)} />}
 
     </div>
+  );
+}
+
+function HomeNavigation({ value, onChange }: { value: Tab; onChange: (tab: Tab) => void }) {
+  const destinations: { id: Tab; label: string; icon: React.ReactNode }[] = [
+    { id: "games", label: "Juegos", icon: <Gamepad2 size={15} /> },
+    { id: "feed", label: "Feed", icon: <Newspaper size={15} /> },
+    { id: "gallery", label: "Galería", icon: <Palette size={15} /> },
+    { id: "events", label: "Eventos", icon: <Trophy size={15} /> },
+    { id: "profile", label: "Perfil", icon: <User size={15} /> },
+  ];
+  return (
+    <nav className="border-t border-border/55 bg-card/48" aria-label="Navegación principal">
+      <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto -mb-px flex overflow-x-auto px-2 no-scrollbar sm:px-3">
+        {destinations.map(destination => {
+          const active = value === destination.id;
+          return <button key={destination.id} onClick={() => onChange(destination.id)} aria-current={active ? "page" : undefined}
+            className={`relative flex min-w-[76px] flex-1 flex-col items-center gap-1 px-2 pb-2.5 pt-2.5 text-[10px] font-display font-semibold transition active:scale-[.97] sm:min-w-[92px] sm:flex-row sm:justify-center sm:gap-1.5 sm:text-[11px] ${active ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+            <span className={`grid h-7 w-7 place-items-center rounded-lg transition ${active ? "bg-primary/11" : ""}`}>{destination.icon}</span>
+            <span>{destination.label}</span>
+            {active && <span className="absolute bottom-0 h-0.5 w-8 rounded-full grad-brand" />}
+          </button>;
+        })}
+      </div>
+    </nav>
   );
 }
 
