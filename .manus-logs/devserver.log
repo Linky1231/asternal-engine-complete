@@ -801,3 +801,118 @@
 [2026-08-17T22:07:38.032Z] 10:07:38 PM [vite] (client) page reload src/main.tsx
 [2026-08-17T22:07:47.105Z] 10:07:47 PM [vite] (client) page reload src/lib/manus-oauth.ts
 [2026-08-17T22:07:47.105Z] 10:07:47 PM [vite] (client) hmr update /src/styles.css
+[2026-08-17T22:11:02.993Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:11:02.998Z] Dev server exited with code -1
+[2026-08-17T22:11:04.085Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:11:04.386Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:11:04.612Z] node:internal/modules/run_main:122
+[2026-08-17T22:11:04.612Z] triggerUncaughtException(
+[2026-08-17T22:11:04.612Z] ^
+[2026-08-17T22:11:04.612Z] Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@shared/const' imported from /home/ubuntu/asternal-engine/server/_core/googleOAuth.ts
+[2026-08-17T22:11:04.612Z] at packageResolve (node:internal/modules/esm/resolve:857:9)
+[2026-08-17T22:11:04.612Z] at moduleResolve (node:internal/modules/esm/resolve:926:18)
+[2026-08-17T22:11:04.612Z] at defaultResolve (node:internal/modules/esm/resolve:1056:11)
+[2026-08-17T22:11:04.612Z] at nextResolve (node:internal/modules/esm/hooks:748:28)
+[2026-08-17T22:11:04.612Z] at resolveBase (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:10334)
+[2026-08-17T22:11:04.612Z] at resolveDirectory (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:11421)
+[2026-08-17T22:11:04.612Z] at resolveTsPaths (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:13062)
+[2026-08-17T22:11:04.612Z] at async resolve (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:14742)
+[2026-08-17T22:11:04.612Z] at async nextResolve (node:internal/modules/esm/hooks:748:22)
+[2026-08-17T22:11:04.612Z] at async Hooks.resolve (node:internal/modules/esm/hooks:240:24) {
+[2026-08-17T22:11:04.612Z] code: 'ERR_MODULE_NOT_FOUND'
+[2026-08-17T22:11:04.612Z] }
+[2026-08-17T22:11:04.612Z] Node.js v22.13.0
+[2026-08-17T22:11:23.074Z] 10:11:23 PM [tsx] change in ./server/_core/googleOAuth.ts Rerunning...
+[2026-08-17T22:11:23.235Z] node:internal/modules/run_main:122
+[2026-08-17T22:11:23.235Z] triggerUncaughtException(
+[2026-08-17T22:11:23.235Z] ^
+[2026-08-17T22:11:23.235Z] Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@shared/const' imported from /home/ubuntu/asternal-engine/server/routers.ts
+[2026-08-17T22:11:23.235Z] at packageResolve (node:internal/modules/esm/resolve:857:9)
+[2026-08-17T22:11:23.235Z] at moduleResolve (node:internal/modules/esm/resolve:926:18)
+[2026-08-17T22:11:23.235Z] at defaultResolve (node:internal/modules/esm/resolve:1056:11)
+[2026-08-17T22:11:23.235Z] at nextResolve (node:internal/modules/esm/hooks:748:28)
+[2026-08-17T22:11:23.235Z] at resolveBase (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:10334)
+[2026-08-17T22:11:23.235Z] at resolveDirectory (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:11421)
+[2026-08-17T22:11:23.235Z] at resolveTsPaths (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:13062)
+[2026-08-17T22:11:23.235Z] at async resolve (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:14742)
+[2026-08-17T22:11:23.235Z] at async nextResolve (node:internal/modules/esm/hooks:748:22)
+[2026-08-17T22:11:23.235Z] at async Hooks.resolve (node:internal/modules/esm/hooks:240:24) {
+[2026-08-17T22:11:23.235Z] code: 'ERR_MODULE_NOT_FOUND'
+[2026-08-17T22:11:23.235Z] }
+[2026-08-17T22:11:23.235Z] Node.js v22.13.0
+[2026-08-17T22:11:27.206Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:11:27.210Z] Dev server exited with code -1
+[2026-08-17T22:11:28.299Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:11:28.568Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:11:28.765Z] node:internal/modules/run_main:122
+[2026-08-17T22:11:28.765Z] triggerUncaughtException(
+[2026-08-17T22:11:28.765Z] ^
+[2026-08-17T22:11:28.765Z] Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@shared/const' imported from /home/ubuntu/asternal-engine/server/routers.ts
+[2026-08-17T22:11:28.765Z] at packageResolve (node:internal/modules/esm/resolve:857:9)
+[2026-08-17T22:11:28.765Z] at moduleResolve (node:internal/modules/esm/resolve:926:18)
+[2026-08-17T22:11:28.765Z] at defaultResolve (node:internal/modules/esm/resolve:1056:11)
+[2026-08-17T22:11:28.765Z] at nextResolve (node:internal/modules/esm/hooks:748:28)
+[2026-08-17T22:11:28.765Z] at resolveBase (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:10334)
+[2026-08-17T22:11:28.765Z] at resolveDirectory (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:11421)
+[2026-08-17T22:11:28.765Z] at resolveTsPaths (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:13062)
+[2026-08-17T22:11:28.765Z] at async resolve (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:14742)
+[2026-08-17T22:11:28.765Z] at async nextResolve (node:internal/modules/esm/hooks:748:22)
+[2026-08-17T22:11:28.765Z] at async Hooks.resolve (node:internal/modules/esm/hooks:240:24) {
+[2026-08-17T22:11:28.765Z] code: 'ERR_MODULE_NOT_FOUND'
+[2026-08-17T22:11:28.765Z] }
+[2026-08-17T22:11:28.765Z] Node.js v22.13.0
+[2026-08-17T22:12:00.967Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:12:00.971Z] Dev server exited with code -1
+[2026-08-17T22:12:02.058Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:12:02.326Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:12:03.077Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:12:03.190Z] Server running on http://localhost:3000/
+[2026-08-17T22:13:04.576Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:13:04.582Z] Dev server exited with code -1
+[2026-08-17T22:13:05.679Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:13:05.948Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:13:06.700Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:13:06.798Z] Server running on http://localhost:3000/
+[2026-08-17T22:14:31.882Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:14:31.887Z] Dev server exited with code -1
+[2026-08-17T22:14:32.974Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:14:33.244Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:14:33.989Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:14:34.086Z] Server running on http://localhost:3000/
+[2026-08-17T22:15:11.682Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:15:11.717Z] Dev server exited with code -1
+[2026-08-17T22:15:12.786Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:15:13.067Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:15:13.778Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:15:13.875Z] Server running on http://localhost:3000/
+[2026-08-17T22:15:25.405Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:15:25.449Z] Dev server exited with code -1
+[2026-08-17T22:15:26.507Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:15:26.782Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:15:27.512Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:15:27.610Z] Server running on http://localhost:3000/
+[2026-08-17T22:15:55.021Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:15:55.061Z] Dev server exited with code -1
+[2026-08-17T22:15:56.126Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:15:56.399Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:15:57.106Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:15:57.202Z] Server running on http://localhost:3000/
+[2026-08-17T22:17:02.421Z] [ELIFECYCLE] Command failed.
+[2026-08-17T22:17:02.425Z] Dev server exited with code -1
+[2026-08-17T22:17:03.509Z] Starting dev server with command: pnpm run dev
+[2026-08-17T22:17:03.792Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-17T22:17:04.590Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-17T22:17:04.690Z] Server running on http://localhost:3000/
+[2026-08-18T03:28:36.016Z] 3:28:36 AM [tsx] change in ./server/_core/index.ts Restarting...
+[2026-08-18T03:28:36.440Z] 3:28:36 AM [tsx] change in ./server/_core/env.ts Restarting...
+[2026-08-18T03:28:37.212Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-18T03:28:37.304Z] Server running on http://localhost:3000/
+[2026-08-18T03:28:42.748Z] 3:28:42 AM [tsx] unlink in ./server/_core/googleOAuth.ts Restarting...
+[2026-08-18T03:28:43.467Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-18T03:28:43.567Z] Server running on http://localhost:3000/
+[2026-08-18T03:29:25.295Z] [ELIFECYCLE] Command failed.
+[2026-08-18T03:29:25.299Z] Dev server exited with code -1
+[2026-08-18T03:29:26.387Z] Starting dev server with command: pnpm run dev
+[2026-08-18T03:29:26.647Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-18T03:29:27.354Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-18T03:29:27.447Z] Server running on http://localhost:3000/

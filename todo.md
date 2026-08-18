@@ -413,8 +413,24 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Retirar el flujo Manus del botón Google para no mostrar una identidad ajena como si fuera Google.
 - [x] Implementar la alternativa aprobada y validar que la sesión permanezca dentro de Asternal.
 
-# Validación final Google OAuth
+# Validación final Google OAuth — cancelada por decisión del usuario
 
-- [ ] Confirmar que la URL de autorización usa el callback registrado de Asternal.
-- [ ] Verificar el retorno autenticado y la hidratación de sesión sin navegación hacia Manus.
-- [ ] Publicar la integración validada y documentar la prueba final para el usuario.
+- [x] Cancelado: confirmar la URL de autorización Google.
+- [x] Cancelado: verificar el retorno autenticado de Google.
+- [x] Cancelado: publicar la integración Google validada.
+
+# Publicación de backend OAuth — cancelada por decisión del usuario
+
+- [x] Cancelado: publicar rutas OAuth Google bajo `/api`.
+- [x] Cancelado: verificar la ruta de inicio OAuth Google.
+
+# Credenciales Google propias de Asternal — canceladas por decisión del usuario
+
+- [x] Cancelado: reemplazar el cliente OAuth de Google.
+- [x] Cancelado: validar el consentimiento Google de Asternal.
+
+# Retirada de inicio de sesión Google
+
+- [x] Eliminar el botón, mensajes y launcher de Google de la pantalla de acceso.
+- [x] Eliminar rutas, verificación y pruebas OAuth de Google sin afectar el inicio local por usuario/correo y contraseña.
+- [x] Ejecutar pruebas, build y verificación visual del formulario de acceso simplificado.

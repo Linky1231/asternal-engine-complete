@@ -11,3 +11,7 @@ El flujo recomendado es OAuth 2.0 Authorization Code: Asternal crea `state` anti
 | [Ayuda de Google Cloud: clientes OAuth](https://support.google.com/googleapi/answer/6158849?hl=en) | Explica crear el OAuth Client ID en APIs y servicios → Credenciales, además de la configuración del consentimiento. |
 
 El proyecto debe recibir dos secretos: `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`. En Google Cloud se registrará como URI de redirección autorizada: `https://asternaleng-dvlqmnye.manus.space/api/auth/google/callback`.
+
+## Prueba publicada de 2026-08-17
+
+La ruta publicada `https://asternaleng-dvlqmnye.manus.space/api/auth/google/start` redirige correctamente a `accounts.google.com` con el callback propio `https://asternaleng-dvlqmnye.manus.space/api/auth/google/callback`. Esto confirma que el servidor fullstack y la URI de retorno están activos. Sin embargo, la pantalla de Google muestra «to continue to manus.space», lo que confirma que el `GOOGLE_CLIENT_ID` configurado pertenece a la pantalla de consentimiento/branding de Manus, no a una aplicación Google administrada y mostrada como Asternal. Cambiar solo la URI de redirección no cambia el propietario ni el nombre de esa aplicación: se requieren credenciales OAuth de un proyecto propio de Google Cloud para Asternal.

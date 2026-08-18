@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "NODE_ENV=development tsx watch server/_core/index.ts",
     "build": "tsc -b && vite build --outDir dist/public && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --alias:@shared=./shared --outdir=dist",
     "lint": "eslint .",
     "format": "prettier --write .",
