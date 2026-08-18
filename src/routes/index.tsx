@@ -208,10 +208,7 @@ function HomePage() {
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">
       {/* Navegación de Inicio: identidad, acciones prioritarias y destinos principales. */}
-      <header className="app-header relative sticky top-0 z-20 overflow-hidden border-b border-border/70 bg-background/95 backdrop-blur-md">
-        <div aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-[3px] grad-brand shadow-[0_2px_14px_oklch(0.54_0.15_260/0.35)]" />
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-[18%] top-0 h-20 grad-brand-soft opacity-35 blur-3xl" />
-        <div className="relative">
+      <header className="app-header sticky top-0 z-20 border-b border-border/70 bg-background/95 backdrop-blur-md">
         <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5">
           <button onClick={() => navigate({ to: "/profile" })} title="Mi perfil"
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-slate-900/5 shadow-[0_8px_20px_-10px_oklch(0.5_0.13_266/0.35)] active:scale-95 transition shrink-0">
@@ -242,7 +239,6 @@ function HomePage() {
           </button>
         </div>
         <HomeNavigation value={tab} onChange={setTab} />
-        </div>
       </header>
 
       {/* Content */}
@@ -462,10 +458,9 @@ function HomeNavigation({ value, onChange }: { value: Tab; onChange: (tab: Tab) 
         {destinations.map(destination => {
           const active = value === destination.id;
           return <button key={destination.id} onClick={() => onChange(destination.id)} aria-current={active ? "page" : undefined}
-            className={`relative flex min-w-[76px] flex-1 flex-col items-center gap-1 px-2 pb-2.5 pt-2.5 text-[10px] font-display font-semibold transition active:scale-[.97] sm:min-w-[92px] sm:flex-row sm:justify-center sm:gap-1.5 sm:text-[11px] ${active ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}>
-            <span className={`grid h-7 w-7 place-items-center rounded-lg transition ${active ? "bg-primary/11" : ""}`}>{destination.icon}</span>
+            className={`relative my-1 flex min-w-[76px] flex-1 flex-col items-center gap-1 rounded-xl px-2 py-2 text-[10px] font-display font-semibold transition active:scale-[.97] sm:min-w-[92px] sm:flex-row sm:justify-center sm:gap-1.5 sm:text-[11px] ${active ? "grad-brand text-primary-foreground shadow-sm shadow-primary/20" : "text-muted-foreground hover:text-foreground hover:bg-muted/55"}`}>
+            <span className={`grid h-7 w-7 place-items-center rounded-lg transition ${active ? "bg-white/15" : ""}`}>{destination.icon}</span>
             <span>{destination.label}</span>
-            {active && <span className="absolute bottom-0 h-0.5 w-8 rounded-full grad-brand" />}
           </button>;
         })}
       </div>

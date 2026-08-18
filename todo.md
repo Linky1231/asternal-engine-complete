@@ -473,3 +473,13 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Aislar el panel de notificaciones y corregir su capa, scroll y fondo en móvil.
 - [x] Reubicar el botón Crear respetando las áreas seguras y controles del sistema móvil.
 - [x] Validar panel, navegación, responsive, pruebas y build antes de publicar.
+
+# Degradado activo y modo Voz de Orión
+
+- [x] Restaurar el degradado azul como estado activo de los botones de navegación y controles principales, sin aplicarlo como franja superior.
+- [x] Auditar el chat Orión, sus respuestas y los patrones de captura/reproducción de audio existentes.
+- [x] Implementar el modo Voz con conversación por turnos, micrófono, síntesis femenina y respuestas concisas.
+- [x] Incluir estados de permiso, escucha, pensamiento, habla, pausa y compatibilidad sin voz.
+- [x] Validar accesibilidad, pruebas, build y comportamiento móvil antes de publicar.
+
+Orión incorpora ahora un activador de Voz en la cabecera y otro en el compositor. Al activar el modo, Orión emite un saludo, escucha por turnos mediante la API de reconocimiento del navegador, genera una respuesta con límite de 170 tokens e instrucciones de dos frases breves, y la reproduce con la voz española femenina disponible de mayor prioridad. La tarjeta de estado comunica si Orión está hablando, escuchando, pensando o si el navegador no ofrece las APIs necesarias; se puede detener en cualquier momento. La navegación principal de Inicio aplica `grad-brand` dentro del destino seleccionado, sin una franja decorativa en la cabecera. Vitest pasó con 33 pruebas y la compilación de producción completó correctamente.

@@ -963,3 +963,60 @@
 [2026-08-18T04:05:04.921Z] 4:05:04 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
 [2026-08-18T04:10:26.303Z] 4:10:26 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationsPanel.tsx
 [2026-08-18T04:10:26.318Z] 4:10:26 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
+[2026-08-18T04:12:29.454Z] [Auth] Missing session cookie
+[2026-08-18T04:12:29.610Z] [Auth] Missing session cookie
+[2026-08-18T04:12:29.702Z] [Auth] Missing session cookie
+[2026-08-18T04:12:29.846Z] [Auth] Missing session cookie
+[2026-08-18T04:12:29.847Z] [Auth] Missing session cookie
+[2026-08-18T04:12:29.983Z] [Auth] Missing session cookie
+[2026-08-18T04:12:32.284Z] [Auth] Missing session cookie
+[2026-08-18T04:12:34.239Z] [Auth] Missing session cookie
+[2026-08-18T04:12:34.330Z] [Auth] Missing session cookie
+[2026-08-18T04:12:34.443Z] [Auth] Missing session cookie
+[2026-08-18T04:12:34.448Z] [Auth] Missing session cookie
+[2026-08-18T04:12:34.470Z] [Auth] Missing session cookie
+[2026-08-18T04:12:34.587Z] [Auth] Missing session cookie
+[2026-08-18T04:12:35.020Z] [Auth] Missing session cookie
+[2026-08-18T04:12:35.028Z] [Auth] Missing session cookie
+[2026-08-18T04:12:50.887Z] [Auth] Missing session cookie
+[2026-08-18T04:12:50.888Z] [Auth] Missing session cookie
+[2026-08-18T04:12:51.089Z] [Auth] Missing session cookie
+[2026-08-18T04:12:51.192Z] [Auth] Missing session cookie
+[2026-08-18T04:13:02.558Z] [Auth] Missing session cookie
+[2026-08-18T04:13:03.022Z] [Auth] Missing session cookie
+[2026-08-18T04:13:03.088Z] [Auth] Missing session cookie
+[2026-08-18T04:13:03.200Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.155Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.157Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.159Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.286Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.297Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.388Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.411Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.558Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.689Z] [Auth] Missing session cookie
+[2026-08-18T04:13:38.813Z] [Auth] Missing session cookie
+[2026-08-18T04:13:41.158Z] [Auth] Missing session cookie
+[2026-08-18T04:13:41.622Z] [Auth] Missing session cookie
+[2026-08-18T04:13:41.858Z] [Auth] Missing session cookie
+[2026-08-18T04:13:41.858Z] [Auth] Missing session cookie
+[2026-08-18T04:13:41.872Z] [Auth] Missing session cookie
+[2026-08-18T04:13:41.991Z] [Auth] Missing session cookie
+[2026-08-18T04:13:42.003Z] [Auth] Missing session cookie
+[2026-08-18T04:13:42.098Z] [Auth] Missing session cookie
+[2026-08-18T04:13:42.126Z] [Auth] Missing session cookie
+[2026-08-18T04:13:42.253Z] [Auth] Missing session cookie
+[2026-08-18T04:22:02.520Z] 4:22:02 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-18T04:23:53.947Z] 4:23:53 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
+[2026-08-18T04:24:48.786Z] 4:24:48 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-18T04:25:12.517Z] 4:25:12 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-18T04:27:41.032Z] 4:27:41 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-18T04:28:53.074Z] 4:28:53 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-18T04:29:24.924Z] 4:29:24 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
+[2026-08-18T04:29:24.942Z] 4:29:24 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-18T04:30:21.955Z] [ELIFECYCLE] Command failed.
+[2026-08-18T04:30:21.960Z] Dev server exited with code -1
+[2026-08-18T04:30:23.046Z] Starting dev server with command: pnpm run dev
+[2026-08-18T04:30:23.311Z] $ NODE_ENV=development tsx watch server/_core/index.ts
+[2026-08-18T04:30:24.109Z] [OAuth] Initialized with baseURL: https://api.manus.im
+[2026-08-18T04:30:24.213Z] Server running on http://localhost:3000/

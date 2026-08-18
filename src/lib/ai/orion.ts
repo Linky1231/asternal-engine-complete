@@ -147,8 +147,11 @@ A continuación tienes el conocimiento del motor (código fuente). Úsalo como r
 ${ENGINE_KNOWLEDGE}`;
 
 /** Construye los mensajes con el system prompt + historial. */
-export function buildOrionMessages(history: OrionMessage[]): OrionMessage[] {
-  return [{ role: "system", content: SYSTEM_PROMPT }, ...history];
+export function buildOrionMessages(history: OrionMessage[], voiceMode = false): OrionMessage[] {
+  const voiceInstruction = voiceMode
+    ? "\n\n=== MODO VOZ ===\nResponde para una conversación por turnos. Habla siempre en español, con un máximo de dos frases breves (unas 65 palabras), sin markdown, listas ni código leído en voz alta. Si hace falta código, di que has dejado el ejemplo en el chat y da solo el siguiente paso concreto. Termina de forma natural para ceder el turno a la persona."
+    : "";
+  return [{ role: "system", content: `${SYSTEM_PROMPT}${voiceInstruction}` }, ...history];
 }
 
 /** Detecta si la pregunta pide resolver código (usa el router de código). */
@@ -160,9 +163,9 @@ export function needsCodingModel(q: string): boolean {
 
 function buildPayload(
   history: OrionMessage[],
-  opts: { coding?: boolean; maxTokens?: number; temperature?: number; stream?: boolean } = {}
+  opts: { coding?: boolean; maxTokens?: number; temperature?: number; stream?: boolean; voice?: boolean } = {}
 ) {
-  const messages = buildOrionMessages(history);
+  const messages = buildOrionMessages(history, Boolean(opts.voice));
   return {
     model: opts.coding ? ORION_MODEL_CODING : ORION_MODEL,
     messages,
@@ -198,13 +201,13 @@ function orionErrorForStatus(status: number, detail: string): Error {
  */
 export async function orionChat(
   history: OrionMessage[],
-  opts: { coding?: boolean; maxTokens?: number; temperature?: number } = {}
+  opts: { coding?: boolean; maxTokens?: number; temperature?: number; voice?: boolean } = {}
 ): Promise<OrionResult> {
   const key = getOrionApiKey();
   if (!key) {
     throw new Error("Falta la clave de la API de Orión (Yielding Bear).");
   }
-  const messages = buildOrionMessages(history);
+  const messages = buildOrionMessages(history, Boolean(opts.voice));
 
   const payload = {
     model: opts.coding ? ORION_MODEL_CODING : ORION_MODEL,
@@ -294,7 +297,7 @@ export async function orionChat(
 export async function orionChatStream(
   history: OrionMessage[],
   onDelta: (delta: string) => void,
-  opts: { coding?: boolean; maxTokens?: number; temperature?: number; signal?: AbortSignal } = {}
+  opts: { coding?: boolean; maxTokens?: number; temperature?: number; signal?: AbortSignal; voice?: boolean } = {}
 ): Promise<OrionResult> {
   const payload = buildPayload(history, { ...opts, stream: true });
 
