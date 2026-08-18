@@ -495,3 +495,11 @@ Orión incorpora ahora un activador de Voz en la cabecera y otro en el composito
 - [x] Validar capturas, accesibilidad, pruebas y compilación antes de publicar.
 
 La auditoría y sus referencias quedaron documentadas en `research-ai-slop.md` y `ai-slop-audit.md`. La primera corrección elimina la estructura de tarjeta reiterada en la entrada y en Historial: Acceso ahora explica el flujo real de construir, probar y compartir; Historial pasa de seis métricas vacías a una bitácora que guía la primera actividad y usa registros continuos cuando ya existen datos. La lógica de autenticación, datos, editor y motor permanece sin cambios.
+
+---
+
+# Nueva pantalla de acceso
+
+- [x] Auditar la pantalla de acceso actual y definir una composición nueva, agradable y propia de Asternal.
+- [x] Reemplazar completamente la interfaz visual sin alterar acceso, registro, validaciones ni redirecciones.
+- [x] Validar el formulario en escritorio y móvil, junto con pruebas y compilación.

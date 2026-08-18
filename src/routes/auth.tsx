@@ -297,7 +297,7 @@ function FloatInput({
   return (
     <div className="space-y-1">
       <div className="relative group/input">
-        <div className={`relative flex items-center border rounded-xl bg-white transition-all duration-300 ${
+        <div className={`relative flex items-center border rounded-lg bg-background/75 transition-all duration-200 ${
           focused
             ? 'border-primary/50 ring-[3px] ring-primary/[0.06] shadow-sm shadow-primary/5'
             : error
@@ -361,7 +361,7 @@ function PasswordStrength({ password }: { password: string }) {
     <div className="px-1 mt-1.5 space-y-1">
       <div className="flex gap-1">
         {[1, 2, 3].map(i => (
-          <div key={i} className={`h-1 rounded-full flex-1 transition-all duration-500 ${i <= score ? c.fill : c.bg}`} />
+          <div key={i} className={`h-1 rounded-sm flex-1 transition-all duration-300 ${i <= score ? c.fill : c.bg}`} />
         ))}
       </div>
       <p className={`text-[10px] font-medium tracking-wide ${c.text} capitalize`}>{strength}</p>
@@ -509,129 +509,74 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-background overflow-y-auto relative">
+    <div className="min-h-screen w-full overflow-y-auto bg-[#f5f8fc] text-foreground relative">
 
       <ConfettiBurst active={!!successMsg} />
 
-      {/* ─── Background layers ─── */}
-      <div className="fixed inset-0 pointer-events-none select-none overflow-hidden" style={{ transform: "translateZ(0)" }}>
-        {/* Atmósfera clara y rejilla de taller: una sola capa de firma, no una superficie de marketing. */}
-        <div className="absolute inset-0 grad-brand-soft" />
-        {/* Mesh blobs */}
-        {/* Dot grid */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.02]" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="dot-grid-auth" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="0.5" fill="oklch(0.55 0.15 262)" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#dot-grid-auth)" />
-        </svg>
+      {/* Una cuadrícula de editor muy tenue sostiene la pantalla sin convertirla en una ilustración de marketing. */}
+      <div className="fixed inset-0 pointer-events-none select-none overflow-hidden" style={{ backgroundImage: "linear-gradient(oklch(0.55 0.15 262 / 0.045) 1px, transparent 1px), linear-gradient(90deg, oklch(0.55 0.15 262 / 0.045) 1px, transparent 1px)", backgroundSize: "36px 36px" }}>
+        <div className="absolute -top-40 right-[12%] h-[34rem] w-[34rem] rounded-full bg-primary/[0.075] blur-3xl" />
+        <div className="absolute -bottom-56 -left-44 h-[34rem] w-[34rem] rounded-full bg-accent/[0.06] blur-3xl" />
       </div>
 
       {/* ═══════ CONTENT ═══════ */}
       <div className="relative z-10 flex-1 flex flex-col">
 
-        {/* Header: logo memorable */}
-        <header className="w-full px-5 pt-6 flex justify-center">
+        <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 pt-5 sm:px-8 sm:pt-7">
           <Logo loaded={loaded} />
+          <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono tracking-[0.14em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-success" /> ESTUDIO EN LÍNEA
+          </div>
         </header>
 
         {/* Main grid */}
-        <div className="flex-1 w-full max-w-6xl mx-auto grid lg:grid-cols-[1.05fr_1fr] items-center gap-2 lg:gap-14 px-5 pb-10 pt-3">
+        <main className="mx-auto grid w-full max-w-7xl flex-1 items-center gap-10 px-5 pb-10 pt-9 sm:px-8 lg:grid-cols-[1.12fr_0.88fr] lg:gap-20 lg:py-14">
 
-          {/* ─── BRAND + HERO ─── */}
-          <div className="order-1 flex flex-col items-center text-center">
-
-            {/* Hero visual — estrella de la página */}
-            <div className="w-full" style={{
-              animation: loaded ? 'scale-in 1100ms 100ms cubic-bezier(0.16,1,0.3,1) both' : 'none',
-            }}>
-              <HeroScene />
+          <section className="order-1 max-w-xl" aria-labelledby="access-title">
+            <div style={{ animation: loaded ? 'fade-in-up 500ms 80ms cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+              <p className="mb-5 flex items-center gap-2 text-[10px] font-mono font-semibold tracking-[0.17em] text-primary"><span className="h-px w-7 bg-primary" /> MOTOR SOCIAL DE JUEGOS</p>
+              <h1 id="access-title" className="max-w-lg text-[clamp(2.35rem,5vw,4.35rem)] font-display font-bold tracking-[-0.055em] leading-[0.94] text-foreground">Tu mundo empieza<br /><span className="text-primary">cuando entras.</span></h1>
+              <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">Crea una escena, prueba su lógica y entrégala a una comunidad que también construye.</p>
             </div>
 
-            {/* Contexto de producto */}
-            <div style={{
-              animation: loaded ? 'fade-in-up 500ms 300ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
-            }}>
-              <div className="inline-flex items-center gap-2 border-y border-primary/15 py-1.5 text-[11px] font-display font-medium tracking-wide text-primary/80 -mt-1 lg:-mt-3">
-                <Sparkles size={12} className="text-accent" />
-                Taller de creación social
+            <div className="mt-9 overflow-hidden border border-primary/15 bg-white/55 shadow-[0_24px_60px_-38px_oklch(0.43_0.12_262/0.55)]" style={{ animation: loaded ? 'fade-in-up 600ms 180ms cubic-bezier(0.22,1,0.36,1) both' : 'none' }}>
+              <div className="flex items-center justify-between border-b border-primary/12 px-4 py-2.5 text-[10px] font-mono tracking-wider text-muted-foreground"><span>PLAYFIELD_01</span><span className="flex items-center gap-1.5 text-success"><span className="h-1.5 w-1.5 rounded-full bg-success" /> LISTO PARA CREAR</span></div>
+              <div className="relative h-44 overflow-hidden bg-[linear-gradient(oklch(0.55_0.15_262/0.07)_1px,transparent_1px),linear-gradient(90deg,oklch(0.55_0.15_262/0.07)_1px,transparent_1px)] bg-[size:22px_22px] sm:h-52">
+                <div className="absolute left-[13%] top-[21%] h-20 w-20 border border-primary/25 bg-primary/[0.06] shadow-[7px_7px_0_oklch(0.55_0.15_262/0.11)]" />
+                <div className="absolute left-[18%] top-[14%] grid h-20 w-20 place-items-center border border-primary/25 bg-background/85"><Gamepad2 size={34} className="text-primary" /></div>
+                <div className="absolute left-[48%] top-[28%] border border-accent/30 bg-accent/[0.09] px-3 py-2 text-[10px] font-mono text-foreground">cuando inicia<br /><span className="text-primary">mover + 10</span></div>
+                <div className="absolute bottom-5 right-[10%] flex items-center gap-2 border border-border bg-background/90 px-3 py-2 text-[10px] font-mono"><Play size={11} className="fill-primary text-primary" /> PROBAR ESCENA</div>
+              </div>
+              <div className="grid grid-cols-3 divide-x divide-primary/12 border-t border-primary/12">
+                {[{ icon: PencilRuler, label: "CONSTRUIR" }, { icon: Blocks, label: "PROGRAMAR" }, { icon: Rocket, label: "COMPARTIR" }].map((item) => <div key={item.label} className="flex items-center justify-center gap-1.5 px-2 py-3 text-[9px] font-mono text-muted-foreground"><item.icon size={12} className="text-primary" />{item.label}</div>)}
               </div>
             </div>
+          </section>
 
-            {/* Headline corta y directa */}
-            <div style={{
-              animation: loaded ? 'fade-in-up 600ms 420ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
-            }}>
-              <h1 className="text-[clamp(1.8rem,3.6vw,2.9rem)] font-display font-bold tracking-tight leading-[1.08] text-foreground mt-4 mb-3 max-w-lg mx-auto">
-                Crea juegos desde{' '}
-                <span className="text-primary">
-                  cualquier navegador.
-                </span>
-              </h1>
-            </div>
-
-            {/* Descripción breve */}
-            <div style={{
-              animation: loaded ? 'fade-in-up 600ms 540ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
-            }}>
-              <p className="text-[15px] leading-relaxed text-muted-foreground/80 max-w-md mx-auto mb-8">
-                Construye, prueba y comparte en un mismo lugar: editor visual, lógica con bloques y comunidad para tus juegos.
-              </p>
-            </div>
-
-            {/* Secuencia de trabajo, no una cuadrícula de tarjetas genéricas. */}
-            <div className="hidden sm:block max-w-sm mx-auto w-full text-left">
-              <div className="text-[10px] font-mono tracking-[0.16em] text-muted-foreground/70 mb-2">RECORRIDO DEL ESTUDIO</div>
-              <div className="border-l border-primary/25 pl-4 space-y-0">
-              {[
-                { icon: PencilRuler, label: "Construye", desc: "Sprites, escenas y animaciones" },
-                { icon: Blocks, label: "Prueba", desc: "Lógica visual y controles" },
-                { icon: Rocket, label: "Comparte", desc: "Publica y recibe partidas" },
-              ].map((f, i) => (
-                <div key={f.label} className="group/step relative py-2.5 border-b border-border/55 last:border-b-0" style={{ animation: loaded ? `fade-in-up 500ms ${860 + i * 120}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
-                  <span className="absolute -left-[21px] top-4 grid h-3.5 w-3.5 place-items-center rounded-full border border-primary/35 bg-background"><span className="h-1.5 w-1.5 rounded-full bg-primary" /></span>
-                    <div className="flex items-center gap-1.5 text-[12px] font-display font-semibold text-foreground group-hover/step:text-primary transition-colors duration-200">
-                      <f.icon size={13} className="text-primary/70" />
-                      {f.label}
-                    </div>
-                    <div className="ml-[19px] text-[10px] text-muted-foreground/70 leading-snug">{f.desc}</div>
-                </div>
-              ))}
-              </div>
-            </div>
-          </div>
-
-          {/* ─── AUTH CARD ─── */}
-          <div className="order-2 w-full flex justify-center lg:justify-end">
+          <section className="order-2 w-full lg:border-l lg:border-primary/15 lg:pl-14">
             <div className="w-full max-w-[400px]" style={{
-              animation: loaded ? 'fade-in-up 800ms 700ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
+              animation: loaded ? 'fade-in-up 600ms 240ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
-                <div className="relative rounded-2xl border border-border bg-surface shadow-[var(--shadow-md)]">
-                  <div className="relative p-6 sm:p-7 overflow-hidden group/form-card">
+                <div className="relative border-y border-border bg-white/72 sm:border sm:border-border sm:shadow-[0_20px_45px_-38px_oklch(0.43_0.12_262/0.60)]">
+                  <div className="relative p-6 sm:p-8 overflow-hidden">
 
                     {/* Header */}
-                    <div className="text-center mb-6 relative">
-                      <div className="w-10 h-10 rounded-xl border border-primary/20 bg-primary/[0.07] grid place-items-center mx-auto mb-3">
-                        <Gamepad2 size={19} className="text-primary" />
-                      </div>
-                      <h2 className="text-lg font-display font-semibold tracking-tight text-foreground mb-0.5">
-                        {mode === "signin" ? "Bienvenido de nuevo" : "Crea tu cuenta"}
+                    <div className="mb-7 relative">
+                      <p className="mb-2 text-[10px] font-mono font-semibold tracking-[0.16em] text-primary">CUENTA ASTERNAL</p>
+                      <h2 className="text-2xl font-display font-semibold tracking-[-0.035em] text-foreground">
+                        {mode === "signin" ? "Entra al taller." : "Prepara tu taller."}
                       </h2>
-                      <p className="text-sm text-muted-foreground/70">
-                        {mode === "signin" ? "Vuelve a tu mesa de trabajo" : "Abre tu espacio de creación"}
+                      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                        {mode === "signin" ? "Tu juego, tu comunidad y tus proyectos te esperan." : "Crea tu identidad y empieza a construir en Asternal."}
                       </p>
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex bg-surface-2 rounded-lg p-1 mb-5 relative">
-                      <div className="absolute top-1 bottom-1 w-[calc(50%_-_4px)] rounded-md grad-brand shadow-sm transition-all duration-300"
-                        style={{ left: mode === "signin" ? "2px" : "calc(50% + 0px)" }} />
+                    <div className="flex border-b border-border mb-6 relative">
                       {(["signin", "signup"] as const).map(m => (
                         <button key={m} type="button" onClick={() => switchMode(m)}
-                          className={`relative flex-1 py-2 rounded-md text-xs font-display font-semibold tracking-wide transition-colors duration-200 z-10 ${
-                            mode === m ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                          className={`relative flex-1 border-b-2 -mb-px py-2.5 text-xs font-display font-semibold tracking-[0.08em] transition-colors duration-200 ${
+                            mode === m ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
                           }`}>
                           {m === "signin" ? "ACCEDER" : "REGISTRARSE"}
                         </button>
@@ -709,7 +654,7 @@ function AuthPage() {
                       {/* Submit button */}
                       <div style={{ animation: 'slide-in-up 300ms cubic-bezier(0.22,1,0.36,1) both', animationDelay: '240ms' }}>
                         <button disabled={busy}
-                          className="relative w-full py-3 rounded-lg grad-brand text-white text-sm font-display font-semibold tracking-wide shadow-sm hover:brightness-[1.03] active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+                          className="relative w-full border border-primary/20 py-3 rounded-md grad-brand text-white text-sm font-display font-semibold tracking-wide shadow-sm hover:brightness-[1.03] active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
                         >
                           <span className="relative z-10 flex items-center justify-center gap-2">
                             {busy ? (
@@ -724,17 +669,17 @@ function AuthPage() {
                     </form>
 
                     {pendingQrProfile && (
-                      <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-primary/15 bg-primary/[0.045] px-3.5 py-3 text-xs text-primary/80 animate-[scale-in_220ms_ease-out]">
+                      <div className="mt-4 flex items-start gap-2.5 border-l-2 border-primary bg-primary/[0.045] px-3.5 py-3 text-xs text-primary/80 animate-[scale-in_220ms_ease-out]">
                         <ArrowRight size={14} className="mt-0.5 shrink-0" />
-                        <p>You must log in to view this profile</p>
+                        <p>Inicia sesión para ver este perfil.</p>
                       </div>
                     )}
 
                   </div>
                 </div>
             </div>
-          </div>
-        </div>
+          </section>
+        </main>
       </div>
     </div>
   );
