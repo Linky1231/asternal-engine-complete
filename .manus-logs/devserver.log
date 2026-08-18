@@ -1020,3 +1020,39 @@
 [2026-08-18T04:30:23.311Z] $ NODE_ENV=development tsx watch server/_core/index.ts
 [2026-08-18T04:30:24.109Z] [OAuth] Initialized with baseURL: https://api.manus.im
 [2026-08-18T04:30:24.213Z] Server running on http://localhost:3000/
+[2026-08-18T04:32:50.807Z] [Auth] Missing session cookie
+[2026-08-18T04:32:50.969Z] [Auth] Missing session cookie
+[2026-08-18T04:32:50.972Z] [Auth] Missing session cookie
+[2026-08-18T04:32:51.047Z] [Auth] Missing session cookie
+[2026-08-18T04:32:51.108Z] [Auth] Missing session cookie
+[2026-08-18T04:32:51.203Z] [Auth] Missing session cookie
+[2026-08-18T04:32:51.248Z] [Auth] Missing session cookie
+[2026-08-18T04:32:51.350Z] [Auth] Missing session cookie
+[2026-08-18T04:32:53.180Z] [Auth] Missing session cookie
+[2026-08-18T04:32:53.309Z] [Auth] Missing session cookie
+[2026-08-18T04:32:53.310Z] [Auth] Missing session cookie
+[2026-08-18T04:32:53.360Z] [Auth] Missing session cookie
+[2026-08-18T04:32:53.436Z] [Auth] Missing session cookie
+[2026-08-18T04:32:54.928Z] [Auth] Missing session cookie
+[2026-08-18T04:32:54.986Z] [Auth] Missing session cookie
+[2026-08-18T04:32:54.991Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.072Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.104Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.197Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.225Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.312Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.444Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.564Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.688Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.836Z] [Auth] Missing session cookie
+[2026-08-18T04:32:55.970Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.110Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.244Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.433Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.584Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.727Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.872Z] [Auth] Missing session cookie
+[2026-08-18T04:32:56.998Z] [Auth] Missing session cookie
+[2026-08-18T04:45:38.201Z] 4:45:38 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-18T04:45:38.277Z] 4:45:38 AM [vite] (client) hmr update /src/styles.css, /src/components/social/HistorySection.tsx
+[2026-08-18T04:46:54.371Z] 4:46:54 AM [vite] (client) hmr update /src/styles.css, /src/components/social/HistorySection.tsx

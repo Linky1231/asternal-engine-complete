@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Avatar } from "./Avatar";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, Gamepad2, Clock, BarChart3, Loader2, Flame, CalendarDays, TrendingUp, Award } from "lucide-react";
+import { Heart, Gamepad2, Clock, BarChart3, Loader2, Flame, CalendarDays, Award, ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { PostWithMeta } from "@/lib/social/api";
 import {
@@ -12,33 +12,10 @@ import {
   formatPlayTime,
 } from "@/lib/social/history";
 import { UserName } from "./UserName";
+import { SegmentedControl } from "@/components/ui/segmented";
+import { isFirstActivity } from "@/lib/social/activity-state";
 
 type HistoryTab = "games" | "likes";
-
-/** Tarjeta compacta de estadística. */
-function StatCard({ icon, label, value, sub, tone }: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub?: string;
-  tone?: "primary" | "accent" | "emerald" | "rose";
-}) {
-  const toneCls =
-    tone === "primary" ? "bg-primary/10 text-primary"
-    : tone === "accent" ? "bg-accent/10 text-accent"
-    : tone === "emerald" ? "bg-success/10 text-success"
-    : "bg-destructive/10 text-destructive";
-  return (
-    <div className="rounded-lg border border-border/70 bg-surface p-2.5 flex flex-col gap-1 min-w-0">
-      <div className={`w-7 h-7 rounded-lg grid place-items-center ${toneCls}`}>
-        {icon}
-      </div>
-      <div className="text-sm font-semibold font-display leading-tight truncate">{value}</div>
-      <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider truncate">{label}</div>
-      {sub && <div className="text-[9px] text-muted-foreground/60 truncate">{sub}</div>}
-    </div>
-  );
-}
 
 export function HistorySection() {
   const [tab, setTab] = useState<HistoryTab>("games");
@@ -51,6 +28,7 @@ export function HistorySection() {
   const stats = getUsageStats();
   const topGame = getTopGame("total");
   const max7 = Math.max(1, ...stats.last7.map(d => d.seconds));
+  const firstActivity = isFirstActivity({ totalSeconds: stats.total.seconds, gameCount: sortedGames.length, likeCount: likedPosts.length });
 
   useEffect(() => {
     // Simulate loading time for the view transition
@@ -76,121 +54,71 @@ export function HistorySection() {
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
       className="space-y-4"
     >
-      {/* Header */}
-      <div className="rounded-lg border border-border/70 bg-surface p-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 text-primary grid place-items-center">
-            <BarChart3 size={18} />
-          </div>
+      <section className="border-b border-border pb-5">
+        <div className="flex items-start gap-3">
+          <BarChart3 size={19} className="mt-0.5 text-primary shrink-0" />
           <div>
-            <div className="font-display text-sm font-semibold">Historial</div>
-            <div className="text-[11px] text-muted-foreground">
-              {sortedGames.length} juegos jugados · {likedPosts.length} likes
-            </div>
+            <h2 className="font-display text-base font-semibold">Bitácora de juego</h2>
+            <p className="mt-0.5 text-[12px] text-muted-foreground">Tus partidas y hallazgos, en un solo registro.</p>
           </div>
         </div>
 
-        {/* Estadísticas de uso */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-3">
-          <StatCard
-            icon={<Flame size={13} />}
-            label="Hoy"
-            value={formatPlayTime(stats.today.seconds)}
-            sub={`${stats.today.sessions} sesión${stats.today.sessions !== 1 ? "es" : ""} · ${stats.today.uniqueGames} juego${stats.today.uniqueGames !== 1 ? "s" : ""}`}
-            tone="primary"
-          />
-          <StatCard
-            icon={<CalendarDays size={13} />}
-            label="7 días"
-            value={formatPlayTime(stats.week.seconds)}
-            sub={`${stats.week.sessions} sesiones · ${stats.week.uniqueGames} juegos`}
-            tone="accent"
-          />
-          <StatCard
-            icon={<TrendingUp size={13} />}
-            label="30 días"
-            value={formatPlayTime(stats.month.seconds)}
-            sub={`${stats.month.sessions} sesiones · ${stats.month.uniqueGames} juegos`}
-            tone="emerald"
-          />
-          <StatCard
-            icon={<CalendarDays size={13} />}
-            label="Este año"
-            value={formatPlayTime(stats.year.seconds)}
-            sub={`${stats.year.sessions} sesiones · ${stats.year.uniqueGames} juegos`}
-            tone="accent"
-          />
-          <StatCard
-            icon={<BarChart3 size={13} />}
-            label="Total"
-            value={formatPlayTime(stats.total.seconds)}
-            sub={`${stats.total.sessions} sesiones · ${stats.total.uniqueGames} juegos`}
-            tone="primary"
-          />
-          <StatCard
-            icon={<Flame size={13} />}
-            label="Racha"
-            value={`${stats.streakDays} día${stats.streakDays !== 1 ? "s" : ""}`}
-            sub={stats.bestDay ? `Mejor día: ${stats.bestDay.seconds >= 3600 ? formatPlayTime(stats.bestDay.seconds) : `${Math.floor(stats.bestDay.seconds / 60)}m`}` : "Sin actividad"}
-            tone="rose"
-          />
-        </div>
-
-        {/* Mini gráfica de los últimos 7 días + top juego */}
-        <div className="flex gap-3 items-end">
-          <div className="flex-1 min-w-0">
-            <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Últimos 7 días</div>
-            <div className="flex items-end gap-1 h-12">
-              {stats.last7.map((d, i) => (
-                <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
-                  <div
-                    className="w-full rounded-md bg-primary/80 transition-colors hover:bg-primary"
-                    style={{ height: `${Math.max(6, (d.seconds / max7) * 100)}%`, minHeight: 4 }}
-                    title={formatPlayTime(d.seconds)}
-                  />
-                  <span className="text-[7px] font-mono text-muted-foreground/60 truncate w-full text-center">{d.label}</span>
-                </div>
-              ))}
-            </div>
+        {firstActivity ? (
+          <div className="mt-5 border-l-2 border-primary pl-4 py-1">
+            <div className="font-display text-sm font-semibold">Tu primera sesión empieza aquí</div>
+            <p className="mt-1 max-w-md text-[12px] leading-relaxed text-muted-foreground">Cuando pruebes un juego o marques una publicación, Asternal convertirá esa actividad en una bitácora útil.</p>
+            <Link to="/" className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-semibold text-primary hover:text-primary/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">
+              Explorar juegos <ArrowRight size={13} />
+            </Link>
           </div>
-          {topGame && (
-            <div className="shrink-0 max-w-[38%]">
-              <div className="text-[9px] font-mono text-muted-foreground uppercase tracking-wider mb-1.5">Más jugado</div>
-              <div className="rounded-lg border border-border/70 bg-surface px-2.5 py-2 flex items-center gap-2">
-                <Award size={14} className="text-primary shrink-0" />
-                <div className="min-w-0">
-                  <div className="text-[11px] font-medium truncate">{topGame.title}</div>
-                  <div className="text-[9px] font-mono text-muted-foreground">{formatPlayTime(topGame.seconds)}</div>
-                </div>
+        ) : (
+          <>
+            <div className="mt-5 grid grid-cols-3 divide-x divide-border border-y border-border">
+              <div className="py-3 pr-3">
+                <div className="text-[10px] font-mono text-muted-foreground">TIEMPO TOTAL</div>
+                <div className="mt-1 font-display text-lg font-semibold tabular-nums">{formatPlayTime(stats.total.seconds)}</div>
+              </div>
+              <div className="px-3 py-3">
+                <div className="text-[10px] font-mono text-muted-foreground">JUEGOS</div>
+                <div className="mt-1 font-display text-lg font-semibold tabular-nums">{sortedGames.length}</div>
+              </div>
+              <div className="pl-3 py-3">
+                <div className="text-[10px] font-mono text-muted-foreground">RACHA</div>
+                <div className="mt-1 font-display text-lg font-semibold tabular-nums">{stats.streakDays}d</div>
               </div>
             </div>
-          )}
-        </div>
+            <div className="mt-4 grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <div className="min-w-0">
+                <div className="mb-2 text-[10px] font-mono text-muted-foreground">ÚLTIMOS 7 DÍAS</div>
+                <div className="flex items-end gap-1 h-14">
+                  {stats.last7.map((d, i) => (
+                    <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+                      <div className="w-full rounded-sm bg-primary/75 transition-colors hover:bg-primary" style={{ height: `${Math.max(6, (d.seconds / max7) * 100)}%`, minHeight: 4 }} title={formatPlayTime(d.seconds)} />
+                      <span className="text-[8px] font-mono text-muted-foreground/70 truncate w-full text-center">{d.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {topGame && (
+                <div className="border-l border-border pl-3 sm:max-w-44">
+                  <div className="mb-1 text-[10px] font-mono text-muted-foreground">MÁS JUGADO</div>
+                  <div className="flex items-center gap-2">
+                    <Award size={15} className="text-primary shrink-0" />
+                    <div className="min-w-0"><div className="text-[12px] font-medium truncate">{topGame.title}</div><div className="text-[10px] font-mono text-muted-foreground">{formatPlayTime(topGame.seconds)}</div></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
-        {/* Sub-tabs */}
-        <div className="relative flex bg-muted/40 rounded-xl p-0.5 mt-3">
-          <button
-            onClick={() => setTab("games")}
-            className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-display tracking-widest transition-colors ${
-              tab === "games" ? "text-primary-foreground" : "text-muted-foreground"
-            }`}
-          >
-            <Gamepad2 size={13} /> JUEGOS
-          </button>
-          <button
-            onClick={() => setTab("likes")}
-            className={`relative z-10 flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[11px] font-display tracking-widest transition-colors ${
-              tab === "likes" ? "text-primary-foreground" : "text-muted-foreground"
-            }`}
-          >
-            <Heart size={13} /> LIKES
-          </button>
-          <div
-            className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-lg grad-brand shadow-sm transition-transform duration-300 ease-out"
-            style={{ transform: `translateX(${tab === "games" ? "0%" : "calc(100% + 4px)"})` }}
-          />
-        </div>
-      </div>
+        <SegmentedControl
+          className="mt-5"
+          value={tab}
+          onChange={setTab}
+          items={[{ id: "games", label: "JUEGOS", icon: <Gamepad2 size={13} /> }, { id: "likes", label: "LIKES", icon: <Heart size={13} /> }]}
+        />
+      </section>
 
       {/* Content */}
       <AnimatePresence mode="wait">
@@ -209,12 +137,9 @@ export function HistorySection() {
                 <span className="text-xs">Cargando historial…</span>
               </div>
             ) : sortedGames.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center">
-                <Gamepad2 size={24} className="mx-auto mb-2 text-muted-foreground/40" />
-                <div className="text-sm text-muted-foreground">Aún no has jugado ningún juego</div>
-                <div className="text-[11px] text-muted-foreground/60 mt-1">
-                  ¡Explora juegos en la sección JUEGOS!
-                </div>
+              <div className="border-l-2 border-border pl-4 py-5">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground"><Gamepad2 size={16} className="text-muted-foreground" /> Aún no hay partidas guardadas</div>
+                <Link to="/" className="mt-1.5 inline-flex text-[11px] font-medium text-primary hover:text-primary/75">Explorar juegos</Link>
               </div>
             ) : (
               sortedGames.map(([gameId, data], i) => (
@@ -222,8 +147,8 @@ export function HistorySection() {
                   key={gameId}
                   initial={{ opacity: 0, y: 12, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.25, delay: i * 0.04, ease: [0.22, 1, 0.36, 1] }}
-                  className="panel rounded-2xl border border-border/50 overflow-hidden hover:border-primary/30 transition-colors"
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-b border-border/80 last:border-b-0 overflow-hidden hover:bg-surface-2/55 transition-colors"
                 >
                   <div className="flex items-center gap-3 p-3">
                     {/* Cover thumbnail */}
@@ -283,12 +208,9 @@ export function HistorySection() {
                 <span className="text-xs">Cargando likes…</span>
               </div>
             ) : likedPosts.length === 0 ? (
-              <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center">
-                <Heart size={24} className="mx-auto mb-2 text-muted-foreground/40" />
-                <div className="text-sm text-muted-foreground">No has dado like a ninguna publicación</div>
-                <div className="text-[11px] text-muted-foreground/60 mt-1">
-                  ¡Explora y da like a las publicaciones que te gusten!
-                </div>
+              <div className="border-l-2 border-border pl-4 py-5">
+                <div className="flex items-center gap-2 text-sm font-medium text-foreground"><Heart size={16} className="text-muted-foreground" /> Aún no has guardado publicaciones</div>
+                <p className="mt-1.5 text-[11px] text-muted-foreground">Tus referencias favoritas aparecerán aquí.</p>
               </div>
             ) : (
               likedPosts.map((p, i) => (
@@ -296,8 +218,8 @@ export function HistorySection() {
                   key={p.id}
                   initial={{ opacity: 0, y: 12, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ duration: 0.25, delay: i * 0.03, ease: [0.22, 1, 0.36, 1] }}
-                  className="panel rounded-2xl border border-border/50 overflow-hidden hover:border-primary/30 transition-colors"
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                  className="border-b border-border/80 last:border-b-0 overflow-hidden hover:bg-surface-2/55 transition-colors"
                 >
                   <div className="flex items-start gap-3 p-3">
                     {/* Author avatar */}

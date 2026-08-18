@@ -483,3 +483,15 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Validar accesibilidad, pruebas, build y comportamiento móvil antes de publicar.
 
 Orión incorpora ahora un activador de Voz en la cabecera y otro en el compositor. Al activar el modo, Orión emite un saludo, escucha por turnos mediante la API de reconocimiento del navegador, genera una respuesta con límite de 170 tokens e instrucciones de dos frases breves, y la reproduce con la voz española femenina disponible de mayor prioridad. La tarjeta de estado comunica si Orión está hablando, escuchando, pensando o si el navegador no ofrece las APIs necesarias; se puede detener en cualquier momento. La navegación principal de Inicio aplica `grad-brand` dentro del destino seleccionado, sin una franja decorativa en la cabecera. Vitest pasó con 33 pruebas y la compilación de producción completó correctamente.
+
+---
+
+# Auditoría y corrección de patrones AI Slop
+
+- [x] Investigar el término AI Slop, sus señales visuales y los patrones de diseño genérico de constructores de aplicaciones.
+- [x] Auditar las vistas de Asternal para localizar jerarquías, decoraciones, controles y vacíos que parezcan genéricos, incoherentes o poco intencionales.
+- [x] Definir una dirección de diseño propia para un motor de videojuegos que también es red social, sin modificar las funciones del motor.
+- [x] Reemplazar los patrones prioritarios detectados por interfaces más específicas, legibles y consistentes.
+- [x] Validar capturas, accesibilidad, pruebas y compilación antes de publicar.
+
+La auditoría y sus referencias quedaron documentadas en `research-ai-slop.md` y `ai-slop-audit.md`. La primera corrección elimina la estructura de tarjeta reiterada en la entrada y en Historial: Acceso ahora explica el flujo real de construir, probar y compartir; Historial pasa de seis métricas vacías a una bitácora que guía la primera actividad y usa registros continuos cuando ya existen datos. La lógica de autenticación, datos, editor y motor permanece sin cambios.
