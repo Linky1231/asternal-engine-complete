@@ -454,3 +454,15 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Reorganizar la identidad del perfil para separar portada, avatar, acciones y metadatos con una jerarquía estable.
 - [x] Mejorar la navegación principal de Inicio para priorizar destinos, estado activo y adaptación móvil.
 - [x] Validar interacción, responsividad, pruebas y build antes de publicar.
+
+# Restauración del acceso de graduado — descartada tras aclaración del usuario
+
+- [x] Descartado: localizar y restaurar el acceso de graduado; la solicitud se refería al degradado superior.
+- [x] Descartado: integrar el acceso de graduado en la cabecera.
+- [x] Descartado: validar el acceso de graduado.
+
+# Restauración del degradado superior
+
+- [x] Revisar los acentos de degradado actuales de la cabecera y navegación de Inicio.
+- [x] Restaurar un degradado superior sutil, coherente y legible.
+- [x] Validar contraste, responsive, pruebas y build antes de publicar.

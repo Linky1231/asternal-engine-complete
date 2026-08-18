@@ -939,3 +939,25 @@
 [2026-08-18T03:46:45.668Z] 3:46:45 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
 [2026-08-18T03:59:09.498Z] 3:59:09 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
 [2026-08-18T03:59:09.503Z] 3:59:09 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
+[2026-08-18T04:01:15.498Z] [Auth] Missing session cookie
+[2026-08-18T04:01:15.645Z] [Auth] Missing session cookie
+[2026-08-18T04:01:15.761Z] [Auth] Missing session cookie
+[2026-08-18T04:01:15.909Z] [Auth] Missing session cookie
+[2026-08-18T04:01:18.093Z] [Auth] Missing session cookie
+[2026-08-18T04:01:18.229Z] [Auth] Missing session cookie
+[2026-08-18T04:01:18.337Z] [Auth] Missing session cookie
+[2026-08-18T04:01:20.081Z] [Auth] Missing session cookie
+[2026-08-18T04:01:20.194Z] [Auth] Missing session cookie
+[2026-08-18T04:01:20.297Z] [Auth] Missing session cookie
+[2026-08-18T04:01:20.404Z] [Auth] Missing session cookie
+[2026-08-18T04:01:55.433Z] [Auth] Missing session cookie
+[2026-08-18T04:01:55.517Z] [Auth] Missing session cookie
+[2026-08-18T04:01:55.544Z] [Auth] Missing session cookie
+[2026-08-18T04:01:55.689Z] [Auth] Missing session cookie
+[2026-08-18T04:03:00.238Z] [Auth] Missing session cookie
+[2026-08-18T04:03:00.366Z] [Auth] Missing session cookie
+[2026-08-18T04:03:00.369Z] [Auth] Missing session cookie
+[2026-08-18T04:03:00.429Z] [Auth] Missing session cookie
+[2026-08-18T04:03:00.495Z] [Auth] Missing session cookie
+[2026-08-18T04:03:00.607Z] [Auth] Missing session cookie
+[2026-08-18T04:05:04.921Z] 4:05:04 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx

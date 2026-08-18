@@ -208,7 +208,10 @@ function HomePage() {
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">
       {/* Navegación de Inicio: identidad, acciones prioritarias y destinos principales. */}
-      <header className="app-header sticky top-0 z-20 bg-background/95 backdrop-blur-md border-b border-border/70">
+      <header className="app-header relative sticky top-0 z-20 overflow-hidden border-b border-border/70 bg-background/95 backdrop-blur-md">
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 z-10 h-[3px] grad-brand shadow-[0_2px_14px_oklch(0.54_0.15_260/0.35)]" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-[18%] top-0 h-20 grad-brand-soft opacity-35 blur-3xl" />
+        <div className="relative">
         <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 py-2.5">
           <button onClick={() => navigate({ to: "/profile" })} title="Mi perfil"
             className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-slate-900/5 shadow-[0_8px_20px_-10px_oklch(0.5_0.13_266/0.35)] active:scale-95 transition shrink-0">
@@ -239,6 +242,7 @@ function HomePage() {
           </button>
         </div>
         <HomeNavigation value={tab} onChange={setTab} />
+        </div>
       </header>
 
       {/* Content */}
