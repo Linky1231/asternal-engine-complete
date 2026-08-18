@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Avatar } from "./Avatar";
 import { Link } from "@tanstack/react-router";
 import {
@@ -87,6 +88,12 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = previousOverflow; };
+  }, []);
+
   const unread = items.filter(item => !item.read).length;
   const filtered = useMemo(
     () => cat === "todas" ? items : items.filter(item => categoryOf(item.type) === cat),
@@ -105,8 +112,8 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[90] overflow-y-auto bg-background text-foreground" role="dialog" aria-modal="true" aria-label="Panel de notificaciones">
+  const panel = (
+    <div className="fixed inset-0 z-[1000] isolate overflow-y-auto overscroll-contain bg-background text-foreground" role="dialog" aria-modal="true" aria-label="Panel de notificaciones">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-72 overflow-hidden">
         <div className="absolute -top-24 left-[18%] h-64 w-64 rounded-full bg-primary/12 blur-3xl" />
         <div className="absolute -top-32 right-[12%] h-72 w-72 rounded-full bg-cyan-400/10 blur-3xl" />
@@ -268,4 +275,6 @@ export function NotificationsPanel({ onClose }: { onClose: () => void }) {
       </div>
     </div>
   );
+
+  return createPortal(panel, document.body);
 }

@@ -466,3 +466,10 @@ Implementado mediante `TransformInspector`, utilidades de `transforms.ts` y migr
 - [x] Revisar los acentos de degradado actuales de la cabecera y navegación de Inicio.
 - [x] Restaurar un degradado superior sutil, coherente y legible.
 - [x] Validar contraste, responsive, pruebas y build antes de publicar.
+
+# Corrección de panel superpuesto y botón Crear móvil
+
+- [x] Auditar por qué el panel de notificaciones muestra contenido de Inicio y se superpone a la navegación.
+- [x] Aislar el panel de notificaciones y corregir su capa, scroll y fondo en móvil.
+- [x] Reubicar el botón Crear respetando las áreas seguras y controles del sistema móvil.
+- [x] Validar panel, navegación, responsive, pruebas y build antes de publicar.

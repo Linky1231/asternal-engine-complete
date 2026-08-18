@@ -961,3 +961,5 @@
 [2026-08-18T04:03:00.495Z] [Auth] Missing session cookie
 [2026-08-18T04:03:00.607Z] [Auth] Missing session cookie
 [2026-08-18T04:05:04.921Z] 4:05:04 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx
+[2026-08-18T04:10:26.303Z] 4:10:26 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationsPanel.tsx
+[2026-08-18T04:10:26.318Z] 4:10:26 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx

@@ -343,7 +343,7 @@ function HomePage() {
       {/* Floating CTA to editor */}
       <Link
         to="/editor"
-        className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom))] right-[max(1.25rem,env(safe-area-inset-right))] z-30 h-14 pl-4 pr-5 rounded-xl btn-grad shadow-[0_16px_40px_-14px_oklch(0.55_0.14_262/0.42)] flex items-center gap-2 active:scale-95 font-display tracking-widest text-xs"
+        className="fixed bottom-[calc(env(safe-area-inset-bottom)+5rem)] right-[max(1rem,env(safe-area-inset-right))] z-30 flex h-14 items-center gap-2 rounded-xl btn-grad pl-4 pr-5 font-display text-xs tracking-widest shadow-[0_16px_40px_-14px_oklch(0.55_0.14_262/0.42)] active:scale-95 sm:bottom-[max(1.25rem,env(safe-area-inset-bottom))] sm:right-[max(1.25rem,env(safe-area-inset-right))]"
       >
         <Plus size={18} strokeWidth={2} /> CREAR
       </Link>
