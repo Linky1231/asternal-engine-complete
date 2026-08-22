@@ -534,6 +534,6 @@ YB fue retirado de imports, configuración y dependencias activas. Orión ahora 
 
 - [x] Diagnosticar el error 404 en la ruta principal del dominio publicado.
 - [x] Corregir el servidor y fallback de archivos estáticos para la aplicación SPA.
-- [ ] Verificar el dominio en producción y publicar la corrección.
+- [x] Verificar el dominio en producción y publicar la corrección.
 
-La primera publicación posterior a la corrección local continúa mostrando `Not Found` en el dominio, aunque el artefacto local compilado devuelve HTTP 200. Se mantiene abierta la verificación para inspeccionar la disposición real de archivos del contenedor de producción y aplicar el ajuste definitivo.
+Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto se propagaba. Tras la publicación definitiva, la consulta sin caché devolvió HTTP 200 y la verificación visual de `https://asternaleng-dvlqmnye.manus.space/?verified=c2c5a7e5` muestra la pantalla de acceso de Asternal. El dominio ya no responde 404.
