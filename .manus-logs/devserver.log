@@ -1323,3 +1323,5 @@
 [2026-08-22T20:37:50.919Z] 8:37:50 PM [vite] (client) hmr update /src/styles.css
 [2026-08-22T20:37:58.663Z] 8:37:58 PM [vite] (client) hmr update /src/styles.css, /src/components/social/SubPageHeader.tsx
 [2026-08-22T20:38:38.387Z] 8:38:38 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-22T20:43:14.480Z] 8:43:14 PM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-22T20:44:38.371Z] 8:44:38 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css

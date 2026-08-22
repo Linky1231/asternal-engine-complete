@@ -1,0 +1,143 @@
+/* Intensificación glass: una capa visual por encima de los tokens existentes.
+   Conserva los azules de Asternal y hace perceptible la materialidad en pantalla. */
+
+:root {
+  --glass-hot-edge: oklch(1 0 0 / 0.92);
+  --glass-blue-edge: oklch(0.74 0.08 236 / 0.52);
+  --glass-deep-shadow: 0 24px 50px -28px oklch(0.37 0.12 258 / 0.46), 0 8px 18px -13px oklch(0.25 0.06 260 / 0.24);
+  --glass-control-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.78), inset 0 -1px 0 oklch(0.42 0.10 258 / 0.09), 0 8px 17px -15px oklch(0.28 0.05 260 / 0.45);
+}
+
+/* Botones de acción de Asternal: vidrio azul con dos reflejos y borde activo. */
+:is(button, a)[class~="bg-primary"],
+.btn-grad,
+.grad-brand {
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid oklch(1 0 0 / 0.42) !important;
+  background-image:
+    linear-gradient(118deg, oklch(1 0 0 / 0.38) 0%, oklch(1 0 0 / 0.12) 29%, transparent 53%),
+    linear-gradient(180deg, oklch(1 0 0 / 0.15), transparent 72%),
+    var(--gradient-asternal) !important;
+  background-blend-mode: screen, soft-light, normal;
+  box-shadow:
+    inset 0 1.5px 0 oklch(1 0 0 / 0.56),
+    inset 0 -1px 0 oklch(0.3 0.09 259 / 0.22),
+    0 14px 28px -18px oklch(0.45 0.14 263 / 0.82),
+    0 3px 8px -5px oklch(0.36 0.10 260 / 0.28) !important;
+  backdrop-filter: blur(12px) saturate(1.18);
+  transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1), filter 180ms ease, box-shadow 180ms ease, border-color 180ms ease !important;
+}
+
+:is(button, a)[class~="bg-primary"]::after,
+.btn-grad::after,
+.grad-brand::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(112deg, transparent 22%, oklch(1 0 0 / 0.32) 45%, transparent 66%);
+  transform: translateX(-130%);
+  transition: transform 520ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+:is(button, a)[class~="bg-primary"]:hover,
+.btn-grad:hover,
+.grad-brand:hover {
+  filter: saturate(1.12) brightness(1.07);
+  border-color: oklch(1 0 0 / 0.68) !important;
+  box-shadow:
+    inset 0 1.5px 0 oklch(1 0 0 / 0.68),
+    inset 0 -1px 0 oklch(0.3 0.09 259 / 0.18),
+    0 18px 32px -18px oklch(0.45 0.14 263 / 0.92),
+    0 5px 12px -7px oklch(0.36 0.10 260 / 0.32) !important;
+}
+
+:is(button, a)[class~="bg-primary"]:hover::after,
+.btn-grad:hover::after,
+.grad-brand:hover::after { transform: translateX(130%); }
+
+:is(button, a)[class~="bg-primary"]:active,
+.btn-grad:active,
+.grad-brand:active {
+  transform: translateY(1px) scale(0.975);
+  box-shadow: inset 0 2px 5px oklch(0.24 0.06 260 / 0.22), 0 4px 10px -8px oklch(0.38 0.1 260 / 0.5) !important;
+}
+
+/* Superficies y estructuras: un vidrio blanco pronunciado para separar capas. */
+:is(.bg-card, .bg-surface, .bg-popover, .panel, .surface, .surface-2, .glass-surface, .glass-menu, .glass-control) {
+  background-color: oklch(1 0 0 / 0.68) !important;
+  border-color: var(--glass-blue-edge) !important;
+  box-shadow: var(--glass-control-shadow), var(--glass-deep-shadow) !important;
+  backdrop-filter: blur(22px) saturate(1.18) !important;
+}
+
+/* Botones secundarios y navegación reciben volumen sin transformarse en CTA azul. */
+:is(button, a).glass-control,
+:is(button, a).glass-btn,
+:is(button, a).neu-btn,
+:is(button, a)[class~="bg-card"] {
+  background-image: linear-gradient(125deg, oklch(1 0 0 / 0.72), oklch(1 0 0 / 0.18) 48%, transparent 75%);
+  border-color: oklch(1 0 0 / 0.88) !important;
+  box-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.9), 0 12px 22px -18px oklch(0.28 0.05 260 / 0.48) !important;
+}
+
+:is(button, a).glass-control:hover,
+:is(button, a).glass-btn:hover,
+:is(button, a).neu-btn:hover,
+:is(button, a)[class~="bg-card"]:hover {
+  background-color: oklch(1 0 0 / 0.86) !important;
+  border-color: var(--glass-hot-edge) !important;
+  box-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.96), 0 16px 28px -18px oklch(0.35 0.09 260 / 0.5) !important;
+}
+
+/* Acciones contextuales y navegación con azul suave: capa de vidrio teñida, no un bloque plano. */
+:is(button, a)[class*="bg-primary/"] {
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(128deg, oklch(1 0 0 / 0.52), transparent 58%), linear-gradient(145deg, oklch(0.73 0.08 238 / 0.22), oklch(0.85 0.045 232 / 0.12)) !important;
+  border-color: oklch(0.68 0.09 242 / 0.42) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.78), inset 0 -1px 0 oklch(0.44 0.11 257 / 0.08), 0 10px 20px -18px oklch(0.31 0.07 260 / 0.6) !important;
+  backdrop-filter: blur(16px) saturate(1.18);
+}
+
+:is(button, a)[class*="bg-primary/"]:hover {
+  border-color: oklch(1 0 0 / 0.84) !important;
+  background-image: linear-gradient(128deg, oklch(1 0 0 / 0.66), transparent 58%), linear-gradient(145deg, oklch(0.70 0.10 238 / 0.30), oklch(0.85 0.05 232 / 0.16)) !important;
+  box-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.88), 0 15px 25px -18px oklch(0.31 0.07 260 / 0.66) !important;
+}
+
+:is(button, a)[class*="bg-muted/"] {
+  background-color: oklch(1 0 0 / 0.42) !important;
+  border-color: oklch(1 0 0 / 0.64) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.7), 0 7px 15px -16px oklch(0.28 0.05 260 / 0.5) !important;
+  backdrop-filter: blur(14px) saturate(1.1);
+}
+
+/* Inputs, pestañas y paneles de resultados: brillante pero con contraste de texto estable. */
+input, textarea, select,
+[role="tablist"],
+[role="dialog"] {
+  border-color: var(--glass-blue-edge) !important;
+  box-shadow: var(--glass-control-shadow) !important;
+  backdrop-filter: blur(18px) saturate(1.12);
+}
+
+input:focus-visible, textarea:focus-visible, select:focus-visible {
+  border-color: var(--glass-hot-edge) !important;
+  box-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.92), 0 0 0 4px oklch(0.55 0.15 262 / 0.16), 0 16px 26px -20px oklch(0.39 0.1 260 / 0.58) !important;
+}
+
+/* La barra de navegación debe mostrar vidrio incluso con contenido claro detrás. */
+.app-header,
+.glass-header {
+  background: linear-gradient(135deg, oklch(1 0 0 / 0.78), oklch(0.96 0.012 252 / 0.56)) !important;
+  border-color: oklch(1 0 0 / 0.8) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.94), 0 9px 24px -24px oklch(0.28 0.05 260 / 0.62) !important;
+  backdrop-filter: blur(24px) saturate(1.16) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(button, a)[class~="bg-primary"]::after, .btn-grad::after, .grad-brand::after { transition: none; }
+}

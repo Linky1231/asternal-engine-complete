@@ -555,3 +555,12 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Aplicar superficies translúcidas, bordes luminosos, desenfoque y elevación suave con los colores actuales de Asternal.
 - [x] Integrar estados de foco, hover, presión y reducción de movimiento accesibles.
 - [x] Verificar la interfaz en escritorio y móvil, pruebas y compilación antes de publicar.
+
+---
+
+# Intensificación del acabado glass
+
+- [x] Identificar los controles y superficies que aún se perciben planos u opacos.
+- [x] Reforzar el vidrio de los botones azules con capa translúcida, brillo especular, borde iluminado y profundidad visible.
+- [x] Extender el mismo material pronunciado a paneles, campos, tarjetas, pestañas y menús compartidos.
+- [x] Validar contraste, respuesta táctil, escritorio, móvil, pruebas y compilación antes de publicar.
