@@ -19,9 +19,10 @@ app.post("/api/orion/chat", async (req, res) => {
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
-// `index.ts` se compila en `dist/index.js` y Vite entrega el cliente en
-// `dist/public`; por tanto, los estáticos deben resolverse desde este directorio.
-const publicDirectory = path.resolve(dirname, "public");
+// `index.ts` y el cliente de Vite se publican juntos dentro de `dist`.
+// Resolver desde el propio directorio del bundle hace que el fallback SPA
+// funcione también en el contenedor de producción.
+const publicDirectory = dirname;
 app.use(express.static(publicDirectory));
 app.use((_req, res) => res.sendFile(path.join(publicDirectory, "index.html")));
 

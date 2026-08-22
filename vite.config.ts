@@ -47,7 +47,10 @@ export default defineConfig({
     dedupe: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
   },
   build: {
-    outDir: "dist/public",
+    // El publicador de producción busca el documento de entrada en `dist`.
+    // Mantener el cliente en la raíz permite servirlo tanto estáticamente como
+    // desde el servidor de Orión sin una carpeta intermedia.
+    outDir: "dist",
     sourcemap: false,
     rollupOptions: {
       output: {

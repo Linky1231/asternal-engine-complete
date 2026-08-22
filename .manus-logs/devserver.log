@@ -1303,3 +1303,5 @@
 [2026-08-22T05:15:45.604Z] VITE v7.3.6  ready in 201 ms
 [2026-08-22T05:15:45.604Z] ➜  Local:   http://localhost:5173/
 [2026-08-22T05:15:45.604Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-22T14:29:43.892Z] 2:29:43 PM [vite] vite.config.ts changed, restarting server...
+[2026-08-22T14:29:43.910Z] 2:29:43 PM [vite] server restarted.

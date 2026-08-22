@@ -535,3 +535,5 @@ YB fue retirado de imports, configuración y dependencias activas. Orión ahora 
 - [x] Diagnosticar el error 404 en la ruta principal del dominio publicado.
 - [x] Corregir el servidor y fallback de archivos estáticos para la aplicación SPA.
 - [ ] Verificar el dominio en producción y publicar la corrección.
+
+La primera publicación posterior a la corrección local continúa mostrando `Not Found` en el dominio, aunque el artefacto local compilado devuelve HTTP 200. Se mantiene abierta la verificación para inspeccionar la disposición real de archivos del contenedor de producción y aplicar el ajuste definitivo.
