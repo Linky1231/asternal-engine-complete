@@ -527,3 +527,11 @@ La versión literal compila correctamente con `tsc -b && vite build` y se verifi
 - [x] Validar el envío de mensajes, compilación y publicación.
 
 YB fue retirado de imports, configuración y dependencias activas. Orión ahora llama únicamente a `/api/orion/chat`, una ruta propia que se ejecuta en el servidor y usa el modelo integrado de Manus disponible, sin enviar la clave al navegador. Se verificó una respuesta real del servicio (HTTP 200), junto con 2 pruebas unitarias y una compilación de producción correcta.
+
+---
+
+# Incidente: dominio publicado devuelve 404
+
+- [x] Diagnosticar el error 404 en la ruta principal del dominio publicado.
+- [x] Corregir el servidor y fallback de archivos estáticos para la aplicación SPA.
+- [ ] Verificar el dominio en producción y publicar la corrección.
