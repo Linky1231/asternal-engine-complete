@@ -611,6 +611,15 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Corrección de etiquetas celestes y beneficios de perfil
+
+- [x] Localizar los controles informativos que heredan apariencia de botón azul y pierden contraste.
+- [x] Diferenciar visualmente etiquetas y acciones, preservando el degradado solo en controles interactivos.
+- [x] Aplicar el turquesa suave de Plus al bloque de beneficios del perfil de forma localizada.
+- [x] Validar los paneles afectados, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

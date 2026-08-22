@@ -602,15 +602,10 @@ export function ProfilePanel({
       {viewingOwn && (
         <Link
           to="/plus"
-          className="block relative overflow-hidden rounded-lg border p-4 active:scale-[0.99] transition"
-          style={{
-            borderColor: "color-mix(in oklab, var(--plus) 40%, transparent)",
-            background: "linear-gradient(135deg, color-mix(in oklab, var(--plus) 15%, transparent), transparent)",
-          }}
+          className="profile-plus-benefits block relative overflow-hidden rounded-lg border p-4 active:scale-[0.99] transition"
         >
           <div className="relative flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl grid place-items-center text-white shrink-0"
-              style={{ background: "var(--gradient-plus)" }}>
+            <div className="profile-plus-benefits-icon w-11 h-11 rounded-xl grid place-items-center text-white shrink-0">
               <Star size={20} fill="currentColor" />
             </div>
             <div className="flex-1 min-w-0">
@@ -619,7 +614,7 @@ export function ProfilePanel({
                 {profile.is_plus ? "Gestiona tus beneficios activos" : "Suscríbete y desbloquea todo"}
               </div>
             </div>
-            <ChevronRight size={18} style={{ color: "var(--plus)" }} />
+            <ChevronRight size={18} className="profile-plus-benefits-chevron" />
           </div>
         </Link>
       )}
@@ -818,8 +813,8 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
       )}
 
       {!canCustomize && viewingOwn && (
-        <div className="text-center py-2 px-3 rounded-lg bg-primary/5 border border-primary/15">
-          <div className="text-[11px] text-primary font-medium">Personaliza tu QR con Plus</div>
+        <div className="text-center py-2 px-3 rounded-lg bg-muted/35 border border-border/50">
+          <div className="text-[11px] text-foreground font-medium">Personaliza tu QR con Plus</div>
           <div className="text-[10px] text-muted-foreground/50 mt-0.5">Cambia colores, estilos y tamaño</div>
         </div>
       )}

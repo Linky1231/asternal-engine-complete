@@ -9,6 +9,10 @@
   /* Firma Azure Drift original: cobalto → azur → cielo. El vidrio aporta
      volumen, pero no sustituye ni apaga el azul de marca. */
   --asternal-control-gradient: linear-gradient(135deg, oklch(0.52 0.15 266) 0%, oklch(0.61 0.12 254) 48%, oklch(0.74 0.08 234) 100%);
+  /* Aurora queda disponible solo para las superficies Plus autorizadas. */
+  --plus-aurora-gradient: linear-gradient(135deg, #268FB3 0%, #30ABAD 52%, #7ACBD9 100%);
+  --plus-aurora-solid: #268FB3;
+  --plus-aurora-edge: #30ABAD;
 }
 
 /* Todos los controles azules usan el mismo degradado, sin cambiar de tono al interactuar. */
@@ -21,6 +25,7 @@
   background-color: var(--primary) !important;
   background-image: var(--asternal-control-gradient) !important;
   background-blend-mode: normal;
+  color: var(--primary-foreground, #fff) !important;
   box-shadow:
     inset 0 1.5px 0 oklch(1 0 0 / 0.38),
     inset 0 -1px 0 oklch(0.3 0.09 259 / 0.22),
@@ -190,11 +195,8 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 /* Plugin / Plus — Aurora tomado del primer marco de perfil coloreado.
    Es una excepción local: el Azure Drift se mantiene intacto fuera de Plus. */
 .plus-page {
-  --plus-aurora-gradient: linear-gradient(135deg, #2089AE 0%, #2BA7A8 52%, #75C6D4 100%);
-  --plus-aurora-solid: #2089AE;
-  --plus-aurora-edge: #2BA7A8;
-  --primary: #2089AE;
-  --plus: #2089AE;
+  --primary: var(--plus-aurora-solid);
+  --plus: var(--plus-aurora-solid);
 }
 
 .plus-page .btn-grad,
@@ -205,7 +207,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow:
     inset 0 1.5px 0 rgb(255 255 255 / 0.38),
     inset 0 -1px 0 rgb(13 103 126 / 0.18),
-    0 12px 26px -17px rgb(32 137 174 / 0.52) !important;
+    0 12px 26px -17px rgb(38 143 179 / 0.52) !important;
 }
 
 .plus-page .btn-grad:hover,
@@ -215,33 +217,54 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow:
     inset 0 1.5px 0 rgb(255 255 255 / 0.5),
     inset 0 -1px 0 rgb(13 103 126 / 0.2),
-    0 16px 30px -16px rgb(43 167 168 / 0.5) !important;
+    0 16px 30px -16px rgb(48 171 173 / 0.5) !important;
 }
 
 .plus-page .plus-glass-hero,
 .plus-page .plus-glass-card,
 .plus-page .plus-glass-note {
-  border-color: rgb(43 167 168 / 0.28) !important;
+  border-color: rgb(48 171 173 / 0.28) !important;
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(117 198 212 / 0.1)),
+    linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(122 203 217 / 0.1)),
     var(--glass-base) !important;
-  box-shadow: 0 20px 42px -30px rgb(32 137 174 / 0.34), inset 0 1px 0 rgb(255 255 255 / 0.64) !important;
+  box-shadow: 0 20px 42px -30px rgb(38 143 179 / 0.34), inset 0 1px 0 rgb(255 255 255 / 0.64) !important;
 }
 
 .plus-page .plus-choice {
-  border-color: rgb(32 137 174 / 0.26) !important;
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(117 198 212 / 0.07)) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64), 0 7px 15px -15px rgb(32 137 174 / 0.42);
+  border-color: rgb(38 143 179 / 0.26) !important;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(122 203 217 / 0.07)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64), 0 7px 15px -15px rgb(38 143 179 / 0.42);
 }
 
 .plus-page .plus-choice.border-primary,
 .plus-page .plus-choice:focus-visible {
   border-color: var(--plus-aurora-edge) !important;
-  box-shadow: 0 0 0 2px rgb(43 167 168 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.72) !important;
+  box-shadow: 0 0 0 2px rgb(48 171 173 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.72) !important;
 }
 
 .plus-page .plus-social-input {
-  border: 1px solid rgb(32 137 174 / 0.2);
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.58), rgb(117 198 212 / 0.06)) !important;
+  border: 1px solid rgb(38 143 179 / 0.2);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.58), rgb(122 203 217 / 0.06)) !important;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64);
 }
+
+/* El resumen de beneficios pertenece a Plus, aun cuando viva dentro del perfil. */
+.profile-plus-benefits {
+  border-color: rgb(48 171 173 / 0.42) !important;
+  background:
+    linear-gradient(135deg, rgb(38 143 179 / 0.15), rgb(48 171 173 / 0.11) 52%, rgb(122 203 217 / 0.14)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72), 0 16px 30px -26px rgb(38 143 179 / 0.42);
+}
+
+.profile-plus-benefits:hover {
+  border-color: rgb(48 171 173 / 0.58) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.82), 0 20px 34px -26px rgb(38 143 179 / 0.5);
+}
+
+.profile-plus-benefits-icon {
+  background: var(--plus-aurora-gradient) !important;
+  border: 1px solid rgb(255 255 255 / 0.42);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.32), 0 10px 20px -15px rgb(38 143 179 / 0.64);
+}
+
+.profile-plus-benefits-chevron { color: var(--plus-aurora-solid) !important; }
