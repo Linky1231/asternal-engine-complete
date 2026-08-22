@@ -299,12 +299,12 @@ function FloatInput({
   return (
     <div className="space-y-1">
       <div className="relative group/input">
-        <div className={`relative flex items-center border rounded-xl bg-white transition-all duration-300 ${
+        <div className={`glass-control relative flex items-center rounded-xl ${
           focused
             ? 'border-primary/50 ring-[3px] ring-primary/[0.06] shadow-sm shadow-primary/5'
             : error
               ? 'border-destructive/40 ring-[3px] ring-destructive/[0.04]'
-              : 'border-border/70 hover:border-border/90'
+              : ''
         }`}>
           <span className={`pl-3.5 transition-colors duration-300 shrink-0 ${focused ? 'text-primary/60' : error ? 'text-destructive/50' : 'text-muted-foreground/30'}`}>
             <Icon size={14} />
@@ -542,7 +542,7 @@ function AuthPage() {
             <div style={{
               animation: loaded ? 'fade-in-up 500ms 300ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/15 bg-surface text-[11px] font-display font-medium tracking-wide text-primary/80 shadow-sm -mt-1 lg:-mt-3">
+              <div className="glass-control inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-display font-medium tracking-wide text-primary/80 -mt-1 lg:-mt-3">
                 <Sparkles size={12} className="text-accent" />
                 Todo comienza con una idea
               </div>
@@ -579,7 +579,7 @@ function AuthPage() {
                 { icon: Users, label: "Comunidad activa", desc: "Remixa y colabora" },
               ].map((f, i) => (
                 <div key={f.label} className="group/card" style={{ animation: loaded ? `fade-in-up 900ms ${1000 + i * 280}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
-                  <div className="p-2.5 rounded-xl border border-border/50 bg-surface transition-all duration-400 group-hover/card:bg-white/80 group-hover/card:border-primary/30 group-hover/card:shadow-lg group-hover/card:shadow-primary/5 group-hover/card:-translate-y-0.5">
+                  <div className="glass-surface p-2.5 rounded-xl transition-all duration-400 group-hover/card:border-primary/30 group-hover/card:shadow-lg group-hover/card:shadow-primary/5 group-hover/card:-translate-y-0.5">
                     <div className="flex items-center gap-1.5 text-[12px] font-display font-semibold text-foreground mb-0.5 group-hover/card:text-primary transition-colors duration-300">
                       <f.icon size={12} className="text-primary/60 group-hover/card:text-primary transition-colors duration-300" />
                       {f.label}
@@ -597,8 +597,8 @@ function AuthPage() {
               animation: loaded ? 'fade-in-up 800ms 700ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
                 {/* Tarjeta premium: borde degradado + sombras en capas + radius 24px */}
-                <div className="relative rounded-3xl border border-primary/15 shadow-md">
-                  <div className="relative bg-card rounded-3xl p-7 overflow-hidden group/form-card">
+                <div className="glass-surface relative rounded-3xl">
+                  <div className="relative rounded-3xl p-7 overflow-hidden group/form-card">
 
                     {/* Shine superior */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-3/4 bg-gradient-to-r from-transparent via-white/90 to-transparent" />
@@ -620,8 +620,8 @@ function AuthPage() {
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex bg-muted/60 rounded-xl p-0.5 mb-5 relative">
-                      <div className="absolute top-0.5 bottom-0.5 w-[calc(50%_-_2px)] rounded-[10px] bg-white shadow-sm transition-all duration-400"
+                    <div className="glass-control flex rounded-xl p-0.5 mb-5 relative">
+                      <div className="absolute top-0.5 bottom-0.5 w-[calc(50%_-_2px)] rounded-[10px] bg-white/80 shadow-sm shadow-primary/10 transition-all duration-400"
                         style={{ left: mode === "signin" ? "2px" : "calc(50% + 0px)" }} />
                       {(["signin", "signup"] as const).map(m => (
                         <button key={m} type="button" onClick={() => switchMode(m)}
@@ -704,7 +704,7 @@ function AuthPage() {
                       {/* Submit button */}
                       <div style={{ animation: 'slide-in-up 300ms cubic-bezier(0.22,1,0.36,1) both', animationDelay: '240ms' }}>
                         <button disabled={busy}
-                          className="relative w-full py-2.5 rounded-xl grad-brand text-white text-sm font-display font-semibold tracking-wide shadow-lg shadow-primary/20 hover:shadow-md hover:shadow-primary/30 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 overflow-hidden group/btn"
+                          className="btn-grad relative w-full py-2.5 rounded-xl text-sm font-display font-semibold tracking-wide active:scale-[0.98] disabled:opacity-50 overflow-hidden group/btn"
                         >
                           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
                           <div className="absolute inset-0 bg-white/[0.06] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />

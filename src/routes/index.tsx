@@ -239,12 +239,11 @@ function HomePage() {
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">
       {/* Header */}
-      {/* bg casi opaco + blur reducido: el backdrop-blur-xl sobre un header
-          sticky obligaba a re-desenfocar el fondo en cada frame de scroll → lag. */}
-      <header className="app-header sticky top-0 z-20 bg-background border-b border-border/70">
+      {/* Material de vidrio contenido: blur moderado para mantener el scroll fluido. */}
+      <header className="app-header glass-header sticky top-0 z-20 border-b">
         <div className={`max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto flex items-center gap-2 sm:gap-2.5 px-3 sm:px-4 ${inPreview ? "pt-14 pb-3" : "py-2.5"}`}>
           <button onClick={() => navigate({ to: "/profile" })} title="Mi perfil"
-            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden border border-slate-900/5  active:scale-95 transition shrink-0">
+            className="glass-control w-9 h-9 sm:w-10 sm:h-10 rounded-xl overflow-hidden active:scale-95 shrink-0">
             <Avatar p={me} className="w-full h-full" />
           </button>
           <div className="flex-1 min-w-0 header-name">
@@ -261,7 +260,7 @@ function HomePage() {
             </div>
           )}
           <button onClick={() => setMenuOpen(true)} title="Menú"
-            className="w-9 h-9 rounded-lg border border-line-strong bg-card text-ink-2 grid place-items-center hover:bg-muted/60 hover:text-foreground active:scale-95 transition shrink-0">
+            className="glass-control w-9 h-9 rounded-lg text-ink-2 grid place-items-center hover:text-foreground active:scale-95 shrink-0">
             <Menu size={16} />
           </button>
         </div>
@@ -271,7 +270,7 @@ function HomePage() {
             <input value={search} onChange={e => setSearch(e.target.value)}
               onKeyDown={e => e.key === "Enter" && reload(tab)}
               placeholder={tab === "games" ? "Buscar juegos…" : "Buscar publicaciones…"}
-              className="flex-1 bg-card border border-line-strong rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/40 placeholder:text-muted-foreground" />
+              className="glass-control flex-1 rounded-lg px-3 py-2 text-sm outline-none placeholder:text-muted-foreground" />
             <button onClick={() => reload(tab)}
               className="px-4 py-2 rounded-lg btn-grad text-xs font-display tracking-widest shrink-0">IR</button>
           </div>

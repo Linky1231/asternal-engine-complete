@@ -545,3 +545,13 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Corregir el bloqueo del host de la vista previa en Vite.
 - [x] Restaurar la salida del frontend dentro de `dist/public` para el servidor de producción.
 - [x] Verificar preview, build y publicación en producción.
+
+---
+
+# Sistema visual glass Apple-like para Asternal
+
+- [x] Analizar la referencia y traducir sus principios de materialidad sin copiar su paleta ni su contenido.
+- [x] Auditar botones, campos, tarjetas, paneles y navegación para localizar los estilos compartidos.
+- [x] Aplicar superficies translúcidas, bordes luminosos, desenfoque y elevación suave con los colores actuales de Asternal.
+- [x] Integrar estados de foco, hover, presión y reducción de movimiento accesibles.
+- [x] Verificar la interfaz en escritorio y móvil, pruebas y compilación antes de publicar.
