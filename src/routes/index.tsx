@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Avatar } from "@/components/social/Avatar";
-import { Component, lazy, Suspense, useEffect, useState, useCallback } from "react";
+import { Component, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Compass, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, Store, FileText, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,24 +9,16 @@ import { fetchFeed, fetchGames, getMyProfile, isMod, isAdmin, type PostWithMeta,
 import { syncAllProjects } from "@/lib/engine/cloud-sync";
 import { PostComposer } from "@/components/social/PostComposer";
 import { PostCard } from "@/components/social/PostCard";
+import { GamesHome } from "@/components/social/GamesHome";
 import { NotificationBell } from "@/components/social/NotificationBell";
-
-const GamesHome = lazy(() => import("@/components/social/GamesHome").then((module) => ({ default: module.GamesHome })));
-const ProfilePanel = lazy(() => import("@/components/social/ProfilePanel").then((module) => ({ default: module.ProfilePanel })));
-const NotificationsPanel = lazy(() => import("@/components/social/NotificationsPanel").then((module) => ({ default: module.NotificationsPanel })));
-const ChatSection = lazy(() => import("@/components/social/ChatSection"));
-const OrionPanel = lazy(() => import("@/components/ai/OrionPanel"));
-const StoreSection = lazy(() => import("@/components/social/StoreSection").then((module) => ({ default: module.StoreSection })));
-const EventsSection = lazy(() => import("@/components/social/EventsSection").then((module) => ({ default: module.EventsSection })));
-const GamePageSection = lazy(() => import("@/components/social/GamePageSection").then((module) => ({ default: module.GamePageSection })));
-
-function DeferredPanelFallback({ fullScreen = false }: { fullScreen?: boolean }) {
-  return (
-    <div className={fullScreen ? "fixed inset-0 z-[95] grid place-items-center bg-background/88 backdrop-blur-xl" : "min-h-48 grid place-items-center"}>
-      <span className="w-5 h-5 rounded-full border-2 border-primary/30 border-t-primary animate-spin" aria-label="Cargando" />
-    </div>
-  );
-}
+import { ProfilePanel } from "@/components/social/ProfilePanel";
+import { NotificationsPanel } from "@/components/social/NotificationsPanel";
+import ChatSection from "@/components/social/ChatSection";
+import OrionPanel from "@/components/ai/OrionPanel";
+import { ForumSection } from "@/components/social/ForumSection";
+import { StoreSection } from "@/components/social/StoreSection";
+import { EventsSection } from "@/components/social/EventsSection";
+import { GamePageSection } from "@/components/social/GamePageSection";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -176,8 +168,6 @@ function HomePage() {
   const onFeedChange = useCallback(() => reload("feed"), [reload]);
 
   useEffect(() => {
-    let cancelDeferredSync: (() => void) | undefined;
-
     (async () => {
       try {
         let session = null;
@@ -212,35 +202,16 @@ function HomePage() {
         // descarga los de la cuenta) para que los juegos aparezcan en cualquier
         // dispositivo con la misma cuenta. Silencioso: no bloquea la carga.
         if (!localSession) {
-          // La sincronización completa sigue ocurriendo, pero cede el primer
-          // instante interactivo al usuario para que Inicio no se bloquee.
-          const syncWhenIdle = () => {
-            void syncAllProjects().then(r => {
-              if (r.pushed > 0 || r.imported > 0) {
-                toast.success(
-                  `Nube sincronizada: ${r.pushed} subido${r.pushed === 1 ? "" : "s"} · ${r.imported} descargado${r.imported === 1 ? "" : "s"}`
-                );
-              }
-            }).catch(() => {/* noop */});
-          };
-          const idleWindow = window as Window & {
-            requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
-            cancelIdleCallback?: (handle: number) => void;
-          };
-          if (typeof idleWindow.requestIdleCallback === "function") {
-            const idleId = idleWindow.requestIdleCallback(syncWhenIdle, { timeout: 2_500 });
-            cancelDeferredSync = () => idleWindow.cancelIdleCallback?.(idleId);
-          } else {
-            const timeoutId = window.setTimeout(syncWhenIdle, 750);
-            cancelDeferredSync = () => window.clearTimeout(timeoutId);
-          }
+          syncAllProjects().then(r => {
+            if (r.pushed > 0 || r.imported > 0) {
+              toast.success(
+                `Nube sincronizada: ${r.pushed} subido${r.pushed === 1 ? "" : "s"} · ${r.imported} descargado${r.imported === 1 ? "" : "s"}`
+              );
+            }
+          }).catch(() => {/* noop */});
         }
-        const [profileResult, modResult, adminResult] = await Promise.allSettled([
-          getMyProfile(),
-          isMod(),
-          isAdmin(),
-        ]);
-        let prof: Profile | null = profileResult.status === "fulfilled" ? profileResult.value : null;
+        let prof: Profile | null = null;
+        try { prof = await getMyProfile(); } catch { /* noop */ }
         if (!prof && localSession) {
           // El perfil de la cuenta local vive en localStorage.
           try {
@@ -249,15 +220,14 @@ function HomePage() {
           } catch { /* noop */ }
         }
         if (prof) setMe(prof);
-        if (modResult.status === "fulfilled") setMod(modResult.value);
-        if (adminResult.status === "fulfilled") setAdmin(adminResult.value);
+        try { setMod(await isMod()); } catch { /* noop */ }
+        try { setAdmin(await isAdmin()); } catch { /* noop */ }
         await reload(tab);
       } catch (e) {
         // No romper la preview si el esquema aún no está creado en Supabase.
         console.warn("[home] error de carga inicial (¿esquema sin crear?):", e);
       }
     })();
-    return () => cancelDeferredSync?.();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -325,7 +295,7 @@ function HomePage() {
           >
             {tab === "games" ? (
               loading ? <SkeletonList /> : (
-                <Suspense fallback={<DeferredPanelFallback />}><GamesHome games={games} myId={myId} isMod={mod} onChange={() => reload("games")} onOpenGame={(id) => setGamePageId(id)} /></Suspense>
+                <GamesHome games={games} myId={myId} isMod={mod} onChange={() => reload("games")} onOpenGame={(id) => setGamePageId(id)} />
               )
             ) : tab === "feed" ? (
               <div className="max-w-2xl md:max-w-3xl mx-auto w-full">
@@ -436,7 +406,7 @@ function HomePage() {
                 </motion.div>
               </div>
             ) : tab === "gallery" ? (
-              <Suspense fallback={<DeferredPanelFallback />}><StoreSection myId={myId} isMod={mod} /></Suspense>
+              <StoreSection myId={myId} isMod={mod} />
             ) : (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -445,7 +415,7 @@ function HomePage() {
               >
                 {myId && (
                   <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto w-full">
-                    <Suspense fallback={<DeferredPanelFallback />}><ProfilePanel userId={myId} myId={myId} isMod={mod} viewingOwn={true} onProfileChange={setMe} /></Suspense>
+                    <ProfilePanel userId={myId} myId={myId} isMod={mod} viewingOwn={true} onProfileChange={setMe} />
                   </div>
                 )}
               </motion.div>
@@ -536,23 +506,23 @@ function HomePage() {
           onClose={() => setChatOpen(false)}
           onRetry={() => setChatRetryNonce((n) => n + 1)}
         >
-          <Suspense fallback={<DeferredPanelFallback fullScreen />}><ChatSection
-              key={chatRetryNonce}
-              myId={myId}
-              onClose={() => { setChatOpen(false); setChatShareText(null); setChatShareView(undefined); }}
-              initialText={chatShareText ?? undefined}
-              initialView={chatShareView}
-            /></Suspense>
+          <ChatSection
+            key={chatRetryNonce}
+            myId={myId}
+            onClose={() => { setChatOpen(false); setChatShareText(null); setChatShareView(undefined); }}
+            initialText={chatShareText ?? undefined}
+            initialView={chatShareView}
+          />
         </ChatBoundary>
       )}
 
       {/* Full-screen asistente Orión */}
       <AnimatePresence>
-        {orionOpen && <Suspense fallback={<DeferredPanelFallback fullScreen />}><OrionPanel onClose={() => setOrionOpen(false)} /></Suspense>}
+        {orionOpen && <OrionPanel onClose={() => setOrionOpen(false)} />}
       </AnimatePresence>
 
       {/* Full-screen panel de notificaciones */}
-      {notifOpen && <Suspense fallback={<DeferredPanelFallback fullScreen />}><NotificationsPanel onClose={() => setNotifOpen(false)} /></Suspense>}
+      {notifOpen && <NotificationsPanel onClose={() => setNotifOpen(false)} />}
 
       {/* Full-screen panel de Eventos */}
       <AnimatePresence>
@@ -585,7 +555,7 @@ function HomePage() {
             </header>
             <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="max-w-2xl md:max-w-3xl mx-auto px-4 py-4">
-                <Suspense fallback={<DeferredPanelFallback />}><EventsSection isAdmin={admin} /></Suspense>
+                <EventsSection isAdmin={admin} />
               </div>
             </div>
           </motion.div>
@@ -594,12 +564,12 @@ function HomePage() {
 
       {/* Full-screen game page */}
       {gamePageId && (
-        <Suspense fallback={<DeferredPanelFallback fullScreen />}><GamePageSection
-            gameId={gamePageId}
-            myId={myId}
-            isMod={mod}
-            onClose={() => setGamePageId(null)}
-          /></Suspense>
+        <GamePageSection
+          gameId={gamePageId}
+          myId={myId}
+          isMod={mod}
+          onClose={() => setGamePageId(null)}
+        />
       )}
 
       {/* Bottom Navigation */}

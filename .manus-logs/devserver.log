@@ -1325,11 +1325,3 @@
 [2026-08-22T20:38:38.387Z] 8:38:38 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-22T20:43:14.480Z] 8:43:14 PM [vite] (client) hmr update /src/main.tsx, /src/styles.css
 [2026-08-22T20:44:38.371Z] 8:44:38 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
-[2026-08-22T20:51:04.255Z] 8:51:04 PM [vite] (client) hmr update /src/main.tsx, /src/styles.css
-[2026-08-22T20:51:04.314Z] 8:51:04 PM [vite] (client) hmr update /src/routes/plus.tsx, /src/styles.css
-[2026-08-22T20:51:04.361Z] 8:51:04 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
-[2026-08-22T20:51:04.362Z] 8:51:04 PM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
-[2026-08-22T20:51:19.647Z] 8:51:19 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
-[2026-08-22T20:52:18.292Z] 8:52:18 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
-[2026-08-22T20:52:18.294Z] 8:52:18 PM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
-[2026-08-22T20:52:39.827Z] 8:52:39 PM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
