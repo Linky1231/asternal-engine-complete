@@ -584,3 +584,11 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Aplicar el degradado y material glass de Asternal al apartado Plus sin alterar sus funciones.
 - [x] Auditar y corregir inconsistencias visuales, textos genéricos, párrafos y acciones sin propósito en las áreas revisadas.
 - [x] Validar la aplicación completa en escritorio y móvil, con pruebas y compilación antes de publicar.
+
+---
+
+# Restauración del azul de marca
+
+- [x] Identificar y restaurar el tono y degradado azul originales de Asternal.
+- [x] Conservar el material glass nuevo sin sustituir ni apagar el color de marca.
+- [x] Verificar controles, Plus, vista previa, pruebas y compilación antes de publicar.

@@ -5,8 +5,10 @@
   --glass-hot-edge: oklch(1 0 0 / 0.92);
   --glass-blue-edge: oklch(0.74 0.08 236 / 0.52);
   --glass-deep-shadow: 0 24px 50px -28px oklch(0.37 0.12 258 / 0.46), 0 8px 18px -13px oklch(0.25 0.06 260 / 0.24);
-  --glass-control-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.78), inset 0 -1px 0 oklch(0.42 0.10 258 / 0.09), 0 8px 17px -15px oklch(0.28 0.05 260 / 0.45);
-  --asternal-control-gradient: var(--gradient-asternal);
+  --glass-control-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.78), inset 0 -1px 0 oklch(0.42 0.10 258 / 0.09), 0 8px 17px -13px oklch(0.28 0.05 260 / 0.45);
+  /* Firma Azure Drift original: cobalto → azur → cielo. El vidrio aporta
+     volumen, pero no sustituye ni apaga el azul de marca. */
+  --asternal-control-gradient: linear-gradient(135deg, oklch(0.52 0.15 266) 0%, oklch(0.61 0.12 254) 48%, oklch(0.74 0.08 234) 100%);
 }
 
 /* Todos los controles azules usan el mismo degradado, sin cambiar de tono al interactuar. */
@@ -16,10 +18,11 @@
   isolation: isolate;
   overflow: hidden;
   border: 1px solid oklch(1 0 0 / 0.42) !important;
+  background-color: var(--primary) !important;
   background-image: var(--asternal-control-gradient) !important;
   background-blend-mode: normal;
   box-shadow:
-    inset 0 1.5px 0 oklch(1 0 0 / 0.56),
+    inset 0 1.5px 0 oklch(1 0 0 / 0.38),
     inset 0 -1px 0 oklch(0.3 0.09 259 / 0.22),
     0 14px 28px -18px oklch(0.45 0.14 263 / 0.82),
     0 3px 8px -5px oklch(0.36 0.10 260 / 0.28) !important;
@@ -36,8 +39,8 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(112deg, transparent 22%, oklch(1 0 0 / 0.20) 45%, transparent 66%);
-  opacity: 0.5;
+  background: linear-gradient(112deg, transparent 22%, oklch(1 0 0 / 0.11) 45%, transparent 66%);
+  opacity: 0.35;
   transition: opacity 120ms ease-out;
 }
 
@@ -46,7 +49,7 @@
 .grad-brand:hover {
   border-color: oklch(1 0 0 / 0.68) !important;
   box-shadow:
-    inset 0 1.5px 0 oklch(1 0 0 / 0.68),
+    inset 0 1.5px 0 oklch(1 0 0 / 0.46),
     inset 0 -1px 0 oklch(0.3 0.09 259 / 0.18),
     0 18px 32px -18px oklch(0.45 0.14 263 / 0.92),
     0 5px 12px -7px oklch(0.36 0.10 260 / 0.32) !important;
@@ -54,7 +57,7 @@
 
 :is(button, a)[class*="bg-primary"]:hover::after,
 .btn-grad:hover::after,
-.grad-brand:hover::after { opacity: 0.8; }
+.grad-brand:hover::after { opacity: 0.48; }
 
 :is(button, a)[class*="bg-primary"]:active,
 .btn-grad:active,
@@ -94,6 +97,7 @@
 :is(button, a)[class*="bg-primary/"] {
   position: relative;
   overflow: hidden;
+  background-color: var(--primary) !important;
   background-image: var(--asternal-control-gradient) !important;
   border-color: oklch(0.68 0.09 242 / 0.42) !important;
   box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.78), inset 0 -1px 0 oklch(0.44 0.11 257 / 0.08), 0 10px 20px -18px oklch(0.31 0.07 260 / 0.6) !important;
