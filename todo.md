@@ -595,6 +595,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Atenuación suave del turquesa de Plus
+
+- [x] Reducir la luminosidad del degradado turquesa de Plus sin cambiar Azure Drift.
+- [x] Preservar el acabado glass, el contraste y las funciones premium de Plus.
+- [x] Validar Plus en vista previa, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.
