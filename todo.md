@@ -564,3 +564,12 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Reforzar el vidrio de los botones azules con capa translúcida, brillo especular, borde iluminado y profundidad visible.
 - [x] Extender el mismo material pronunciado a paneles, campos, tarjetas, pestañas y menús compartidos.
 - [x] Validar contraste, respuesta táctil, escritorio, móvil, pruebas y compilación antes de publicar.
+
+---
+
+# Degradado azul constante y animaciones fluidas
+
+- [x] Localizar todos los estados de botones y controles azules que alteran el degradado al interactuar.
+- [x] Aplicar un único degradado azul constante a los estados normal, hover, foco y presión.
+- [x] Optimizar únicamente animaciones para que usen propiedades de composición y respeten movimiento reducido.
+- [x] Validar consistencia visual, fluidez, pruebas y compilación antes de publicar.
