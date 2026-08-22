@@ -592,3 +592,12 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Identificar y restaurar el tono y degradado azul originales de Asternal.
 - [x] Conservar el material glass nuevo sin sustituir ni apagar el color de marca.
 - [x] Verificar controles, Plus, vista previa, pruebas y compilación antes de publicar.
+
+---
+
+# Turquesa glass exclusivo de Plugin/Plus
+
+- [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.
+- [x] Aplicar el turquesa glass del primer marco de perfil a esos controles y al apartado Plugin/Plus.
+- [x] Confirmar que el Azure Drift permanece intacto fuera de Plugin/Plus.
+- [x] Validar Plus/Plugin en escritorio y móvil, pruebas y compilación antes de publicar.

@@ -1348,3 +1348,9 @@
 [2026-08-22T21:16:16.727Z] 9:16:16 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
 [2026-08-22T21:17:14.458Z] 9:17:14 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-22T21:22:52.432Z] 9:22:52 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
+[2026-08-22T21:33:24.078Z] Starting dev server with command: pnpm run dev
+[2026-08-22T21:33:24.361Z] $ vite --host
+[2026-08-22T21:33:24.584Z] VITE v7.3.6  ready in 195 ms
+[2026-08-22T21:33:24.584Z] ➜  Local:   http://localhost:5173/
+[2026-08-22T21:33:24.584Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-22T21:33:45.815Z] 9:33:45 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
