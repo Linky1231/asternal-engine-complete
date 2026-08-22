@@ -1374,3 +1374,5 @@
 [2026-08-22T22:07:46.620Z] 10:07:46 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
 [2026-08-22T22:11:50.779Z] 10:11:50 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GameCard.tsx
 [2026-08-22T22:11:51.219Z] 10:11:51 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GamePageSection.tsx
+[2026-08-22T22:15:37.424Z] 10:15:37 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GamesHome.tsx
+[2026-08-22T22:15:37.427Z] 10:15:37 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GameIcon.tsx

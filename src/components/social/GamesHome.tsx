@@ -5,7 +5,7 @@ import { FaGamepad } from "react-icons/fa";
 import type { PostWithMeta } from "@/lib/social/api";
 import { fetchGamePlayCounts24h } from "@/lib/social/api";
 import { SUPABASE_ACCESS_TOKEN, runGamePlaysSchemaSetup } from "@/lib/supabase/setup";
-import { GameIcon } from "./GameIcon";
+import { GameIcon, GameIconPlaceholder } from "./GameIcon";
 import { GameCard } from "./GameCard";
 
 function extractTitle(content: string): string {
@@ -401,13 +401,11 @@ function Ranking24({ games, totalGames, onOpen }: {
               <span className={`w-6 h-6 shrink-0 rounded-lg grid place-items-center font-display text-[11px] font-bold ${i < 3 ? `bg-primary/10 ${medals[i]}` : "text-muted-foreground/60 bg-muted/60"}`}>
                 {i + 1}
               </span>
-              <div className="relative w-11 h-11 shrink-0 rounded-lg overflow-hidden border border-border/60 bg-muted/40">
-                {g.signed_cover ? (
-                  <img src={g.signed_cover} alt="" className="w-full h-full object-cover" />
+              <div className={`relative w-11 h-11 shrink-0 rounded-lg overflow-hidden border border-border/60 ${g.signed_cover || g.signed_screenshots?.[0] ? "bg-muted/40" : "tile-blueprint"}`}>
+                {g.signed_cover || g.signed_screenshots?.[0] ? (
+                  <img src={g.signed_cover ?? g.signed_screenshots[0]} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="w-full h-full grid place-items-center text-muted-foreground/50">
-                    <Gamepad2 size={16} />
-                  </div>
+                  <GameIconPlaceholder iconSize={22} />
                 )}
               </div>
               <div className="min-w-0 flex-1">
@@ -489,6 +487,8 @@ function ForYouSection({ items, userGenres, activeGenre, onSelectGenre, onOpen, 
 function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24?: number; onPlay: () => void }) {
   const title = extractTitle(post.content);
   const active = plays24 && plays24 > 0 ? plays24 : 1 + Math.floor((post.likes + post.comments_count) * 1.3);
+  const visualUrl = post.signed_cover ?? post.signed_screenshots[0] ?? null;
+  const hasVisual = Boolean(visualUrl);
   return (
     <div className="relative">
       {/* Halo de brillo aparte: sombra estática con pulso SOLO de opacidad
@@ -497,27 +497,21 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
       <div className="banner-glow-halo absolute -inset-3 rounded-[32px]" aria-hidden />
       <div className="banner-glow relative rounded-3xl overflow-hidden border border-white/70">
         <div className="relative aspect-[16/10] w-full md:aspect-[21/9]">
-        {post.signed_cover ? (
-          <img src={post.signed_cover} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+        {hasVisual ? (
+          <img src={visualUrl!} alt={title} className="absolute inset-0 w-full h-full object-cover" />
         ) : (
-          <>
-            {/* Sin portada: el MISMO degradado oficial de la página (Azure Drift),
-                nunca un degradado distinto — la identidad es una sola en toda la app. */}
-            <div className="absolute inset-0 grad-brand" />
-            {/* Marca de agua: icono de juego translúcido de fondo */}
-            <div className="absolute inset-0 grid place-items-center">
-              <FaGamepad size={180} className="text-white/[0.18]" />
-            </div>
-          </>
+          <div className="absolute inset-0 tile-blueprint">
+            <GameIconPlaceholder iconSize={112} />
+          </div>
         )}
         {/* Overlay azul de marca SOLO sobre portadas (nunca negro): da contraste
             al título sin desaturar a gris. Sin portada NO se aplica: el degradado
             oficial de la página se ve completo, con solo un scrim sutil abajo
             para que el texto blanco siga legible. */}
-        {post.signed_cover ? (
+        {hasVisual ? (
           <div className="absolute inset-0 banner-overlay-deep" />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/30 via-ink/5 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/[0.10] via-transparent to-white/10" />
         )}
         {/* Barrido de luz: animación que subraya «este es el mejor juego» */}
         <div className="banner-shine" />
@@ -529,20 +523,20 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
       </div>
       <div className="absolute inset-x-0 bottom-0 p-4 space-y-3">
         <div>
-          <div className="text-white font-display text-xl leading-tight drop-shadow">{title}</div>
-          <div className="text-white/80 text-[11px] font-mono truncate">
+          <div className={`${hasVisual ? "text-white" : "text-foreground"} font-display text-xl leading-tight drop-shadow`}>{title}</div>
+          <div className={`${hasVisual ? "text-white/80" : "text-muted-foreground"} text-[11px] font-mono truncate`}>
             @{post.author?.username ?? "jugador"}
           </div>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onPlay}
-            className="flex-1 h-11 rounded-xl bg-white text-primary font-display tracking-widest text-xs flex items-center justify-center gap-2  transition "
+            className={`flex-1 h-11 rounded-xl ${hasVisual ? "bg-white text-primary" : "grad-brand text-primary-foreground"} font-display tracking-widest text-xs flex items-center justify-center gap-2 transition`}
           >
             <Play size={16} fill="currentColor" /> JUGAR
           </button>
         </div>
-        <div className="flex items-center gap-3 text-white/90 text-[11px]">
+        <div className={`flex items-center gap-3 ${hasVisual ? "text-white/90" : "text-muted-foreground"} text-[11px]`}>
           <span className="flex items-center gap-1">
             {plays24 && plays24 > 0 ? <Flame size={11} fill="currentColor" /> : <Users size={11} />}
             {plays24 && plays24 > 0 ? `${plays24} jugados hoy` : `${active} activos`}

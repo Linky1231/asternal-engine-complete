@@ -91,10 +91,10 @@ export function GameIcon({
 }
 
 /** Marcador compartido para juegos que aún no tienen portada ni capturas. */
-export function GameIconPlaceholder() {
+export function GameIconPlaceholder({ iconSize = 46 }: { iconSize?: number }) {
   return (
     <>
-      <TileMark />
+      <TileMark iconSize={iconSize} />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/15 via-transparent to-black/[0.06]" />
       <CornerTicks />
     </>
@@ -102,12 +102,12 @@ export function GameIconPlaceholder() {
 }
 
 /** Marca del tile sin portada: icono de juego de trazo fino sobre la cuadrícula blueprint. */
-function TileMark() {
+function TileMark({ iconSize = 46 }: { iconSize?: number }) {
   return (
     <span className="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden>
       {/* halo suave: profundidad sin caja ni recuadro genérico */}
       <span className="absolute w-14 h-14 rounded-full bg-primary/[0.06] dark:bg-primary/[0.04] blur-xl" />
-      <FaGamepad size={46} className="relative text-primary/[0.28] dark:text-primary/[0.20]" />
+      <FaGamepad size={iconSize} className="relative text-primary/[0.28] dark:text-primary/[0.20]" />
     </span>
   );
 }
