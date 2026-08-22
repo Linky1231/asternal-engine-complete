@@ -190,11 +190,11 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
 /* Plugin / Plus — Aurora tomado del primer marco de perfil coloreado.
    Es una excepción local: el Azure Drift se mantiene intacto fuera de Plus. */
 .plus-page {
-  --plus-aurora-gradient: linear-gradient(135deg, #197FA6 0%, #249DA0 52%, #69BCCC 100%);
-  --plus-aurora-solid: #197FA6;
-  --plus-aurora-edge: #249DA0;
-  --primary: #197FA6;
-  --plus: #197FA6;
+  --plus-aurora-gradient: linear-gradient(135deg, #2089AE 0%, #2BA7A8 52%, #75C6D4 100%);
+  --plus-aurora-solid: #2089AE;
+  --plus-aurora-edge: #2BA7A8;
+  --primary: #2089AE;
+  --plus: #2089AE;
 }
 
 .plus-page .btn-grad,
@@ -205,7 +205,7 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow:
     inset 0 1.5px 0 rgb(255 255 255 / 0.38),
     inset 0 -1px 0 rgb(13 103 126 / 0.18),
-    0 12px 26px -17px rgb(25 127 166 / 0.52) !important;
+    0 12px 26px -17px rgb(32 137 174 / 0.52) !important;
 }
 
 .plus-page .btn-grad:hover,
@@ -215,33 +215,33 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow:
     inset 0 1.5px 0 rgb(255 255 255 / 0.5),
     inset 0 -1px 0 rgb(13 103 126 / 0.2),
-    0 16px 30px -16px rgb(36 157 160 / 0.5) !important;
+    0 16px 30px -16px rgb(43 167 168 / 0.5) !important;
 }
 
 .plus-page .plus-glass-hero,
 .plus-page .plus-glass-card,
 .plus-page .plus-glass-note {
-  border-color: rgb(36 157 160 / 0.28) !important;
+  border-color: rgb(43 167 168 / 0.28) !important;
   background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(105 188 204 / 0.1)),
+    linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(117 198 212 / 0.1)),
     var(--glass-base) !important;
-  box-shadow: 0 20px 42px -30px rgb(25 127 166 / 0.34), inset 0 1px 0 rgb(255 255 255 / 0.64) !important;
+  box-shadow: 0 20px 42px -30px rgb(32 137 174 / 0.34), inset 0 1px 0 rgb(255 255 255 / 0.64) !important;
 }
 
 .plus-page .plus-choice {
-  border-color: rgb(25 127 166 / 0.26) !important;
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(105 188 204 / 0.07)) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64), 0 7px 15px -15px rgb(25 127 166 / 0.42);
+  border-color: rgb(32 137 174 / 0.26) !important;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.64), rgb(117 198 212 / 0.07)) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64), 0 7px 15px -15px rgb(32 137 174 / 0.42);
 }
 
 .plus-page .plus-choice.border-primary,
 .plus-page .plus-choice:focus-visible {
   border-color: var(--plus-aurora-edge) !important;
-  box-shadow: 0 0 0 2px rgb(47 217 210 / 0.2), inset 0 1px 0 rgb(255 255 255 / 0.72) !important;
+  box-shadow: 0 0 0 2px rgb(43 167 168 / 0.18), inset 0 1px 0 rgb(255 255 255 / 0.72) !important;
 }
 
 .plus-page .plus-social-input {
-  border: 1px solid rgb(25 127 166 / 0.2);
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.58), rgb(105 188 204 / 0.06)) !important;
+  border: 1px solid rgb(32 137 174 / 0.2);
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.58), rgb(117 198 212 / 0.06)) !important;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64);
 }

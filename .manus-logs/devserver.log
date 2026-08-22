@@ -1360,3 +1360,11 @@
 [2026-08-22T21:41:11.882Z] ➜  Local:   http://localhost:5173/
 [2026-08-22T21:41:11.882Z] ➜  Network: http://169.254.0.21:5173/
 [2026-08-22T21:56:06.844Z] 9:56:06 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
+[2026-08-22T21:57:48.199Z] [ELIFECYCLE] Command failed.
+[2026-08-22T21:57:48.203Z] Dev server exited with code -1
+[2026-08-22T21:57:49.291Z] Starting dev server with command: pnpm run dev
+[2026-08-22T21:57:49.564Z] $ vite --host
+[2026-08-22T21:57:49.769Z] VITE v7.3.6  ready in 181 ms
+[2026-08-22T21:57:49.769Z] ➜  Local:   http://localhost:5173/
+[2026-08-22T21:57:49.769Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-22T22:00:43.603Z] 10:00:43 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css

@@ -603,6 +603,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Ajuste fino de claridad en Plus
+
+- [x] Aclarar ligeramente los turquesas Aurora de Plugin/Plus sin recuperar brillo excesivo.
+- [x] Conservar el Azure Drift global, el material glass y el contraste de Plus.
+- [x] Validar pruebas y compilación antes de publicar el ajuste fino.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.
