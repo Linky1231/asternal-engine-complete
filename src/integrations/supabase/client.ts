@@ -496,6 +496,38 @@ const localStorageBackend = { from: (bucket: string) => makeStorageBucket(bucket
 const localRpc = async (fn: string, _args?: Record<string, unknown>) => {
   switch (fn) {
     case 'purchase_game': return { data: { ok: true, free: true }, error: null };
+    case 'donate_orbes': {
+      const postId = _args?._post_id as string;
+      const amount = Number(_args?._amount);
+      if (!postId || !Number.isInteger(amount) || amount <= 0) {
+        return { data: { ok: false, error: 'Cantidad inválida' }, error: null };
+      }
+      const { data: { user } } = await localAuth.getUser();
+      if (!user) return { data: { ok: false, error: 'No autenticado' }, error: null };
+      const posts = getTableData<Record<string, unknown>>('posts');
+      const post = posts.find(p => p.id === postId);
+      if (!post || post.category !== 'game') return { data: { ok: false, error: 'Juego no encontrado' }, error: null };
+      const authorId = post.author_id as string;
+      if (authorId === user.id) return { data: { ok: false, error: 'No puedes donar a tu propio juego' }, error: null };
+      const profiles = getTableData<Record<string, unknown>>('profiles');
+      const donorIndex = profiles.findIndex(p => p.id === user.id);
+      const creatorIndex = profiles.findIndex(p => p.id === authorId);
+      if (donorIndex < 0 || creatorIndex < 0) return { data: { ok: false, error: 'No se encontró la cuenta' }, error: null };
+      const donorBalance = Number(profiles[donorIndex].orbes ?? 0);
+      if (donorBalance < amount) return { data: { ok: false, error: 'No tienes suficientes orbes', balance: donorBalance }, error: null };
+      const creatorBalance = Number(profiles[creatorIndex].orbes ?? 0);
+      profiles[donorIndex] = { ...profiles[donorIndex], orbes: donorBalance - amount, updated_at: now() };
+      profiles[creatorIndex] = { ...profiles[creatorIndex], orbes: creatorBalance + amount, updated_at: now() };
+      saveTableData('profiles', profiles);
+      const transactions = getTableData<Record<string, unknown>>('orbe_transactions');
+      const createdAt = now();
+      transactions.push(
+        { id: uid(), user_id: user.id, amount: -amount, kind: 'donation_sent', post_id: postId, description: 'Donación a un juego', created_at: createdAt },
+        { id: uid(), user_id: authorId, amount, kind: 'donation_received', post_id: postId, description: 'Donación recibida por un juego', created_at: createdAt },
+      );
+      saveTableData('orbe_transactions', transactions);
+      return { data: { ok: true, balance: donorBalance - amount }, error: null };
+    }
     case 'purchase_artwork': {
       const postId = _args?._post_id as string;
       if (!postId) return { data: { ok: false, paid: 0 }, error: null };

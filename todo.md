@@ -495,3 +495,13 @@ Orión incorpora ahora un activador de Voz en la cabecera y otro en el composito
 - [x] Validar capturas, accesibilidad, pruebas y compilación antes de publicar.
 
 La auditoría y sus referencias quedaron documentadas en `research-ai-slop.md` y `ai-slop-audit.md`. La primera corrección elimina la estructura de tarjeta reiterada en la entrada y en Historial: Acceso ahora explica el flujo real de construir, probar y compartir; Historial pasa de seis métricas vacías a una bitácora que guía la primera actividad y usa registros continuos cuando ya existen datos. La lógica de autenticación, datos, editor y motor permanece sin cambios.
+
+---
+
+# Actualización desde el repositorio del usuario
+
+- [x] Inspeccionar la nueva versión de `Linky1231/asternal-engine` y comparar sus cambios con el proyecto desplegado.
+- [x] Integrar los cambios compatibles sin sobrescribir la infraestructura, datos ni configuración de Manus.
+- [x] Validar pruebas, compilación y vista previa antes de publicar la actualización transferida.
+
+La transferencia prioriza la novedad funcional de la versión externa: los juegos se abren ahora en una superficie dedicada y sus jugadores pueden apoyar a creadores con orbes. La transacción valida sesión, juego, propiedad, saldo y cantidad antes de actualizar las cuentas y registrar ambos movimientos; se mantiene el adaptador de datos local existente para no volver a añadir servicios externos. La validación completó 37 pruebas, compilación de producción y una revisión de renderizado sin errores visibles.

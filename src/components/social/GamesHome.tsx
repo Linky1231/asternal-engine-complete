@@ -6,6 +6,7 @@ import { fetchGamePlayCounts24h } from "@/lib/social/api";
 import { SUPABASE_ACCESS_TOKEN, runGamePlaysSchemaSetup } from "@/lib/supabase/setup";
 import { GameIcon } from "./GameIcon";
 import { GameCard } from "./GameCard";
+import { GamePageSection } from "./GamePageSection";
 
 function extractTitle(content: string): string {
   const line = content.split("\n")[0] || "Juego";
@@ -180,9 +181,7 @@ export function GamesHome({
         </div>
       </div>
 
-      {selected && (
-        <GamePlayModal post={selected} myId={myId} isMod={isMod} onClose={() => setSelected(null)} onChange={onChange} />
-      )}
+      {selected && <GamePageSection game={selected} myId={myId} isMod={isMod} onClose={() => setSelected(null)} onChange={onChange} />}
     </div>
   );
 }

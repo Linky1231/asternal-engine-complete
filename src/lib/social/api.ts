@@ -800,11 +800,18 @@ export async function getMyOrbes(): Promise<number> {
   return (data as { orbes?: number } | null)?.orbes ?? 0;
 }
 
+/** Envía orbes al creador de un juego y devuelve el saldo actualizado del donante. */
+export async function donateOrbs(postId: string, amount: number): Promise<{ ok: boolean; balance?: number; error?: string }> {
+  const { data, error } = await supabase.rpc("donate_orbes" as never, { _post_id: postId, _amount: amount } as never);
+  if (error) throw error;
+  return (data as { ok: boolean; balance?: number; error?: string }) ?? { ok: false, error: "No se pudo completar la donación" };
+}
+
 export type OrbeTx = {
   id: string;
   user_id: string;
   amount: number;
-  kind: "welcome_bonus" | "game_purchase" | "adjustment" | "refund";
+  kind: "welcome_bonus" | "game_purchase" | "adjustment" | "refund" | "donation_sent" | "donation_received";
   post_id: string | null;
   description: string | null;
   created_at: string;
