@@ -3,6 +3,7 @@ import { X, Gamepad2, HandCoins, Sparkles, Play, Heart, MessageCircle } from "lu
 import { toast } from "sonner";
 import { type PostWithMeta, fetchGames, donateOrbs, getMyOrbes, recordGamePlay } from "@/lib/social/api";
 import { GameCard } from "./GameCard";
+import { GameIconPlaceholder } from "./GameIcon";
 
 const PRESET_AMOUNTS = [5, 10, 25, 50, 100];
 
@@ -142,7 +143,7 @@ export function GamePageSection({
           {game && (
             <>
               {/* Cover image — rounded square, not cropped */}
-              <div className="relative w-full aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden border border-border/40 bg-surface shadow-lg">
+              <div className={`relative w-full aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden border border-border/40 shadow-lg ${!game.signed_cover && !game.signed_media?.[0] ? "tile-blueprint" : "bg-surface"}`}>
                 {game.signed_cover ? (
                   <img
                     src={game.signed_cover}
@@ -155,11 +156,7 @@ export function GamePageSection({
                     alt={title}
                     className="w-full h-full object-contain"
                   />
-                ) : (
-                  <div className="w-full h-full grid place-items-center bg-gradient-to-br from-primary/5 to-primary/10">
-                    <Gamepad2 size={64} className="text-primary/20" />
-                  </div>
-                )}
+                ) : <GameIconPlaceholder />}
                 {/* Overlay: author + stats */}
                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
                   <div className="flex items-center gap-2 text-white/90 text-xs">

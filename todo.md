@@ -573,3 +573,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Aplicar un único degradado azul constante a los estados normal, hover, foco y presión.
 - [x] Optimizar únicamente animaciones para que usen propiedades de composición y respeten movimiento reducido.
 - [x] Validar consistencia visual, fluidez, pruebas y compilación antes de publicar.
+
+---
+
+# Revisión integral de interfaz y Plus
+
+- [x] Reducir el brillo excesivo y ordenar los controles del menú principal desplegable.
+- [x] Eliminar la duplicación del encabezado en el apartado Eventos.
+- [x] Unificar el icono de juegos sin portada entre Inicio y la pantalla individual de juego.
+- [x] Aplicar el degradado y material glass de Asternal al apartado Plus sin alterar sus funciones.
+- [x] Auditar y corregir inconsistencias visuales, textos genéricos, párrafos y acciones sin propósito en las áreas revisadas.
+- [x] Validar la aplicación completa en escritorio y móvil, con pruebas y compilación antes de publicar.

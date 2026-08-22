@@ -445,7 +445,7 @@ function HomePage() {
           <motion.div
             key="menu-drawer"
             onClick={e => e.stopPropagation()}
-            className="fixed right-0 top-0 z-[101] h-full w-[86vw] max-w-xs bg-card border-l border-border shadow-md p-4 flex flex-col gap-0.5 overflow-y-auto"
+            className="menu-drawer fixed right-0 top-0 z-[101] h-full w-[86vw] max-w-xs bg-card border-l border-border shadow-md p-4 flex flex-col gap-0.5 overflow-y-auto"
             initial={{ x: "100%", opacity: 0.4 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "100%", opacity: 0 }}
@@ -472,23 +472,23 @@ function HomePage() {
             </button>
             {/* Categoría: SOCIAL */}
             <CategoryHeader label="SOCIAL" />
-            <MenuItem icon={<MessageCircle size={16} className="text-primary-glow"/>} label="Chats" onClick={() => { setChatOpen(true); closeMenu(); }} />
-            <MenuItem icon={<Bot size={16} className="text-primary-glow"/>} label="Asistencia · Orión" onClick={() => { setOrionOpen(true); closeMenu(); }} />
-            <MenuLink icon={<Search size={16} className="text-primary-glow"/>} label="Buscar" to="/search" onClick={closeMenu} />
-            <MenuItem icon={<Bell size={16} className="text-primary-glow"/>} label="Notificaciones" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} />
+            <MenuItem icon={<MessageCircle size={16} className="text-primary/80"/>} label="Chats" onClick={() => { setChatOpen(true); closeMenu(); }} />
+            <MenuItem icon={<Bot size={16} className="text-primary/80"/>} label="Asistencia · Orión" onClick={() => { setOrionOpen(true); closeMenu(); }} />
+            <MenuLink icon={<Search size={16} className="text-primary/80"/>} label="Buscar" to="/search" onClick={closeMenu} />
+            <MenuItem icon={<Bell size={16} className="text-primary/80"/>} label="Notificaciones" onClick={() => { setMenuOpen(false); setNotifOpen(true); }} />
 
             {/* Categoría: COMUNIDAD */}
             <CategoryHeader label="COMUNIDAD" />
-            <MenuItem icon={<Trophy size={16} className="text-primary-glow"/>} label="Eventos" onClick={() => { setEventsOpen(true); closeMenu(); }} />
-            <MenuLink icon={<BarChart3 size={16} className="text-primary-glow"/>} label="Historial" to="/history" onClick={closeMenu} />
-            <MenuLink icon={<Megaphone size={16} className="text-primary-glow"/>} label="Panel de Orbes" to="/orbes" onClick={closeMenu} />
+            <MenuItem icon={<Trophy size={16} className="text-primary/80"/>} label="Eventos" onClick={() => { setEventsOpen(true); closeMenu(); }} />
+            <MenuLink icon={<BarChart3 size={16} className="text-primary/80"/>} label="Historial" to="/history" onClick={closeMenu} />
+            <MenuLink icon={<Megaphone size={16} className="text-primary/80"/>} label="Panel de Orbes" to="/orbes" onClick={closeMenu} />
             {(mod || admin) && (
-              <MenuLink icon={<ShieldCheck size={16} className="text-primary-glow"/>} label="Moderación" to="/admin" onClick={closeMenu} />
+              <MenuLink icon={<ShieldCheck size={16} className="text-primary/80"/>} label="Moderación" to="/admin" onClick={closeMenu} />
             )}
 
             {/* Categoría: CREACIÓN */}
             <CategoryHeader label="CREACIÓN" />
-            <MenuLink icon={<Wrench size={16} className="text-primary-glow"/>} label="Editor" to="/editor" onClick={closeMenu} />
+            <MenuLink icon={<Wrench size={16} className="text-primary/80"/>} label="Editor" to="/editor" onClick={closeMenu} />
             <MenuLink icon={<Star size={16} fill="currentColor" style={{ color: "var(--plus)" }}/>} label="Centro Plus" to="/plus" onClick={closeMenu} />
 
             <div className="flex-1 min-h-4" />
@@ -555,7 +555,7 @@ function HomePage() {
             </header>
             <div className="flex-1 overflow-y-auto no-scrollbar">
               <div className="max-w-2xl md:max-w-3xl mx-auto px-4 py-4">
-                <EventsSection isAdmin={admin} />
+                <EventsSection isAdmin={admin} showHeader={false} />
               </div>
             </div>
           </motion.div>
@@ -664,7 +664,7 @@ function SkeletonList() {
 function MenuLink({ icon, label, to, onClick }: { icon: React.ReactNode; label: string; to: string; onClick?: () => void }) {
   return (
     <Link to={to} onClick={onClick}
-      className="flex items-center gap-3 px-3 h-10 rounded-lg text-ink hover:bg-muted/60 active:scale-[0.98] transition">
+      className="menu-action flex items-center gap-3 px-3 h-10 rounded-lg text-ink hover:bg-muted/60 active:scale-[0.98] transition">
       {icon} <span className="text-sm font-medium">{label}</span>
     </Link>
   );
@@ -673,7 +673,7 @@ function MenuLink({ icon, label, to, onClick }: { icon: React.ReactNode; label: 
 function MenuItem({ icon, label, onClick, children }: { icon: React.ReactNode; label: string; onClick?: () => void; children?: React.ReactNode }) {
   return (
     <button onClick={onClick}
-      className="flex items-center gap-3 px-3 h-10 rounded-lg text-ink hover:bg-muted/60 active:scale-[0.98] transition w-full text-left">
+      className="menu-action flex items-center gap-3 px-3 h-10 rounded-lg text-ink hover:bg-muted/60 active:scale-[0.98] transition w-full text-left">
       {icon} <span className="text-sm font-medium flex-1">{label}</span>
       {children}
     </button>

@@ -136,6 +136,49 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   backdrop-filter: blur(24px) saturate(1.16) !important;
 }
 
+/* Menú principal: mantiene profundidad de vidrio, pero las opciones no compiten como CTAs. */
+.menu-drawer {
+  background: linear-gradient(160deg, oklch(0.985 0.006 252 / 0.96), oklch(0.94 0.018 246 / 0.9)) !important;
+  border-color: oklch(1 0 0 / 0.72) !important;
+  box-shadow: -18px 0 42px -26px oklch(0.28 0.05 260 / 0.48), inset 1px 0 0 oklch(1 0 0 / 0.84) !important;
+  backdrop-filter: blur(20px) saturate(1.08) !important;
+}
+
+.menu-drawer .menu-action {
+  background: transparent !important;
+  border: 1px solid transparent;
+  box-shadow: none !important;
+}
+
+.menu-drawer .menu-action:hover {
+  background: oklch(1 0 0 / 0.46) !important;
+  border-color: oklch(0.61 0.08 246 / 0.18) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.66) !important;
+}
+
+.menu-drawer .menu-action:active { transform: scale(0.985); }
+
+/* Plus pertenece a la misma interfaz Azure Drift: conserva sus funciones, no una paleta paralela. */
+.plus-page .plus-glass-hero,
+.plus-page .plus-glass-card,
+.plus-page .plus-glass-note,
+.plus-page .plus-social-input {
+  background: linear-gradient(135deg, oklch(1 0 0 / 0.68), oklch(0.94 0.025 248 / 0.42)) !important;
+  border-color: oklch(0.62 0.09 246 / 0.28) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.76), 0 18px 34px -28px oklch(0.32 0.08 258 / 0.42) !important;
+  backdrop-filter: blur(20px) saturate(1.12);
+}
+
+.plus-page .plus-choice {
+  background: oklch(1 0 0 / 0.30);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.58);
+}
+
+.plus-page .plus-choice:hover:not(:disabled) {
+  background: oklch(0.93 0.035 248 / 0.52);
+  border-color: oklch(0.55 0.12 250 / 0.5);
+}
+
 @media (prefers-reduced-motion: reduce) {
   :is(button, a)[class*="bg-primary"]::after, .btn-grad::after, .grad-brand::after { transition: none; }
 }

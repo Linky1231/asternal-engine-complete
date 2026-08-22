@@ -686,12 +686,12 @@ function AuthPage() {
                         </div>
                       )}
 
-                      {/* "Invalid API key": una clave de Supabase guardada en el navegador es incorrecta */}
+                      {/* Recuperación de una configuración local de conexión inválida. */}
                       {err && /invalid api key|apikey|invalid key/i.test(err) && (
                         <button type="button" onClick={resetConnection}
                           className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-lg border border-dashed border-amber-400/50 text-[11px] font-medium text-amber-700 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-100/70 dark:hover:bg-amber-950/40 transition-colors"
                         >
-                          <RefreshCw size={11} /> Restablecer la conexión de Supabase (borra la clave guardada y recarga)
+                          <RefreshCw size={11} /> Restablecer conexión y recargar
                         </button>
                       )}
 
@@ -747,13 +747,6 @@ function AuthPage() {
                           </p>
                         </div>
                       )}
-                      <p className="text-[10px] text-muted-foreground/30 text-center font-mono tracking-wider">
-                        Tus creaciones se sincronizan en la nube
-                      </p>
-                      <button type="button" onClick={resetConnection}
-                        className="mt-2 w-full text-center text-[10px] text-muted-foreground/30 hover:text-primary transition-colors underline underline-offset-2">
-                        ¿Problemas de conexión? Restablecer Supabase
-                      </button>
                     </div>
                   </div>
                 </div>

@@ -90,6 +90,17 @@ export function GameIcon({
   );
 }
 
+/** Marcador compartido para juegos que aún no tienen portada ni capturas. */
+export function GameIconPlaceholder() {
+  return (
+    <>
+      <TileMark />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/15 via-transparent to-black/[0.06]" />
+      <CornerTicks />
+    </>
+  );
+}
+
 /** Marca del tile sin portada: icono de juego de trazo fino sobre la cuadrícula blueprint. */
 function TileMark() {
   return (

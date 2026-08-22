@@ -1339,3 +1339,11 @@
 [2026-08-22T21:01:10.847Z] VITE v7.3.6  ready in 189 ms
 [2026-08-22T21:01:10.847Z] ➜  Local:   http://localhost:5173/
 [2026-08-22T21:01:10.847Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-22T21:15:42.482Z] 9:15:42 PM [vite] (client) hmr update /src/styles.css, /src/components/social/EventsSection.tsx
+[2026-08-22T21:15:42.482Z] 9:15:42 PM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
+[2026-08-22T21:15:42.950Z] 9:15:42 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GamePageSection.tsx
+[2026-08-22T21:15:43.003Z] 9:15:43 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GameIcon.tsx
+[2026-08-22T21:15:43.046Z] 9:15:43 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
+[2026-08-22T21:16:16.717Z] 9:16:16 PM [vite] (client) hmr update /src/routes/plus.tsx, /src/styles.css
+[2026-08-22T21:16:16.727Z] 9:16:16 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
+[2026-08-22T21:17:14.458Z] 9:17:14 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
