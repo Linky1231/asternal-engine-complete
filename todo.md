@@ -620,6 +620,15 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Ficha aislada de juego
+
+- [x] Localizar la fuente de portada rota y los metadatos repetidos en la ficha aislada.
+- [x] Usar un marcador seguro cuando no haya portada válida y eliminar la duplicación visual.
+- [x] Reorganizar la ficha móvil con una jerarquía clara para jugar, precio, autor y actividad.
+- [x] Validar la ficha, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

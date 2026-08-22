@@ -1372,3 +1372,5 @@
 [2026-08-22T22:07:46.268Z] 10:07:46 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
 [2026-08-22T22:07:46.269Z] 10:07:46 PM [vite] (client) hmr update /src/routes/orbes.tsx, /src/styles.css
 [2026-08-22T22:07:46.620Z] 10:07:46 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-22T22:11:50.779Z] 10:11:50 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GameCard.tsx
+[2026-08-22T22:11:51.219Z] 10:11:51 PM [vite] (client) hmr update /src/styles.css, /src/components/social/GamePageSection.tsx

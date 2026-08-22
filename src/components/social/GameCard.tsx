@@ -10,6 +10,7 @@ import { CommentSection } from "./CommentSection";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { PublishGameDialog } from "@/components/engine/PublishGameDialog";
 import { createProject, saveProjectById, setProjectCloudId, setCurrentProjectId } from "@/lib/engine/storage";
+import { GameIconPlaceholder } from "./GameIcon";
 
 function timeAgo(iso: string) {
   const s = Math.max(1, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
@@ -46,6 +47,10 @@ export function GameCard({
   const mine = myId === post.author_id;
   const canRemix = post.allow_remix !== false;
   const price = post.price_orbes ?? 0;
+  const coverUrl = post.signed_cover ?? post.signed_screenshots[0] ?? null;
+  const [coverFailed, setCoverFailed] = useState(false);
+  useEffect(() => { setCoverFailed(false); }, [coverUrl]);
+  const hasCover = Boolean(coverUrl) && !coverFailed;
   const [owned, setOwned] = useState<boolean>(post.owned ?? (price <= 0 || mine));
   useEffect(() => { setOwned(post.owned ?? (price <= 0 || mine)); }, [post.owned, price, mine]);
   const needsPurchase = !owned && price > 0 && !mine;
@@ -205,15 +210,14 @@ export function GameCard({
     <article className="panel rounded-2xl overflow-hidden border border-border/50 shadow-sm">
       <div
         onClick={play}
-        className="relative aspect-[16/10] grid place-items-center cursor-pointer active:scale-[0.99] transition overflow-hidden"
-        style={post.signed_cover ? undefined : { background: "var(--gradient-asternal-soft)" }}
+        className={`relative aspect-[16/10] grid place-items-center cursor-pointer active:scale-[0.99] transition overflow-hidden ${hasCover ? "" : "tile-blueprint"}`}
       >
-        {post.signed_cover ? (
+        {hasCover ? (
           <>
-            <img src={post.signed_cover} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+            <img src={coverUrl!} alt={title} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
           </>
-        ) : null}
+        ) : <GameIconPlaceholder />}
         <button
           className="relative w-16 h-16 rounded-2xl bg-card grid place-items-center shadow-md active:scale-95 hover:scale-105 transition-transform duration-200"
           aria-label={needsPurchase ? "Comprar y jugar" : "Jugar"}
@@ -248,11 +252,11 @@ export function GameCard({
               <Avatar p={post.author} className="w-full h-full" />
             </Link>
             <div className="min-w-0">
-              <div className={`font-display text-base truncate drop-shadow ${post.signed_cover ? "text-white" : "text-foreground"}`}>{title}</div>
+              <div className={`font-display text-base truncate drop-shadow ${hasCover ? "text-white" : "text-foreground"}`}>{title}</div>
               <Link
                 to="/profile/$userId" params={{ userId: post.author_id }}
                 onClick={e => e.stopPropagation()}
-                className={`text-[10px] font-mono truncate hover:underline ${post.signed_cover ? "text-white/80" : "text-muted-foreground"}`}
+                className={`text-[10px] font-mono truncate hover:underline ${hasCover ? "text-white/80" : "text-muted-foreground"}`}
               >
                 @{post.author?.username ?? "jugador"} · {timeAgo(post.created_at)}
               </Link>

@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { X, Gamepad2, HandCoins, Sparkles, Play, Heart, MessageCircle } from "lucide-react";
+import { X, Gamepad2, HandCoins, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { type PostWithMeta, fetchGames, donateOrbs, getMyOrbes, recordGamePlay } from "@/lib/social/api";
+import { type PostWithMeta, fetchGames, donateOrbs, getMyOrbes } from "@/lib/social/api";
 import { GameCard } from "./GameCard";
-import { GameIconPlaceholder } from "./GameIcon";
 
 const PRESET_AMOUNTS = [5, 10, 25, 50, 100];
 
@@ -142,44 +141,8 @@ export function GamePageSection({
           )}
           {game && (
             <>
-              {/* Cover image — rounded square, not cropped */}
-              <div className={`relative w-full aspect-square max-w-sm mx-auto rounded-2xl overflow-hidden border border-border/40 shadow-lg ${!game.signed_cover && !game.signed_media?.[0] ? "tile-blueprint" : "bg-surface"}`}>
-                {game.signed_cover ? (
-                  <img
-                    src={game.signed_cover}
-                    alt={title}
-                    className="w-full h-full object-contain"
-                  />
-                ) : game.signed_media?.[0] ? (
-                  <img
-                    src={game.signed_media[0]}
-                    alt={title}
-                    className="w-full h-full object-contain"
-                  />
-                ) : <GameIconPlaceholder />}
-                {/* Overlay: author + stats */}
-                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-4 pt-10">
-                  <div className="flex items-center gap-2 text-white/90 text-xs">
-                    <span className="font-semibold truncate">{title}</span>
-                    <span className="text-white/50">·</span>
-                    <span className="text-white/70 truncate">@{game.author?.username}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats bar */}
-              <div className="flex items-center justify-center gap-6 text-muted-foreground">
-                <div className="flex items-center gap-1.5 text-xs">
-                  <Heart size={13} className={game.my_like ? "text-red-500" : ""} fill={game.my_like ? "currentColor" : "none"} />
-                  <span className="font-mono">{game.likes}</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-xs">
-                  <MessageCircle size={13} />
-                  <span className="font-mono">{game.comments_count}</span>
-                </div>
-              </div>
-
-              {/* GameCard (player + controls) */}
+              {/* Una única tarjeta integra portada, reproducción, precio y actividad.
+                  La información del proyecto nunca se usa como URL de imagen. */}
               <GameCard
                 post={game}
                 myId={myId}
