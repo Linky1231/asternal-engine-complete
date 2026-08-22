@@ -1,5 +1,6 @@
 // @ts-nocheck — Local DB adapter (types differ from Supabase generics)
 import { supabase, isSchemaMissing } from "@/integrations/supabase/client";
+import { DEFAULT_COVER_FRAME, type CoverFrame, withCoverFrame } from "./cover-frame";
 
 export type SocialLinks = {
   youtube?: string;
@@ -703,6 +704,7 @@ export async function publishGame(input: {
   allowRemix?: boolean;
   priceOrbes?: number;
   gameGenre?: string | null;
+  coverFrame?: CoverFrame;
 }): Promise<PostRow> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
@@ -728,6 +730,7 @@ export async function publishGame(input: {
     screenshots,
     allow_remix: input.allowRemix ?? true,
     price_orbes: Math.max(0, Math.floor(input.priceOrbes ?? 0)),
+    asset_preset: withCoverFrame(null, input.coverFrame ?? DEFAULT_COVER_FRAME),
   } as never).select().single();
   if (error) throw error;
   await upsertTagsFor(post!.id, input.tags);
@@ -758,6 +761,8 @@ export async function updateGame(postId: string, input: {
   allowRemix?: boolean;
   priceOrbes?: number;
   gameGenre?: string | null;
+  coverFrame?: CoverFrame;
+  assetPreset?: Record<string, unknown> | null;
 }): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
@@ -786,6 +791,7 @@ export async function updateGame(postId: string, input: {
   if (typeof input.allowRemix === "boolean") patch.allow_remix = input.allowRemix;
   if (typeof input.priceOrbes === "number") patch.price_orbes = Math.max(0, Math.floor(input.priceOrbes));
   if (input.gameGenre !== undefined) patch.game_genre = input.gameGenre.trim() || null;
+  if (input.coverFrame) patch.asset_preset = withCoverFrame(input.assetPreset, input.coverFrame);
   const { error } = await supabase.from("posts").update(patch as never).eq("id", postId);
   if (error) throw error;
   if (input.tags) {
@@ -1836,4 +1842,3 @@ export async function fetchFollowing(userId: string): Promise<Profile[]> {
     return ids.map(id => byId.get(id)).filter((p): p is Profile => !!p);
   } catch { return []; }
 }
-

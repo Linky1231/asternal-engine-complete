@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { publishGame, updateGame, GAME_GENRES } from "@/lib/social/api";
-import { Upload, Loader2, CheckCircle2, ImagePlus, Images, X, GitFork, Sparkles } from "lucide-react";
+import { Upload, Loader2, CheckCircle2, ImagePlus, Images, X, GitFork, Sparkles, Move, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
 import type { Project } from "@/lib/engine/core";
+import { coverFrameStyle, DEFAULT_COVER_FRAME, normaliseCoverFrame, type CoverFrame } from "@/lib/social/cover-frame";
 
 export function PublishGameDialog({
   open, onOpenChange, project, defaultTitle,
@@ -18,6 +19,8 @@ export function PublishGameDialog({
   initialAllowRemix,
   initialPriceOrbes,
   initialGenre,
+  initialCoverFrame,
+  initialAssetPreset,
   onSaved,
 }: {
   open: boolean;
@@ -35,6 +38,8 @@ export function PublishGameDialog({
   initialAllowRemix?: boolean;
   initialPriceOrbes?: number;
   initialGenre?: string | null;
+  initialCoverFrame?: CoverFrame;
+  initialAssetPreset?: Record<string, unknown> | null;
   onSaved?: () => void;
 }) {
   const navigate = useNavigate();
@@ -44,6 +49,8 @@ export function PublishGameDialog({
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverPreview, setCoverPreview] = useState<string | null>(initialCoverUrl ?? null);
   const [removeCover, setRemoveCover] = useState(false);
+  const [coverFrame, setCoverFrame] = useState<CoverFrame>(normaliseCoverFrame(initialCoverFrame));
+  const dragRef = useRef<{ startX: number; startY: number; frame: CoverFrame } | null>(null);
   const [screens, setScreens] = useState<{ id: string; file?: File; url: string; path?: string; existing?: boolean }[]>([]);
   const [allowRemix, setAllowRemix] = useState<boolean>(initialAllowRemix ?? true);
   const [priceOrbes, setPriceOrbes] = useState<number>(initialPriceOrbes ?? 0);
@@ -62,19 +69,21 @@ export function PublishGameDialog({
       setCoverPreview(initialCoverUrl ?? null);
       setCoverFile(null);
       setRemoveCover(false);
+      setCoverFrame(normaliseCoverFrame(initialCoverFrame));
       setScreens((initialScreenshots ?? []).map((s, i) => ({ id: `existing-${i}`, url: s.url, path: s.path, existing: true })));
       setAllowRemix(initialAllowRemix ?? true);
       setPriceOrbes(initialPriceOrbes ?? 0);
       setGenre(initialGenre ?? "");
       setErr(null); setDone(false);
     }
-  }, [open, initialTitle, defaultTitle, initialDescription, initialTags, initialCoverUrl, initialScreenshots, initialAllowRemix, initialPriceOrbes, initialGenre]);
+  }, [open, initialTitle, defaultTitle, initialDescription, initialTags, initialCoverUrl, initialScreenshots, initialAllowRemix, initialPriceOrbes, initialGenre, initialCoverFrame]);
 
   const pickCover = (f: File | null) => {
     if (!f) return;
     if (f.size > 5 * 1024 * 1024) { setErr("La imagen no puede pesar más de 5MB"); return; }
     setCoverFile(f);
     setRemoveCover(false);
+    setCoverFrame(DEFAULT_COVER_FRAME);
     const url = URL.createObjectURL(f);
     setCoverPreview(url);
   };
@@ -83,6 +92,7 @@ export function PublishGameDialog({
     setCoverFile(null);
     setCoverPreview(null);
     setRemoveCover(true);
+    setCoverFrame(DEFAULT_COVER_FRAME);
   };
 
   const pickScreens = (files: FileList | null) => {
@@ -125,9 +135,11 @@ export function PublishGameDialog({
           allowRemix,
           priceOrbes,
           gameGenre: genre.trim() || null,
+          coverFrame,
+          assetPreset: initialAssetPreset,
         });
       } else if (project) {
-        await publishGame({ project, title: title.trim(), description: description.trim(), tags, coverFile, screenshotFiles: newShots, allowRemix, priceOrbes, gameGenre: genre.trim() || null });
+        await publishGame({ project, title: title.trim(), description: description.trim(), tags, coverFile, screenshotFiles: newShots, allowRemix, priceOrbes, gameGenre: genre.trim() || null, coverFrame });
       }
       setDone(true);
       setTimeout(() => {
@@ -141,6 +153,16 @@ export function PublishGameDialog({
   };
 
   const isEdit = mode === "edit";
+  const updateCoverFrameFromDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const start = dragRef.current;
+    if (!start) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setCoverFrame(normaliseCoverFrame({
+      x: start.frame.x - ((event.clientX - start.startX) / bounds.width) * 100,
+      y: start.frame.y - ((event.clientY - start.startY) / bounds.height) * 100,
+      zoom: start.frame.zoom,
+    }));
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -170,7 +192,7 @@ export function PublishGameDialog({
                 className="relative w-20 h-20 rounded-xl border border-border overflow-hidden bg-input/50 grid place-items-center active:scale-95 transition group"
               >
                 {coverPreview ? (
-                  <img src={coverPreview} alt="portada" className="w-full h-full object-cover" />
+                  <img src={coverPreview} alt="portada" className="w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
                 ) : (
                   <ImagePlus size={22} className="text-muted-foreground group-hover:text-primary-glow" />
                 )}
@@ -191,6 +213,45 @@ export function PublishGameDialog({
                 onChange={e => pickCover(e.target.files?.[0] ?? null)}
               />
             </div>
+            {coverPreview && (
+              <div className="mt-3 rounded-xl border border-border/70 bg-input/30 p-2.5 space-y-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-[10px] font-display tracking-wide text-foreground">
+                    <Move size={12} className="text-primary" /> ENCUADRE DE PORTADA
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setCoverFrame(DEFAULT_COVER_FRAME)}
+                    className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <RotateCcw size={11} /> restablecer
+                  </button>
+                </div>
+                <div
+                  className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border/70 bg-muted/30 touch-none cursor-grab active:cursor-grabbing"
+                  onPointerDown={event => {
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                    dragRef.current = { startX: event.clientX, startY: event.clientY, frame: coverFrame };
+                  }}
+                  onPointerMove={updateCoverFrameFromDrag}
+                  onPointerUp={() => { dragRef.current = null; }}
+                  onPointerCancel={() => { dragRef.current = null; }}
+                >
+                  <img src={coverPreview} alt="Vista previa de encuadre" className="absolute inset-0 h-full w-full object-contain pointer-events-none" style={coverFrameStyle(coverFrame)} />
+                  <div className="absolute inset-0 pointer-events-none border border-primary/35 ring-1 ring-inset ring-white/40" />
+                  <div className="absolute inset-x-0 bottom-0 bg-black/50 px-2 py-1 text-center text-[9px] font-mono text-white">ARRASTRA PARA POSICIONAR</div>
+                </div>
+                <label className="block">
+                  <span className="flex justify-between text-[10px] text-muted-foreground mb-1"><span>ESCALA</span><span className="font-mono text-primary">{coverFrame.zoom.toFixed(2)}×</span></span>
+                  <input
+                    type="range" min="1" max="2.4" step="0.05" value={coverFrame.zoom}
+                    onChange={event => setCoverFrame(frame => ({ ...frame, zoom: Number(event.target.value) }))}
+                    className="w-full accent-primary"
+                    aria-label="Escala de la portada"
+                  />
+                </label>
+              </div>
+            )}
           </div>
           <div>
             <div className="flex items-center justify-between">

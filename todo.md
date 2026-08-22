@@ -648,6 +648,15 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Herramienta de encuadre de portada
+
+- [x] Auditar el flujo de selección de portada, vista previa y publicación del juego.
+- [x] Añadir controles de escala y posición con vista previa interactiva del encuadre.
+- [x] Guardar el encuadre y aplicarlo de forma consistente en las tarjetas públicas.
+- [x] Validar la herramienta, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

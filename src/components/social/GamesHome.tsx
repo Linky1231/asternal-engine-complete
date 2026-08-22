@@ -7,6 +7,7 @@ import { fetchGamePlayCounts24h } from "@/lib/social/api";
 import { SUPABASE_ACCESS_TOKEN, runGamePlaysSchemaSetup } from "@/lib/supabase/setup";
 import { GameIcon, GameIconPlaceholder } from "./GameIcon";
 import { GameCard } from "./GameCard";
+import { coverFrameFromPreset, coverFrameStyle } from "@/lib/social/cover-frame";
 
 function extractTitle(content: string): string {
   const line = content.split("\n")[0] || "Juego";
@@ -392,6 +393,7 @@ function Ranking24({ games, totalGames, onOpen }: {
       <div className="space-y-1.5">
         {games.map(({ g, n }, i) => {
           const title = extractTitle(g.content);
+          const coverFrame = coverFrameFromPreset(g.asset_preset);
           return (
             <button
               key={g.id}
@@ -403,7 +405,7 @@ function Ranking24({ games, totalGames, onOpen }: {
               </span>
               <div className={`relative w-11 h-11 shrink-0 rounded-lg overflow-hidden border border-border/60 ${g.signed_cover || g.signed_screenshots?.[0] ? "bg-muted/40" : "tile-blueprint"}`}>
                 {g.signed_cover || g.signed_screenshots?.[0] ? (
-                  <img src={g.signed_cover ?? g.signed_screenshots[0]} alt="" className="w-full h-full object-cover" />
+                  <img src={g.signed_cover ?? g.signed_screenshots[0]} alt="" className="w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
                 ) : (
                   <GameIconPlaceholder iconSize={22} />
                 )}
@@ -489,6 +491,7 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
   const active = plays24 && plays24 > 0 ? plays24 : 1 + Math.floor((post.likes + post.comments_count) * 1.3);
   const visualUrl = post.signed_cover ?? post.signed_screenshots[0] ?? null;
   const hasVisual = Boolean(visualUrl);
+  const coverFrame = coverFrameFromPreset(post.asset_preset);
   return (
     <div className="relative">
       {/* Halo de brillo aparte: sombra estática con pulso SOLO de opacidad
@@ -498,7 +501,7 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
       <div className="banner-glow relative rounded-3xl overflow-hidden border border-white/70">
         <div className="relative aspect-[16/10] w-full md:aspect-[21/9]">
         {hasVisual ? (
-          <img src={visualUrl!} alt={title} className="absolute inset-0 w-full h-full object-cover" />
+          <img src={visualUrl!} alt={title} className="absolute inset-0 w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
         ) : (
           <div className="absolute inset-0 tile-blueprint">
             <GameIconPlaceholder iconSize={112} />

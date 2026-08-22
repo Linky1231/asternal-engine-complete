@@ -3,6 +3,7 @@ import { Avatar } from "./Avatar";
 import { Play, Heart, MessageCircle, Share2, Trash2, MoreHorizontal, Pencil, GitFork, Loader2, Sparkles, Lock, X, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight, Gamepad2, Flag } from "lucide-react";
 import { useNavigate, Link } from "@tanstack/react-router";
 import { type PostWithMeta, toggleReaction, deletePost, loadGameProject, reportContent, remixGame, purchaseGame, getMyOrbes, recordGamePlay } from "@/lib/social/api";
+import { coverFrameFromPreset, coverFrameStyle } from "@/lib/social/cover-frame";
 import { logPlaySession } from "@/lib/social/history";
 import type { Project, Scene } from "@/lib/engine/core";
 import { GameRuntime } from "@/components/engine/GameRuntime";
@@ -51,6 +52,7 @@ export function GameCard({
   const [coverFailed, setCoverFailed] = useState(false);
   useEffect(() => { setCoverFailed(false); }, [coverUrl]);
   const hasCover = Boolean(coverUrl) && !coverFailed;
+  const coverFrame = coverFrameFromPreset(post.asset_preset);
   const [owned, setOwned] = useState<boolean>(post.owned ?? (price <= 0 || mine));
   useEffect(() => { setOwned(post.owned ?? (price <= 0 || mine)); }, [post.owned, price, mine]);
   const needsPurchase = !owned && price > 0 && !mine;
@@ -211,7 +213,7 @@ export function GameCard({
       <div className="p-3 pb-0">
         <div className={`relative aspect-[16/10] overflow-hidden rounded-[18px] border border-border/60 bg-muted/20 ${hasCover ? "" : "tile-blueprint"}`}>
         {hasCover ? (
-          <img src={coverUrl!} alt={`Portada de ${title}`} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-contain" />
+          <img src={coverUrl!} alt={`Portada de ${title}`} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
         ) : <GameIconPlaceholder />}
         </div>
         <div className="flex items-start justify-between gap-3 pt-3">
@@ -333,6 +335,8 @@ export function GameCard({
           initialAllowRemix={post.allow_remix !== false}
           initialPriceOrbes={post.price_orbes ?? 0}
           initialGenre={post.game_genre ?? null}
+          initialCoverFrame={coverFrame}
+          initialAssetPreset={post.asset_preset}
           onSaved={onChange}
         />
       )}

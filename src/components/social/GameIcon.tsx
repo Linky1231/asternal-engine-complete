@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Sparkles, Lock } from "lucide-react";
 import { FaGamepad } from "react-icons/fa";
 import type { PostWithMeta } from "@/lib/social/api";
+import { coverFrameFromPreset, coverFrameStyle } from "@/lib/social/cover-frame";
 
 function extractTitle(content: string): string {
   const line = content.split("\n")[0] || "Juego";
@@ -39,6 +40,7 @@ export function GameIcon({
     setImgFailed(false);
   }, [coverUrl]);
   const hasCover = !!coverUrl && !imgFailed;
+  const coverFrame = coverFrameFromPreset(post.asset_preset);
 
   const dims = size === "sm" ? "w-16" : size === "lg" ? "w-24" : "w-20";
   const radius = size === "lg" ? "rounded-[22px]" : "rounded-2xl";
@@ -62,7 +64,8 @@ export function GameIcon({
             alt={title}
             loading="lazy"
             onError={() => setImgFailed(true)}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+            className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.04]"
+            style={coverFrameStyle(coverFrame)}
           />
         ) : (
           <TileMark />
