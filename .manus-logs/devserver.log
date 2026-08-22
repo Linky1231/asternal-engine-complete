@@ -1265,3 +1265,41 @@
 [2026-08-22T04:50:16.767Z] VITE v7.3.6  ready in 294 ms
 [2026-08-22T04:50:16.767Z] ➜  Local:   http://localhost:5173/
 [2026-08-22T04:50:16.767Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-22T05:08:54.921Z] 5:08:54 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T05:08:55.041Z] 5:08:55 AM [vite] vite.config.ts changed, restarting server...
+[2026-08-22T05:08:55.047Z] ✘ [ERROR] No loader is configured for ".md" files: src/lib/ai/engine-knowledge.md?raw
+[2026-08-22T05:08:55.047Z] src/lib/ai/engine-knowledge.ts:3:22:
+[2026-08-22T05:08:55.047Z] 3 │ import knowledge from "./engine-knowledge.md?raw";
+[2026-08-22T05:08:55.047Z] ╵                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+[2026-08-22T05:08:55.047Z] failed to load config from /home/ubuntu/asternal-engine/vite.config.ts
+[2026-08-22T05:08:55.047Z] 5:08:55 AM [vite] Build failed with 1 error:
+[2026-08-22T05:08:55.047Z] src/lib/ai/engine-knowledge.ts:3:22: ERROR: No loader is configured for ".md" files: src/lib/ai/engine-knowledge.md?raw
+[2026-08-22T05:08:55.047Z] 5:08:55 AM [vite] server restart failed
+[2026-08-22T05:09:29.143Z] 5:09:29 AM [vite] (client) hmr update /src/main.tsx, /src/styles.css
+[2026-08-22T05:09:29.153Z] 5:09:29 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T05:09:34.589Z] 5:09:34 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T05:09:34.590Z] 5:09:34 AM [vite] (client) hmr update /vly-toolbar-readonly.tsx
+[2026-08-22T05:10:17.451Z] 5:10:17 AM [vite] changed tsconfig file detected: /home/ubuntu/asternal-engine/tsconfig.app.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+[2026-08-22T05:11:25.181Z] 5:11:25 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T05:11:42.535Z] 5:11:42 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T05:12:04.010Z] 5:12:04 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T05:12:27.386Z] [ELIFECYCLE] Command failed.
+[2026-08-22T05:12:27.391Z] Dev server exited with code -1
+[2026-08-22T05:12:28.477Z] Starting dev server with command: pnpm run dev
+[2026-08-22T05:12:28.737Z] $ vite --host
+[2026-08-22T05:12:28.955Z] 5:12:28 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-22T05:12:28.972Z] VITE v7.3.6  ready in 213 ms
+[2026-08-22T05:12:28.972Z] ➜  Local:   http://localhost:5173/
+[2026-08-22T05:12:28.972Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-22T05:14:12.680Z] 5:14:12 AM [vite] server/orion.ts changed, restarting server...
+[2026-08-22T05:14:12.724Z] 5:14:12 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-22T05:14:12.732Z] 5:14:12 AM [vite] server restarted.
+[2026-08-22T05:14:55.208Z] 5:14:55 AM [vite] vite.config.ts changed, restarting server...
+[2026-08-22T05:14:55.222Z] 5:14:55 AM [vite] server restarted.
+[2026-08-22T05:15:43.986Z] [ELIFECYCLE] Command failed.
+[2026-08-22T05:15:43.992Z] Dev server exited with code -1
+[2026-08-22T05:15:45.078Z] Starting dev server with command: pnpm run dev
+[2026-08-22T05:15:45.377Z] $ vite --host
+[2026-08-22T05:15:45.604Z] VITE v7.3.6  ready in 201 ms
+[2026-08-22T05:15:45.604Z] ➜  Local:   http://localhost:5173/
+[2026-08-22T05:15:45.604Z] ➜  Network: http://169.254.0.21:5173/

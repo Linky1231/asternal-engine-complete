@@ -1,25 +1,53 @@
-import { vlyPlugin } from "@vly-ai/integrations";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
+import { completeOrionChat } from "./server/orion";
+
+function manusOrionDevEndpoint(): Plugin {
+  return {
+    name: "manus-orion-dev-endpoint",
+    configureServer(server) {
+      server.middlewares.use("/api/orion/chat", (request, response, next) => {
+        if (request.method !== "POST") return next();
+        let raw = "";
+        request.on("data", chunk => { raw += String(chunk); });
+        request.on("error", next);
+        request.on("end", () => {
+          void (async () => {
+            try {
+              const body = JSON.parse(raw || "{}") as { history?: unknown; options?: { temperature?: unknown } };
+              const result = await completeOrionChat(body.history, body.options);
+              response.setHeader("Content-Type", "application/json");
+              response.end(JSON.stringify(result));
+            } catch (error) {
+              const message = error instanceof Error ? error.message : "No se pudo consultar a Orión.";
+              response.statusCode = 400;
+              response.setHeader("Content-Type", "application/json");
+              response.end(JSON.stringify({ error: message }));
+            }
+          })();
+        });
+      });
+    },
+  };
+}
 
 // https://vite.dev/config/
 export default defineConfig({
   // Exponer también V1/V2/V3 (variables personalizadas del tab Keys) en
   // import.meta.env además del prefijo estándar VITE_.
   envPrefix: ["VITE_", "V1", "V2", "V3"],
-  plugins: [react(), vlyPlugin(), tailwindcss()],
+  plugins: [react(), manusOrionDevEndpoint(), tailwindcss()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    // Force a single copy of React across all packages (including vlyPlugin).
-    // Without this, @vly-ai/integrations can resolve its own React copy, which
-    // triggers "Invalid hook calls" errors at runtime.
+    // Mantiene una sola copia de React entre las dependencias de la aplicación.
     dedupe: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
   },
   build: {
+    outDir: "dist/public",
     sourcemap: false,
     rollupOptions: {
       output: {

@@ -516,3 +516,14 @@ La transferencia prioriza la novedad funcional de la versión externa: los juego
 - [x] Validar la compilación, las pruebas disponibles y la publicación de la transferencia completa.
 
 La versión literal compila correctamente con `tsc -b && vite build` y se verificó en la vista de desarrollo en escritorio y móvil. El repositorio transferido no declara una orden de pruebas automatizadas; por la solicitud de conservar el código literal no se añadió una suite ajena. La única adaptación aplicada fue de entorno: habilitar el binario de compilación e instalar las dos dependencias ya importadas por el código (`react-router` y `@zumer/snapdom`).
+
+---
+
+# Asistente con IA de Manus
+
+- [x] Localizar y retirar la integración actual de YB del asistente.
+- [x] Restaurar el adaptador seguro de servidor para invocar los modelos integrados de Manus.
+- [x] Conectar el asistente a Manus sin exponer credenciales en el cliente.
+- [x] Validar el envío de mensajes, compilación y publicación.
+
+YB fue retirado de imports, configuración y dependencias activas. Orión ahora llama únicamente a `/api/orion/chat`, una ruta propia que se ejecuta en el servidor y usa el modelo integrado de Manus disponible, sin enviar la clave al navegador. Se verificó una respuesta real del servicio (HTTP 200), junto con 2 pruebas unitarias y una compilación de producción correcta.
