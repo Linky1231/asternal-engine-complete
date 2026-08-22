@@ -637,6 +637,17 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Portada completa y acción de juego inferior
+
+- [x] Mantener la portada completa y encuadrada sin recortarla ni superponer controles.
+- [x] Llevar la acción de jugar a un botón grande situado debajo de la información del juego.
+- [x] Validar la ficha móvil, pruebas y compilación antes de publicar.
+
+- [x] Mostrar “Sin portada” únicamente en tarjetas de proyecto dentro del editor cuando no haya imagen.
+- [x] Confirmar que la etiqueta no aparece en las vistas públicas de juegos.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

@@ -208,62 +208,46 @@ export function GameCard({
 
   return (
     <article className="panel rounded-2xl overflow-hidden border border-border/50 shadow-sm">
-      <div
-        onClick={play}
-        className={`relative aspect-[16/10] grid place-items-center cursor-pointer active:scale-[0.99] transition overflow-hidden ${hasCover ? "" : "tile-blueprint"}`}
-      >
+      <div className="p-3 pb-0">
+        <div className={`relative aspect-[16/10] overflow-hidden rounded-[18px] border border-border/60 bg-muted/20 ${hasCover ? "" : "tile-blueprint"}`}>
         {hasCover ? (
-          <>
-            <img src={coverUrl!} alt={title} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-          </>
+          <img src={coverUrl!} alt={`Portada de ${title}`} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-contain" />
         ) : <GameIconPlaceholder />}
-        <button
-          className="relative w-16 h-16 rounded-2xl bg-card grid place-items-center shadow-md active:scale-95 hover:scale-105 transition-transform duration-200"
-          aria-label={needsPurchase ? "Comprar y jugar" : "Jugar"}
-        >
-          {loading ? <Loader2 size={20} className="animate-spin text-primary" /> :
-            needsPurchase ? <Lock size={22} className="text-primary" /> :
-            <Play size={26} className="text-primary translate-x-[2px]" fill="currentColor" />}
-        </button>
-        {/* Top-right price badge */}
-        <div className="absolute top-2 right-2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/95 shadow-md backdrop-blur border border-primary/20">
-          {price > 0 ? (
-            <>
-              <Sparkles size={12} className={owned ? "text-emerald-500" : "text-primary"} fill="currentColor" />
-              <span className="text-[11px] font-display font-semibold tracking-wide">
-                {owned ? "TUYO" : `${price}`}
-              </span>
-            </>
-          ) : (
-            <>
-              <Sparkles size={12} className="text-emerald-500" fill="currentColor" />
-              <span className="text-[11px] font-display font-semibold tracking-wide text-emerald-600">GRATIS</span>
-            </>
-          )}
         </div>
-        <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between gap-2">
-          <div className="min-w-0 flex items-end gap-2">
+        <div className="flex items-start justify-between gap-3 pt-3">
+          <div className="min-w-0 flex items-center gap-2.5">
             <Link
               to="/profile/$userId" params={{ userId: post.author_id }}
-              onClick={e => e.stopPropagation()}
-              className="w-8 h-8 rounded-full overflow-hidden shrink-0 border border-white/30 block"
+              className="w-9 h-9 rounded-full overflow-hidden shrink-0 border border-border/60 block"
             >
               <Avatar p={post.author} className="w-full h-full" />
             </Link>
             <div className="min-w-0">
-              <div className={`font-display text-base truncate drop-shadow ${hasCover ? "text-white" : "text-foreground"}`}>{title}</div>
+              <div className="font-display text-base leading-tight truncate text-foreground">{title}</div>
               <Link
                 to="/profile/$userId" params={{ userId: post.author_id }}
-                onClick={e => e.stopPropagation()}
-                className={`text-[10px] font-mono truncate hover:underline ${hasCover ? "text-white/80" : "text-muted-foreground"}`}
+                className="block text-[10px] font-mono truncate text-muted-foreground hover:underline"
               >
                 @{post.author?.username ?? "jugador"} · {timeAgo(post.created_at)}
               </Link>
             </div>
           </div>
-          <span className="text-[9px] font-display tracking-widest px-2 py-0.5 rounded-full bg-primary/20 text-primary-glow border border-primary/40">JUEGO</span>
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/90 shadow-sm border border-primary/20 shrink-0">
+            <Sparkles size={12} className={price === 0 || owned ? "text-emerald-500" : "text-primary"} fill="currentColor" />
+            <span className={`text-[10px] font-display font-semibold tracking-wide ${price === 0 ? "text-emerald-600" : "text-foreground"}`}>
+              {price === 0 ? "GRATIS" : owned ? "TUYO" : `${price} ORBES`}
+            </span>
+          </div>
         </div>
+        <button
+          onClick={play}
+          disabled={loading}
+          className="mt-3 h-12 w-full rounded-xl grad-brand text-primary-foreground font-display tracking-widest text-xs flex items-center justify-center gap-2 shadow-sm transition-transform active:scale-[0.98] disabled:opacity-70"
+          aria-label={needsPurchase ? `Comprar ${title} y jugar` : `Jugar ${title}`}
+        >
+          {loading ? <Loader2 size={18} className="animate-spin" /> : needsPurchase ? <Lock size={17} /> : <Play size={17} fill="currentColor" />}
+          {loading ? "ABRIENDO" : needsPurchase ? `COMPRAR · ${price} ORBES` : "JUGAR AHORA"}
+        </button>
       </div>
 
       {/* Galería de capturas */}
