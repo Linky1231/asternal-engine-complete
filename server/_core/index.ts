@@ -19,10 +19,9 @@ app.post("/api/orion/chat", async (req, res) => {
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
-// `index.ts` y el cliente de Vite se publican juntos dentro de `dist`.
-// Resolver desde el propio directorio del bundle hace que el fallback SPA
-// funcione también en el contenedor de producción.
-const publicDirectory = dirname;
+// El bundle del servidor queda en `dist/index.js` y Vite genera el cliente en
+// `dist/public`, que también es el directorio exigido por el publicador.
+const publicDirectory = path.join(dirname, "public");
 app.use(express.static(publicDirectory));
 app.use((_req, res) => res.sendFile(path.join(publicDirectory, "index.html")));
 

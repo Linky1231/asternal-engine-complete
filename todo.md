@@ -537,3 +537,11 @@ YB fue retirado de imports, configuración y dependencias activas. Orión ahora 
 - [x] Verificar el dominio en producción y publicar la corrección.
 
 Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto se propagaba. Tras la publicación definitiva, la consulta sin caché devolvió HTTP 200 y la verificación visual de `https://asternaleng-dvlqmnye.manus.space/?verified=c2c5a7e5` muestra la pantalla de acceso de Asternal. El dominio ya no responde 404.
+
+---
+
+# Incidente: preview bloqueado y publicación sin directorio esperado
+
+- [x] Corregir el bloqueo del host de la vista previa en Vite.
+- [x] Restaurar la salida del frontend dentro de `dist/public` para el servidor de producción.
+- [x] Verificar preview, build y publicación en producción.

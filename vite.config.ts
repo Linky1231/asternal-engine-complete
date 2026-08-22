@@ -47,10 +47,9 @@ export default defineConfig({
     dedupe: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
   },
   build: {
-    // El publicador de producción busca el documento de entrada en `dist`.
-    // Mantener el cliente en la raíz permite servirlo tanto estáticamente como
-    // desde el servidor de Orión sin una carpeta intermedia.
-    outDir: "dist",
+    // El publicador de producción copia el cliente desde `dist/public`.
+    // El bundle del servidor se mantiene en `dist/index.js`.
+    outDir: "dist/public",
     sourcemap: false,
     rollupOptions: {
       output: {
@@ -109,6 +108,10 @@ export default defineConfig({
   server: {
     host: true,
     port: 5173,
+    // Las vistas previas se exponen mediante subdominios temporales seguros.
+    // Aceptar exclusivamente los dominios de Manus evita el bloqueo de Host
+    // sin abrir el dev server a hosts arbitrarios.
+    allowedHosts: [".manus.computer", ".manus.space"],
     hmr: {
       overlay: false,
     },

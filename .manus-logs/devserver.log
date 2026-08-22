@@ -1305,3 +1305,12 @@
 [2026-08-22T05:15:45.604Z] ➜  Network: http://169.254.0.21:5173/
 [2026-08-22T14:29:43.892Z] 2:29:43 PM [vite] vite.config.ts changed, restarting server...
 [2026-08-22T14:29:43.910Z] 2:29:43 PM [vite] server restarted.
+[2026-08-22T20:31:10.657Z] 8:31:10 PM [vite] vite.config.ts changed, restarting server...
+[2026-08-22T20:31:10.676Z] 8:31:10 PM [vite] server restarted.
+[2026-08-22T20:31:20.820Z] [ELIFECYCLE] Command failed.
+[2026-08-22T20:31:20.826Z] Dev server exited with code -1
+[2026-08-22T20:31:21.911Z] Starting dev server with command: pnpm run dev
+[2026-08-22T20:31:22.188Z] $ vite --host
+[2026-08-22T20:31:22.403Z] VITE v7.3.6  ready in 188 ms
+[2026-08-22T20:31:22.403Z] ➜  Local:   http://localhost:5173/
+[2026-08-22T20:31:22.403Z] ➜  Network: http://169.254.0.21:5173/
