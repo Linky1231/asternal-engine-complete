@@ -8,7 +8,7 @@
   --glass-control-shadow: inset 0 1.5px 0 oklch(1 0 0 / 0.78), inset 0 -1px 0 oklch(0.42 0.10 258 / 0.09), 0 8px 17px -13px oklch(0.28 0.05 260 / 0.45);
   /* Firma Azure Drift original: cobalto → azur → cielo. El vidrio aporta
      volumen, pero no sustituye ni apaga el azul de marca. */
-  --asternal-control-gradient: linear-gradient(135deg, oklch(0.48 0.15 266) 0%, oklch(0.57 0.12 254) 48%, oklch(0.70 0.08 234) 100%);
+  --asternal-control-gradient: linear-gradient(135deg, oklch(0.52 0.15 266) 0%, oklch(0.61 0.12 254) 48%, oklch(0.74 0.08 234) 100%);
 }
 
 /* Todos los controles azules usan el mismo degradado, sin cambiar de tono al interactuar. */

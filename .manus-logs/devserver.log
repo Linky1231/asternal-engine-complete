@@ -1354,4 +1354,3 @@
 [2026-08-22T21:33:24.584Z] ➜  Local:   http://localhost:5173/
 [2026-08-22T21:33:24.584Z] ➜  Network: http://169.254.0.21:5173/
 [2026-08-22T21:33:45.815Z] 9:33:45 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
-[2026-08-22T21:39:02.913Z] 9:39:02 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
