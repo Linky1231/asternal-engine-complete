@@ -505,3 +505,12 @@ La auditoría y sus referencias quedaron documentadas en `research-ai-slop.md` y
 - [x] Validar pruebas, compilación y vista previa antes de publicar la actualización transferida.
 
 La transferencia prioriza la novedad funcional de la versión externa: los juegos se abren ahora en una superficie dedicada y sus jugadores pueden apoyar a creadores con orbes. La transacción valida sesión, juego, propiedad, saldo y cantidad antes de actualizar las cuentas y registrar ambos movimientos; se mantiene el adaptador de datos local existente para no volver a añadir servicios externos. La validación completó 37 pruebas, compilación de producción y una revisión de renderizado sin errores visibles.
+
+---
+
+# Transferencia literal de la versión nueva
+
+- [ ] Crear un respaldo recuperable del estado publicado actual.
+- [ ] Reemplazar íntegramente los archivos del proyecto por la última versión de `Linky1231/asternal-engine`.
+- [ ] Conservar y reconciliar solo los adaptadores imprescindibles de ejecución y publicación del entorno.
+- [ ] Validar la compilación, las pruebas disponibles y la publicación de la transferencia completa.
