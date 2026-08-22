@@ -3,7 +3,6 @@ import type { Entity, RuntimeInput, RuntimeState, Scene, UIElement } from "@/lib
 import { stepScene, newRuntimeState, resolveUIRect, sortedForRender, isOnHiddenLayer, layerOpacityFor } from "@/lib/engine/core";
 import { getRenderableImage } from "@/lib/engine/images";
 import { currentFrameRenderable } from "@/lib/engine/animations";
-import { resolveEntityInstance, resolveEntityWorld, sampleTransformTrack } from "@/lib/engine/transforms";
 import { createScriptRunner } from "@/lib/engine/scripts";
 import { startMusic, stopMusic, setVolume, setMuted } from "@/lib/engine/sfx";
 import { drawUIElement } from "./UIEditor";
@@ -46,12 +45,8 @@ export function GameRuntime({
   useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
-    const normalizeRuntimeScene = (source: Scene): Scene => ({
-      ...source,
-      entities: source.entities.map(entity => JSON.parse(JSON.stringify(entity)) as Entity),
-    });
-    const initial: Scene = normalizeRuntimeScene(scene);
-    let work: Scene = normalizeRuntimeScene(initial);
+    const initial: Scene = JSON.parse(JSON.stringify(scene));
+    let work: Scene = JSON.parse(JSON.stringify(initial));
     let drawList = sortedForRender(work).filter(e => !isOnHiddenLayer(work, e));
     const state: RuntimeState = newRuntimeState(initial);
     stateRef.current = state;
@@ -63,7 +58,7 @@ export function GameRuntime({
         shake.time = Math.max(shake.time, duration);
       },
       restart: () => {
-        work = normalizeRuntimeScene(initial);
+        work = JSON.parse(JSON.stringify(initial));
         drawList = sortedForRender(work).filter(e => !isOnHiddenLayer(work, e));
         Object.assign(state, newRuntimeState(initial));
         scripts = createScriptRunner();
@@ -203,17 +198,7 @@ export function GameRuntime({
 
       const tSec = performance.now() / 1000;
       const visualEffects = W >= 700;
-      const animatedScene: Scene = {
-        ...work,
-        entities: work.entities.map(entity => sampleTransformTrack(entity, tSec)),
-      };
-      const instanceResolvedScene: Scene = {
-        ...animatedScene,
-        entities: animatedScene.entities.map(entity => resolveEntityInstance(animatedScene, entity)),
-      };
-      const transformedDrawList = sortedForRender(instanceResolvedScene)
-        .map(entity => resolveEntityWorld(instanceResolvedScene, entity));
-      for (const e of transformedDrawList) {
+      for (const e of drawList) {
         if (e.visible === false) continue;
         const la = layerOpacityFor(work, e);
         const a = (e.opacity ?? 1) * la;
@@ -350,48 +335,11 @@ export function GameRuntime({
   // pressing JUMP while moving the joystick keeps both active.
   const btnSrc = useRef({ left: false, right: false, jump: false });
   const joySrc = useRef({ left: false, right: false, jump: false });
-  const keySrc = useRef({ left: false, right: false, jump: false });
   const recomputeInput = () => {
-    inputRef.current.left = btnSrc.current.left || joySrc.current.left || keySrc.current.left;
-    inputRef.current.right = btnSrc.current.right || joySrc.current.right || keySrc.current.right;
-    inputRef.current.jump = btnSrc.current.jump || joySrc.current.jump || keySrc.current.jump;
+    inputRef.current.left = btnSrc.current.left || joySrc.current.left;
+    inputRef.current.right = btnSrc.current.right || joySrc.current.right;
+    inputRef.current.jump = btnSrc.current.jump || joySrc.current.jump;
   };
-  useEffect(() => {
-    const keyFor = (event: KeyboardEvent): keyof RuntimeInput | null => {
-      if (event.code === "ArrowLeft" || event.code === "KeyA") return "left";
-      if (event.code === "ArrowRight" || event.code === "KeyD") return "right";
-      if (event.code === "ArrowUp" || event.code === "KeyW" || event.code === "Space") return "jump";
-      return null;
-    };
-    const onKeyDown = (event: KeyboardEvent) => {
-      const key = keyFor(event);
-      if (!key) return;
-      keySrc.current[key] = true;
-      recomputeInput();
-      event.preventDefault();
-    };
-    const onKeyUp = (event: KeyboardEvent) => {
-      const key = keyFor(event);
-      if (!key) return;
-      keySrc.current[key] = false;
-      recomputeInput();
-      event.preventDefault();
-    };
-    const onBlur = () => {
-      keySrc.current.left = false;
-      keySrc.current.right = false;
-      keySrc.current.jump = false;
-      recomputeInput();
-    };
-    window.addEventListener("keydown", onKeyDown, { passive: false });
-    window.addEventListener("keyup", onKeyUp, { passive: false });
-    window.addEventListener("blur", onBlur);
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("keyup", onKeyUp);
-      window.removeEventListener("blur", onBlur);
-    };
-  }, []);
   const press = (k: keyof RuntimeInput, v: boolean) => {
     btnSrc.current[k] = v;
     recomputeInput();
@@ -403,9 +351,7 @@ export function GameRuntime({
   const hasCustomInput = (act: "left" | "right" | "jump") =>
     uiButtons.some(b => b.action === act) || (act !== "jump" && uiJoysticks.length > 0);
   const hasAnyCustomInput = uiButtons.some(b => ["left","right","jump"].includes(b.action ?? "")) || uiJoysticks.length > 0;
-  // Keep fallback controls for actions that a custom layout does not provide.
-  // A joystick replaces horizontal buttons, but must not hide the jump fallback.
-  const showDefaultTouch = touchControls && (!hasAnyCustomInput || !hasCustomInput("jump"));
+  const showDefaultTouch = touchControls && !hasAnyCustomInput;
 
   type JoyDrag = { kind: "btn"; el: UIElement } | { kind: "joy"; el: UIElement; cx: number; cy: number; r: number };
   const activePointers = useRef<Map<number, JoyDrag>>(new Map());
@@ -443,12 +389,10 @@ export function GameRuntime({
     const ny = len > max ? (dy / len) * max : dy;
     joyKnobs.current.set(id, { dx: nx, dy: ny });
     const ax = nx / max;
-    const ay = ny / max;
+    void ny;
     joySrc.current.left = ax < -0.25;
     joySrc.current.right = ax > 0.25;
-    // Up on the joystick is a held jump input; the runtime edge detector
-    // turns the transition into one jump and supports coyote/buffer timing.
-    joySrc.current.jump = ay < -0.45;
+    // Joystick is for movement only — jumping is bound to the JUMP button.
     recomputeInput();
   };
   const releaseJoystick = (id: string) => {
@@ -472,7 +416,7 @@ export function GameRuntime({
     const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top;
     const b = hitUIButton(sx, sy);
     if (b) {
-      (ev.currentTarget as HTMLCanvasElement).setPointerCapture(ev.pointerId);
+      (ev.target as Element).setPointerCapture(ev.pointerId);
       activePointers.current.set(ev.pointerId, { kind: "btn", el: b });
       handleButton(b, true);
       ev.preventDefault();
@@ -480,7 +424,7 @@ export function GameRuntime({
     }
     const j = hitJoystick(sx, sy);
     if (j) {
-      (ev.currentTarget as HTMLCanvasElement).setPointerCapture(ev.pointerId);
+      (ev.target as Element).setPointerCapture(ev.pointerId);
       activePointers.current.set(ev.pointerId, { kind: "joy", el: j.el, cx: j.cx, cy: j.cy, r: j.r });
       applyJoystick(j.el.id, sx - j.cx, sy - j.cy, j.r);
       ev.preventDefault();
@@ -489,7 +433,6 @@ export function GameRuntime({
   const onCanvasMove = (ev: React.PointerEvent) => {
     const d = activePointers.current.get(ev.pointerId);
     if (!d || d.kind !== "joy") return;
-    ev.preventDefault();
     const rect = (ev.currentTarget as HTMLElement).getBoundingClientRect();
     const sx = ev.clientX - rect.left, sy = ev.clientY - rect.top;
     applyJoystick(d.el.id, sx - d.cx, sy - d.cy, d.r);
@@ -497,7 +440,6 @@ export function GameRuntime({
   const onCanvasUp = (ev: React.PointerEvent) => {
     const d = activePointers.current.get(ev.pointerId);
     if (!d) return;
-    ev.preventDefault();
     if (d.kind === "btn") handleButton(d.el, false);
     else releaseJoystick(d.el.id);
     activePointers.current.delete(ev.pointerId);
@@ -607,14 +549,13 @@ export function drawEntity(ctx: CanvasRenderingContext2D, e: Entity, time: numbe
   ctx.save();
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "high";
-  const rot = ((e.transform?.rotation.z ?? e.rotation ?? 0) * Math.PI) / 180;
-  const pivotX = e.x + e.w * (e.transform?.pivot.x ?? 0.5);
-  const pivotY = e.y + e.h * (e.transform?.pivot.y ?? 0.5);
-  if (rot || e.flipY) {
-    ctx.translate(pivotX, pivotY);
+  const rot = ((e.rotation ?? 0) * Math.PI) / 180;
+  if (rot) {
+    const cx = e.x + e.w / 2;
+    const cy = e.y + e.h / 2;
+    ctx.translate(cx, cy);
     ctx.rotate(rot);
-    ctx.scale(1, e.flipY ? -1 : 1);
-    ctx.translate(-pivotX, -pivotY);
+    ctx.translate(-cx, -cy);
   }
   const flip = (e.facing === -1) !== !!e.flipX;
   if (flip) {
@@ -642,11 +583,12 @@ export function drawEntity(ctx: CanvasRenderingContext2D, e: Entity, time: numbe
   // fallback shape — reset flip/translate but keep rotation, so redraw at absolute coords
   ctx.restore();
   ctx.save();
-  if (rot || e.flipY) {
-    ctx.translate(pivotX, pivotY);
+  if (rot) {
+    const cx = e.x + e.w / 2;
+    const cy = e.y + e.h / 2;
+    ctx.translate(cx, cy);
     ctx.rotate(rot);
-    ctx.scale(1, e.flipY ? -1 : 1);
-    ctx.translate(-pivotX, -pivotY);
+    ctx.translate(-cx, -cy);
   }
   if (visualEffects) {
     ctx.shadowColor = e.color;

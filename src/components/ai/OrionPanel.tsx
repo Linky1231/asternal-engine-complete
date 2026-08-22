@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  X, Send, Sparkles, Loader2, Trash2, Bot, Rocket, HelpCircle, Plus, MessageSquare, ChevronDown, Check, Zap, Mic, MicOff, Volume2, AudioLines,
+  X, Send, Sparkles, Loader2, Trash2, Bot, Rocket, HelpCircle, Plus, MessageSquare, ChevronDown, Check, Zap,
 } from "lucide-react";
 import { orionChatStream, needsCodingModel, type OrionMessage } from "@/lib/ai/orion";
-import { compactVoiceReply, ORION_VOICE_GREETING, pickFeminineSpanishVoice } from "@/lib/ai/orion-voice";
 import {
   loadOrionChats,
   saveOrionChats,
@@ -48,22 +47,6 @@ const QUICK_PROMPTS = [
 
 const WELCOME = `¡Hola! 👋 Soy **Orión**, tu asistente de desarrollo de juegos.\n\nConozco a fondo el **motor de Asternal** (entidades, escenas, scripting, animaciones, sonido y nube). Estoy aquí para ayudarte a crear tu juego de forma profesional, paso a paso.\n\nPregúntame lo que quieras: cómo funciona el motor, ideas para tu juego, o cómo resolver algo concreto. 🚀`;
 
-type VoicePhase = "off" | "speaking" | "listening" | "thinking" | "unavailable";
-type BrowserRecognition = {
-  lang: string; continuous: boolean; interimResults: boolean;
-  start: () => void; abort: () => void;
-  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  onerror: ((event: { error: string }) => void) | null;
-  onend: (() => void) | null;
-};
-type BrowserRecognitionConstructor = new () => BrowserRecognition;
-
-function getRecognitionConstructor(): BrowserRecognitionConstructor | null {
-  if (typeof window === "undefined") return null;
-  const api = window as unknown as { SpeechRecognition?: BrowserRecognitionConstructor; webkitSpeechRecognition?: BrowserRecognitionConstructor };
-  return api.SpeechRecognition ?? api.webkitSpeechRecognition ?? null;
-}
-
 export default function OrionPanel({ onClose }: { onClose: () => void }) {
   const [chats, setChats] = useState<OrionStoredChat[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -77,13 +60,6 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
   const busyRef = useRef(false);
   const abortRef = useRef<AbortController | null>(null);
   const messagesRef = useRef<OrionStoredMsg[]>([]);
-  const recognitionRef = useRef<BrowserRecognition | null>(null);
-  const voiceModeRef = useRef(false);
-  const speakingRef = useRef(false);
-  const sendVoiceRef = useRef<(text: string) => void>(() => {});
-  const [voiceMode, setVoiceMode] = useState(false);
-  const [voicePhase, setVoicePhase] = useState<VoicePhase>("off");
-  const [voiceDetail, setVoiceDetail] = useState("");
 
   const activeChat = useMemo(
     () => chats.find(c => c.id === activeId) ?? null,
@@ -127,11 +103,6 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
     return () => { abortRef.current?.abort(); };
   }, []);
 
-  useEffect(() => () => {
-    recognitionRef.current?.abort();
-    window.speechSynthesis?.cancel();
-  }, []);
-
   const scrollBottom = useCallback(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, []);
@@ -151,93 +122,12 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
     setBusy(false);
   }, []);
 
-  const stopVoice = useCallback(() => {
-    voiceModeRef.current = false;
-    speakingRef.current = false;
-    recognitionRef.current?.abort();
-    recognitionRef.current = null;
-    window.speechSynthesis?.cancel();
-    setVoiceMode(false);
-    setVoicePhase("off");
-    setVoiceDetail("");
-  }, []);
-
-  const startListening = useCallback(() => {
-    if (!voiceModeRef.current || busyRef.current || speakingRef.current) return;
-    const Recognition = getRecognitionConstructor();
-    if (!Recognition) {
-      setVoicePhase("unavailable");
-      setVoiceDetail("Este navegador no permite escuchar por voz. Puedes seguir escribiendo.");
-      return;
-    }
-    const recognition = new Recognition();
-    recognitionRef.current = recognition;
-    recognition.lang = "es-ES";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.onresult = event => {
-      const text = Array.from(event.results).map(result => result?.[0]?.transcript ?? "").join(" ").trim();
-      if (!text) return;
-      setVoicePhase("thinking");
-      setVoiceDetail("Orión está preparando una respuesta breve…");
-      sendVoiceRef.current(text);
-    };
-    recognition.onerror = event => {
-      if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        setVoicePhase("unavailable");
-        setVoiceDetail("Activa el permiso del micrófono para conversar por voz.");
-      } else if (event.error !== "aborted" && event.error !== "no-speech") {
-        setVoiceDetail("No pudimos entenderte. Inténtalo de nuevo.");
-      }
-    };
-    recognition.onend = () => {
-      recognitionRef.current = null;
-      if (voiceModeRef.current && !busyRef.current && !speakingRef.current) window.setTimeout(() => startListening(), 550);
-    };
-    setVoicePhase("listening");
-    setVoiceDetail("Te escucho. Habla cuando estés listo.");
-    try { recognition.start(); } catch { /* el navegador ya está iniciando la escucha */ }
-  }, []);
-
-  const speak = useCallback((text: string) => {
-    if (!voiceModeRef.current) return;
-    if (!("speechSynthesis" in window)) {
-      setVoicePhase("unavailable");
-      setVoiceDetail("Este navegador no puede reproducir la voz de Orión.");
-      return;
-    }
-    const utterance = new SpeechSynthesisUtterance(compactVoiceReply(text));
-    utterance.lang = "es-ES";
-    utterance.rate = 1.02;
-    utterance.pitch = 1.08;
-    const voice = pickFeminineSpanishVoice(window.speechSynthesis.getVoices());
-    if (voice) utterance.voice = voice;
-    utterance.onstart = () => { speakingRef.current = true; setVoicePhase("speaking"); setVoiceDetail(voice ? `Orión habla con ${voice.name}` : "Orión está hablando…"); };
-    utterance.onend = () => { speakingRef.current = false; if (voiceModeRef.current) startListening(); };
-    utterance.onerror = () => { speakingRef.current = false; if (voiceModeRef.current) startListening(); };
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(utterance);
-  }, [startListening]);
-
-  const toggleVoiceMode = useCallback(() => {
-    if (voiceModeRef.current) { stopVoice(); return; }
-    if (!getRecognitionConstructor() || !("speechSynthesis" in window)) {
-      setVoicePhase("unavailable");
-      setVoiceDetail("El modo Voz requiere un navegador compatible con micrófono y síntesis de voz.");
-      return;
-    }
-    voiceModeRef.current = true;
-    setVoiceMode(true);
-    setErr(null);
-    speak(ORION_VOICE_GREETING);
-  }, [speak, stopVoice]);
-
   const patchActiveMessages = useCallback((fn: (prev: OrionStoredMsg[]) => OrionStoredMsg[]) => {
     setChats(prev => prev.map(c => (c.id === activeId ? { ...c, messages: fn(c.messages), updatedAt: new Date().toISOString() } : c)));
   }, [activeId]);
 
   const send = useCallback(
-    async (text: string, options: { voice?: boolean } = {}) => {
+    async (text: string) => {
       const q = text.trim();
       if (!q || busyRef.current || !activeId) return;
       busyRef.current = true;
@@ -258,7 +148,6 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
       }));
       const controller = new AbortController();
       abortRef.current = controller;
-      const voiceTurn = options.voice ?? voiceModeRef.current;
       try {
         const history: OrionMessage[] = messagesRef.current
           .filter((m) => m.role !== "assistant" || m.content !== WELCOME)
@@ -278,8 +167,6 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
           },
           {
             coding: needsCodingModel(q),
-            maxTokens: voiceTurn ? 170 : undefined,
-            voice: voiceTurn,
             signal: controller.signal,
           }
         );
@@ -297,7 +184,6 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
           return next;
         });
         if (res.balanceUsd > 0) setBalance(res.balanceUsd);
-        if (voiceTurn && voiceModeRef.current) speak(res.content);
       } catch (e) {
         // Si el usuario detuvo el stream, no mostrar error.
         if ((e as Error).name === "AbortError") return;
@@ -317,12 +203,8 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
         taRef.current?.focus();
       }
     },
-    [activeId, patchActiveMessages, speak]
+    [activeId, patchActiveMessages]
   );
-
-  useEffect(() => {
-    sendVoiceRef.current = (text: string) => { void send(text, { voice: true }); };
-  }, [send]);
 
   const newChat = useCallback(() => {
     stop();
@@ -354,48 +236,52 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed inset-0 z-[90] bg-background/97 backdrop-blur-xl flex flex-col"
+      className="fixed inset-0 z-[90] bg-background flex flex-col"
       style={{ height: "100dvh" }}
     >
       {/* Cabecera */}
-      <header className="shrink-0 border-b border-border/60 bg-background/80 backdrop-blur-md">
-        <div className="max-w-2xl md:max-w-3xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-2.5">
+      <header className="shrink-0 border-b border-border/60 bg-background">
+        <div className="max-w-2xl md:max-w-3xl mx-auto flex items-center gap-2.5 px-4 py-3">
+          <div
+            className="relative shrink-0 rounded-full grid place-items-center text-primary-foreground"
+            style={{
+              width: 42,
+              height: 42,
+              padding: 2,
+              background: "var(--color-primary)",
+              boxShadow: "0 4px 16px -6px oklch(0.55 0.15 262/0.5)",
+            }}
+          >
             <div
-              className="relative shrink-0 rounded-full grid place-items-center text-primary-foreground"
-              style={{ width: 42, height: 42, padding: 2, background: "var(--color-primary)", boxShadow: "0 4px 16px -6px oklch(0.55 0.15 262/0.5)" }}
+              className="w-full h-full rounded-full grid place-items-center"
+              style={{ background: "var(--gradient-asternal)" }}
             >
-              <div className="w-full h-full rounded-full grid place-items-center" style={{ background: "var(--gradient-asternal)" }}>
-                <Bot size={19} strokeWidth={2.2} className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" />
-              </div>
+              <Bot size={19} strokeWidth={2.2} className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.25)]" />
             </div>
-            <div className="min-w-0 flex-1">
-              <div className="text-[15px] leading-tight font-semibold flex items-center gap-1.5">
-                Orión
-                <span className="shrink-0 text-[8px] font-display tracking-widest px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">ASISTENTE IA</span>
-              </div>
-              <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-glow animate-pulse shrink-0" />
-                Asistente para crear juegos
-              </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[15px] leading-tight font-semibold flex items-center gap-1.5">
+              Orión
+              <span className="shrink-0 text-[8px] font-display tracking-widest px-1.5 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
+                ASISTENTE IA
+              </span>
             </div>
-            <button onClick={toggleVoiceMode} title={voiceMode ? "Terminar modo Voz" : "Activar modo Voz"} aria-label={voiceMode ? "Terminar modo Voz" : "Activar modo Voz"} aria-pressed={voiceMode}
-              className={`w-9 h-9 rounded-xl border grid place-items-center active:scale-95 transition shrink-0 ${voiceMode ? "border-transparent grad-brand text-primary-foreground shadow-md shadow-primary/25" : "border-border/70 bg-card text-primary hover:border-primary/40"}`}>
-              {voiceMode ? <AudioLines size={15} className={voicePhase === "speaking" ? "animate-pulse" : ""} /> : <Mic size={15} />}
-            </button>
-            <button onClick={newChat} title="Nueva conversación" className="w-9 h-9 rounded-xl border border-border/70 bg-card grid place-items-center active:scale-95 transition shrink-0 text-primary hover:border-primary/40">
-              <Plus size={15} />
-            </button>
-            <button onClick={onClose} className="w-9 h-9 rounded-xl border border-border/70 bg-background grid place-items-center active:scale-95 transition shrink-0">
-              <X size={16} />
-            </button>
+            <div className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              Ayuda profesional para crear juegos · motor de Asternal
+              {balance !== null && (
+                <span className="ml-1 text-[9px] font-mono text-muted-foreground/70">
+                  · saldo ${balance.toFixed(2)}
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Selector de chats: segunda fila en móvil para que nunca comprima el título ni las acciones. */}
-          <div className="relative mt-2.5 sm:absolute sm:top-3 sm:right-4 sm:mt-0 sm:max-w-[200px]">
+          {/* Selector de chats */}
+          <div className="relative shrink-0">
             <button
               onClick={() => setPickerOpen(o => !o)}
-              className="w-full flex items-center gap-1.5 rounded-xl border border-border/70 bg-card px-3 py-2 active:scale-95 transition text-left sm:max-w-[200px]"
+              className="flex items-center gap-1.5 max-w-[140px] sm:max-w-[200px] rounded-xl border border-border/70 bg-card px-2.5 py-1.5 active:scale-95 transition text-left"
               title="Cambiar de conversación"
             >
               <MessageSquare size={13} className="text-primary shrink-0" />
@@ -444,7 +330,7 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
                         {c.id === activeId && <Check size={12} className="text-primary shrink-0" />}
                         <button
                           onClick={(e) => { e.stopPropagation(); deleteChat(c.id); }}
-                          className="p-1 rounded-md text-muted-foreground/50 hover:text-destructive hover:bg-destructive/10 transition shrink-0"
+                          className="p-1 rounded-md text-muted-foreground/50 hover:text-rose-500 hover:bg-rose-500/10 transition shrink-0"
                           title="Eliminar conversación"
                         >
                           <Trash2 size={11} />
@@ -456,6 +342,20 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
               )}
             </AnimatePresence>
           </div>
+
+          <button
+            onClick={newChat}
+            title="Nueva conversación"
+            className="w-9 h-9 rounded-xl border border-border/70 bg-card grid place-items-center active:scale-95 transition shrink-0 text-primary hover:border-primary/40"
+          >
+            <Plus size={15} />
+          </button>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 rounded-xl border border-border/70 bg-background grid place-items-center active:scale-95 transition shrink-0"
+          >
+            <X size={16} />
+          </button>
         </div>
       </header>
 
@@ -544,19 +444,9 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
             </div>
           )}
 
-          {(voiceMode || voicePhase === "unavailable") && (
-            <div className={`mx-auto flex max-w-md items-center gap-3 rounded-2xl border px-3.5 py-2.5 ${voicePhase === "unavailable" ? "border-destructive/30 bg-destructive/10" : "border-primary/20 bg-primary/[0.055]"}`} role="status">
-              <span className={`grid h-8 w-8 shrink-0 place-items-center rounded-xl ${voicePhase === "speaking" ? "grad-brand text-primary-foreground" : "bg-primary/10 text-primary"}`}>
-                {voicePhase === "speaking" ? <Volume2 size={15} className="animate-pulse" /> : voicePhase === "listening" ? <Mic size={15} /> : voicePhase === "thinking" ? <Loader2 size={15} className="animate-spin" /> : <MicOff size={15} />}
-              </span>
-              <div className="min-w-0 flex-1"><p className="font-display text-[11px] font-semibold">{voicePhase === "speaking" ? "Orión habla" : voicePhase === "listening" ? "Modo Voz · escuchando" : voicePhase === "thinking" ? "Modo Voz · pensando" : "Modo Voz no disponible"}</p><p className="mt-0.5 truncate text-[10px] text-muted-foreground">{voiceDetail}</p></div>
-              {voiceMode && <button onClick={stopVoice} className="rounded-lg border border-border/70 bg-card px-2 py-1.5 text-[9px] font-display font-semibold text-muted-foreground transition hover:border-destructive/40 hover:text-destructive">TERMINAR</button>}
-            </div>
-          )}
-
           {err && (
             <div className="flex justify-center">
-              <div className="max-w-[85%] rounded-xl border border-destructive/30 bg-destructive/10 px-3 py-2 text-[11px] text-destructive">
+              <div className="max-w-[85%] rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] text-rose-600 dark:text-rose-300">
                 {err}
               </div>
             </div>
@@ -567,13 +457,9 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
       </div>
 
       {/* Barra de escritura */}
-      <div className="shrink-0 border-t border-border/60 bg-background/80 backdrop-blur-md">
+      <div className="shrink-0 border-t border-border/60 bg-background">
         <div className="max-w-2xl md:max-w-3xl mx-auto px-4 py-3">
-          <div className={`flex items-end gap-2 rounded-2xl border bg-card p-1.5 shadow-sm transition ${voiceMode ? "border-primary/35 shadow-primary/10" : "border-border"}`}>
-            <button onClick={toggleVoiceMode} title={voiceMode ? "Terminar modo Voz" : "Hablar con Orión"} aria-label={voiceMode ? "Terminar modo Voz" : "Hablar con Orión"}
-              className={`w-9 h-9 rounded-lg grid place-items-center active:scale-95 transition shrink-0 ${voiceMode ? "grad-brand text-primary-foreground shadow-sm" : "border border-border text-primary hover:border-primary/40 hover:bg-primary/5"}`}>
-              {voiceMode ? <MicOff size={15} /> : <Mic size={15} />}
-            </button>
+          <div className="flex items-end gap-2 rounded-2xl border border-border bg-card p-1.5 shadow-sm">
             <textarea
               ref={taRef}
               value={input}
@@ -598,7 +484,7 @@ export default function OrionPanel({ onClose }: { onClose: () => void }) {
             </button>
           </div>
           <div className="flex items-center justify-center gap-1 pt-2 text-[9px] text-muted-foreground/50">
-            <Rocket size={9} /> Asistente de Asternal
+            <Rocket size={9} /> Orión conoce el motor de Asternal · recuerda tus conversaciones
             <HelpCircle size={9} className="ml-1" />
           </div>
         </div>

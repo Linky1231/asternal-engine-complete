@@ -1,6 +1,5 @@
 // @ts-nocheck — Local DB adapter (types differ from Supabase generics)
 import { supabase, isSchemaMissing } from "@/integrations/supabase/client";
-import { listManusRecords, syncManusRecord } from "@/lib/manus-sync";
 
 export type SocialLinks = {
   youtube?: string;
@@ -14,6 +13,13 @@ export type CreatorCardStyle = {
   theme?: "dark" | "light" | "neon" | "aurora" | "sunset";
   accent?: string;
   tagline?: string;
+};
+
+export type QRStyle = {
+  fg?: string;
+  bg?: string;
+  size?: number;
+  cornerStyle?: "square" | "rounded" | "dots";
 };
 
 export type Profile = {
@@ -48,6 +54,10 @@ export type Profile = {
   profile_background?: string | null;
   post_effect?: string | null;
   creator_card_style?: CreatorCardStyle | null;
+  // Trust
+  trust_points?: number | null;
+  // QR customization
+  qr_style?: QRStyle | null;
 };
 
 export function isPlusActive(p: Profile | null | undefined): boolean {
@@ -97,6 +107,8 @@ export type PostRow = {
   unlock_reactions_goal?: number | null;
   unlock_at?: string | null;
   entrance_effect?: string | null;
+  asset_preset?: Record<string, unknown> | null;
+  post_type?: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -121,6 +133,8 @@ export type PostWithMeta = PostRow & {
   is_unlocked?: boolean;
   owned?: boolean;
   seller?: Profile | null;
+  asset_preset?: Record<string, unknown> | null;
+  post_type?: string | null;
 };
 
 
@@ -185,23 +199,6 @@ export async function fetchFeed(opts: { search?: string; tag?: string; category?
   const { data: { user } } = await supabase.auth.getUser();
   const me = user?.id ?? null;
   return enrichPosts(posts as PostRow[], me, opts.tag);
-}
-
-/** Carga un post individual con el mismo enriquecimiento que el Feed.
- * Se usa al abrir un juego adjunto: el adjunto solo contiene metadatos ligeros
- * y el runtime necesita la escena serializada en `signed_media`. */
-export async function fetchPostById(postId: string): Promise<PostWithMeta | null> {
-  const { data, error } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("id", postId)
-    .is("deleted_at", null)
-    .maybeSingle();
-  if (error) throw error;
-  if (!data) return null;
-  const { data: { user } } = await supabase.auth.getUser();
-  const [post] = await enrichPosts([data as PostRow], user?.id ?? null);
-  return post ?? null;
 }
 
 /**
@@ -357,6 +354,7 @@ export async function createPost(input: {
   htmlContent?: string | null;
   documents?: File[];
   pinnedGameId?: string | null;
+  postType?: string | null;
   lockedContent?: string | null;
   unlockReactionsGoal?: number | null;
   unlockAt?: string | null;
@@ -394,6 +392,7 @@ export async function createPost(input: {
     document_paths: docPaths,
     document_names: docNames,
     pinned_game_id: input.pinnedGameId || null,
+    post_type: input.postType || null,
     locked_content: input.lockedContent || null,
     unlock_reactions_goal: input.unlockReactionsGoal ?? null,
     unlock_at: input.unlockAt || null,
@@ -430,6 +429,14 @@ export async function updatePost(id: string, patch: { content?: string; category
 }
 
 export async function deletePost(id: string) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  // Verify ownership or moderator status before deleting
+  const { data: post } = await supabase.from("posts").select("author_id").eq("id", id).single();
+  if (!post) throw new Error("Publicación no encontrada");
+  const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
+  const isMod = role && (role.role === "moderator" || role.role === "admin");
+  if (post.author_id !== user.id && !isMod) throw new Error("No tienes permiso para borrar esta publicación");
   const { error } = await supabase.from("posts").update({ deleted_at: new Date().toISOString() }).eq("id", id);
   if (error) throw error;
 }
@@ -800,18 +807,11 @@ export async function getMyOrbes(): Promise<number> {
   return (data as { orbes?: number } | null)?.orbes ?? 0;
 }
 
-/** Envía orbes al creador de un juego y devuelve el saldo actualizado del donante. */
-export async function donateOrbs(postId: string, amount: number): Promise<{ ok: boolean; balance?: number; error?: string }> {
-  const { data, error } = await supabase.rpc("donate_orbes" as never, { _post_id: postId, _amount: amount } as never);
-  if (error) throw error;
-  return (data as { ok: boolean; balance?: number; error?: string }) ?? { ok: false, error: "No se pudo completar la donación" };
-}
-
 export type OrbeTx = {
   id: string;
   user_id: string;
   amount: number;
-  kind: "welcome_bonus" | "game_purchase" | "adjustment" | "refund" | "donation_sent" | "donation_received";
+  kind: "welcome_bonus" | "game_purchase" | "adjustment" | "refund";
   post_id: string | null;
   description: string | null;
   created_at: string;
@@ -852,6 +852,79 @@ export async function fetchAllOrbeTransactions(): Promise<OrbeTx[]> {
     if (rows.length < PAGE) break;
   }
   return all;
+}
+
+/**
+ * Donate orbes from the current user to the author of a game post.
+ * Deducts from donor, credits the author, records both transactions.
+ */
+export async function donateOrbs(
+  postId: string,
+  amount: number,
+): Promise<{ ok: boolean; balance?: number; error?: string }> {
+  if (amount <= 0 || !Number.isFinite(amount)) return { ok: false, error: "Cantidad inválida" };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "No autenticado" };
+
+  // 1. Get the post author
+  const { data: post, error: postErr } = await supabase
+    .from("posts")
+    .select("author_id")
+    .eq("id", postId)
+    .single();
+  if (postErr || !post) return { ok: false, error: "Juego no encontrado" };
+
+  const authorId = (post as { author_id: string }).author_id;
+  if (authorId === user.id) return { ok: false, error: "No puedes donar orbes a tu propio juego" };
+
+  // 2. Check donor balance
+  const { data: donorProfile } = await supabase
+    .from("profiles")
+    .select("orbes")
+    .eq("id", user.id)
+    .maybeSingle();
+  const donorBalance = (donorProfile as { orbes?: number } | null)?.orbes ?? 0;
+  if (donorBalance < amount) return { ok: false, error: "No tienes suficientes orbes" };
+
+  // 3. Deduct from donor
+  const { error: deductErr } = await supabase
+    .from("profiles")
+    .update({ orbes: donorBalance - amount })
+    .eq("id", user.id);
+  if (deductErr) return { ok: false, error: "Error al descontar orbes" };
+
+  // 4. Credit author
+  const { data: authorProfile } = await supabase
+    .from("profiles")
+    .select("orbes")
+    .eq("id", authorId)
+    .maybeSingle();
+  const authorBalance = (authorProfile as { orbes?: number } | null)?.orbes ?? 0;
+  const { error: creditErr } = await supabase
+    .from("profiles")
+    .update({ orbes: authorBalance + amount })
+    .eq("id", authorId);
+  if (creditErr) return { ok: false, error: "Error al acreditar orbes" };
+
+  // 5. Record donor transaction (negative)
+  await supabase.from("orbe_transactions" as never).insert({
+    user_id: user.id,
+    amount: -amount,
+    kind: "adjustment" as never,
+    post_id: postId,
+    description: `Donación a juego`,
+  } as never);
+
+  // 6. Record author transaction (positive)
+  await supabase.from("orbe_transactions" as never).insert({
+    user_id: authorId,
+    amount: amount,
+    kind: "adjustment" as never,
+    post_id: postId,
+    description: `Donación recibida de un jugador`,
+  } as never);
+
+  return { ok: true, balance: donorBalance - amount };
 }
 
 
@@ -980,49 +1053,45 @@ export type CloudProject = {
 };
 
 export async function cloudListProjects(): Promise<CloudProject[]> {
-  const rows = await listManusRecords("user_projects");
-  return rows
-    .filter(row => {
-      const data = row.data as { __kind?: string; __deleted?: boolean } | null;
-      return !data?.__deleted && data?.__kind !== "asset-library";
-    })
-    .map(row => {
-      const envelope = row.data as { name?: string; data?: unknown } | null;
-      return {
-        id: row.id,
-        user_id: "manus",
-        name: row.name || envelope?.name || row.id,
-        data: envelope?.data ?? row.data,
-        published_post_id: null,
-        created_at: row.updated_at,
-        updated_at: row.updated_at,
-      };
-    });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+  const { data, error } = await supabase.from("user_projects").select("id,user_id,name,data,published_post_id,created_at,updated_at").eq("user_id", user.id).order("updated_at", { ascending: false });
+  if (error) throw error;
+  // La biblioteca de assets del editor vive en una fila reservada de esta tabla
+  // (data.__kind = "asset-library"): no es un proyecto y no debe listarse como
+  // juego ni importarse como tal en otros dispositivos.
+  return ((data ?? []) as CloudProject[]).filter(r => {
+    const d = r.data as { __kind?: string } | null;
+    return !d || d.__kind !== "asset-library";
+  });
 }
 
 export async function cloudSaveProject(input: { id?: string; name: string; data: unknown }): Promise<CloudProject> {
-  const id = input.id || crypto.randomUUID();
-  const now = new Date().toISOString();
-  const payload = { name: input.name, data: input.data };
-  const ok = await syncManusRecord({ sourceTable: "user_projects", sourceId: id, payload, sourceUpdatedAt: now });
-  if (!ok) throw new Error("No se pudo sincronizar el proyecto con Manus; quedó en cola local");
-  return {
-    id,
-    user_id: "manus",
-    name: input.name,
-    data: input.data,
-    published_post_id: null,
-    created_at: now,
-    updated_at: now,
-  };
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+  if (input.id) {
+    const { data, error } = await supabase.from("user_projects")
+      .update({ name: input.name, data: input.data as never })
+      .eq("id", input.id).eq("user_id", user.id)
+      .select().single();
+    if (error) throw error;
+    return data as CloudProject;
+  }
+  const { data, error } = await supabase.from("user_projects")
+    .insert({ user_id: user.id, name: input.name, data: input.data as never })
+    .select().single();
+  if (error) throw error;
+  return data as CloudProject;
 }
 
 export async function cloudDeleteProject(id: string): Promise<void> {
-  await syncManusRecord({ sourceTable: "user_projects", sourceId: id, payload: { __deleted: true }, sourceUpdatedAt: new Date().toISOString() });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+  await supabase.from("user_projects").delete().eq("id", id).eq("user_id", user.id);
 }
 
 // ---------- Admin ----------
-export type ManagedUser = { id: string; username: string; display_name: string | null; avatar_url: string | null; is_mod: boolean; is_admin: boolean };
+export type ManagedUser = { id: string; username: string; display_name: string | null; avatar_url: string | null; is_mod: boolean; is_admin: boolean; trust_points: number | null };
 
 export async function isAdmin(): Promise<boolean> {
   const { data: { user } } = await supabase.auth.getUser();
@@ -1032,7 +1101,7 @@ export async function isAdmin(): Promise<boolean> {
 }
 
 export async function listManagedUsers(search?: string): Promise<ManagedUser[]> {
-  let q = supabase.from("profiles").select("id,username,display_name,avatar_url").limit(200);
+  let q = supabase.from("profiles").select("id,username,display_name,avatar_url,trust_points").limit(200);
   if (search) q = q.ilike("username", `%${search}%`);
   const { data: profs, error } = await q;
   if (error) throw error;
@@ -1208,6 +1277,132 @@ export async function unbanEmail(id: string): Promise<void> {
   if (error) throw error;
 }
 
+// ============ TRUST POINTS ============
+
+/** Default trust points for new users */
+export const DEFAULT_TRUST_POINTS = 10;
+
+/** Get trust points for a user (returns default if column doesn't exist) */
+export async function getTrustPoints(userId: string): Promise<number> {
+  try {
+    const { data } = await supabase.from("profiles").select("trust_points").eq("id", userId).maybeSingle();
+    if (data && typeof (data as Record<string, unknown>).trust_points === "number") {
+      return (data as Record<string, unknown>).trust_points as number;
+    }
+    return DEFAULT_TRUST_POINTS;
+  } catch {
+    return DEFAULT_TRUST_POINTS;
+  }
+}
+
+/** Moderator: deduct trust points from a user. Auto-bans when reaching 0. */
+export async function deductTrustPoints(
+  targetUserId: string,
+  amount: number,
+  reason: string,
+): Promise<{ newPoints: number; banned: boolean }> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Get current points
+  const current = await getTrustPoints(targetUserId);
+  const newPoints = Math.max(0, current - amount);
+
+  // Log history BEFORE updating
+  await supabase.from("trust_points_history" as never).insert({
+    user_id: targetUserId,
+    modifier_id: user.id,
+    action: "deduct",
+    amount,
+    reason: reason || "Sin razón especificada",
+    points_before: current,
+    points_after: newPoints,
+  } as never);
+
+  // Update points
+  const { error } = await supabase
+    .from("profiles")
+    .update({ trust_points: newPoints } as never)
+    .eq("id", targetUserId);
+  if (error) throw error;
+
+  // Auto-ban if reaching 0
+  let banned = false;
+  if (newPoints <= 0) {
+    try {
+      const { data: targetProfile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", targetUserId)
+        .maybeSingle();
+      const targetUsername = (targetProfile as Record<string, unknown>)?.username as string | null;
+      if (targetUsername) {
+        await banEmail(
+          `${targetUsername}@trust-ban.local`,
+          `Auto-ban: trust points reached 0 (${reason})`,
+        );
+      }
+      banned = true;
+    } catch { /* noop */ }
+  }
+
+  return { newPoints, banned };
+}
+
+/** Moderator: restore trust points to a user */
+export async function restoreTrustPoints(
+  targetUserId: string,
+  amount: number,
+): Promise<number> {
+  const { data: { user } } = await supabase.auth.getUser();
+  const current = await getTrustPoints(targetUserId);
+  const newPoints = Math.min(DEFAULT_TRUST_POINTS, current + amount);
+
+  // Log history BEFORE updating
+  if (user) {
+    await supabase.from("trust_points_history" as never).insert({
+      user_id: targetUserId,
+      modifier_id: user.id,
+      action: "restore",
+      amount,
+      reason: "Puntos restaurados por moderador",
+      points_before: current,
+      points_after: newPoints,
+    } as never);
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ trust_points: newPoints } as never)
+    .eq("id", targetUserId);
+  if (error) throw error;
+  return newPoints;
+}
+
+export type TrustHistoryEntry = {
+  id: string;
+  user_id: string;
+  modifier_id: string | null;
+  action: "deduct" | "restore";
+  amount: number;
+  reason: string;
+  points_before: number;
+  points_after: number;
+  created_at: string;
+};
+
+/** Fetch trust points history for a user (most recent first). */
+export async function fetchTrustHistory(userId: string): Promise<TrustHistoryEntry[]> {
+  const { data, error } = await supabase
+    .from("trust_points_history" as never)
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(50) as { data: TrustHistoryEntry[] | null; error: unknown };
+  if (error || !data) return [];
+  return data;
+}
+
 // ============ POLLS ============
 export async function votePoll(pollId: string, optionIndex: number): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
@@ -1234,6 +1429,7 @@ export async function updatePlusSettings(patch: {
   profile_background?: string | null;
   post_effect?: string | null;
   creator_card_style?: CreatorCardStyle;
+  qr_style?: QRStyle | null;
 }): Promise<Profile> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
@@ -1245,6 +1441,7 @@ export async function updatePlusSettings(patch: {
   if (patch.profile_background !== undefined) clean.profile_background = patch.profile_background;
   if (patch.post_effect !== undefined) clean.post_effect = patch.post_effect;
   if (patch.creator_card_style !== undefined) clean.creator_card_style = patch.creator_card_style;
+  if (patch.qr_style !== undefined) clean.qr_style = patch.qr_style;
   const { data, error } = await supabase.from("profiles").update(clean as never).eq("id", user.id).select().single();
   if (error) throw error;
   return data as Profile;
@@ -1288,8 +1485,11 @@ export async function fetchArtworks(opts: { search?: string } = {}): Promise<Pos
 
 export async function publishArtwork(input: {
   title: string;
+  description?: string;
   imageDataUrl: string;
   priceOrbes: number;
+  assetPreset?: Record<string, unknown> | null;
+  tags?: string[];
 }): Promise<PostRow> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Not authenticated");
@@ -1301,7 +1501,12 @@ export async function publishArtwork(input: {
   });
   const path = await uploadMedia(file, user.id);
 
-  const content = `🎨 ${input.title}`;
+  // Build rich content: title + description + hashtags
+  const lines = [`🎨 ${input.title}`];
+  if (input.description?.trim()) lines.push(input.description.trim());
+  if (input.tags?.length) lines.push(input.tags.map(t => `#${t}`).join(" "));
+  const content = lines.join("\n\n");
+
   const { data: post, error } = await supabase.from("posts").insert({
     author_id: user.id,
     content,
@@ -1310,8 +1515,15 @@ export async function publishArtwork(input: {
     category: "artwork",
     price_orbes: Math.max(0, Math.floor(input.priceOrbes)),
     cover_url: null,
+    asset_preset: input.assetPreset ?? null,
   } as never).select().single();
   if (error) throw error;
+
+  // Save hashtags to post_tags
+  if (input.tags?.length && post) {
+    await upsertTagsFor(post.id, input.tags);
+  }
+
   return post as PostRow;
 }
 
@@ -1571,30 +1783,57 @@ export async function unfollowUser(userId: string): Promise<void> {
 
 // Lista de perfiles que SIGUEN a userId (sus seguidores).
 export async function fetchFollowers(userId: string): Promise<Profile[]> {
-  const { data, error } = await supabase
-    .from("follows" as never)
-    .select("follower_id")
-    .eq("following_id", userId)
-    .order("created_at", { ascending: false }) as { data: { follower_id: string }[] | null; error: unknown };
-  if (error) return [];
-  const ids = Array.from(new Set((data ?? []).map(r => r.follower_id)));
-  if (!ids.length) return [];
-  const { data: profiles } = await supabase.from("profiles").select("*").in("id", ids);
-  const byId = new Map((profiles ?? []).map(p => [p.id, p as Profile]));
-  return ids.map(id => byId.get(id)).filter((p): p is Profile => !!p);
+  try {
+    const { data, error } = await supabase
+      .from("follows" as never)
+      .select("follower_id")
+      .eq("following_id", userId)
+      .order("created_at", { ascending: false }) as { data: { follower_id: string }[] | null; error: unknown };
+    if (error) return [];
+    const ids = Array.from(new Set((data ?? []).map(r => r.follower_id)));
+    if (!ids.length) return [];
+    let profilesData: Record<string, unknown>[] | null = null;
+    try {
+      const res = await supabase.from("profiles").select("*").in("id", ids);
+      profilesData = res.data as Record<string, unknown>[] | null;
+    } catch { /* batch failed */ }
+    if (!profilesData || profilesData.length === 0) {
+      const single: Profile[] = [];
+      for (const id of ids) {
+        try { const p = await fetchProfileById(id); if (p) single.push(p); } catch { /* ignore */ }
+      }
+      return single;
+    }
+    const byId = new Map(profilesData.map(p => [p.id, p as Profile]));
+    return ids.map(id => byId.get(id)).filter((p): p is Profile => !!p);
+  } catch { return []; }
 }
 
 // Lista de perfiles a los que SIGUE userId (su "siguiendo").
 export async function fetchFollowing(userId: string): Promise<Profile[]> {
-  const { data, error } = await supabase
-    .from("follows" as never)
-    .select("following_id")
-    .eq("follower_id", userId)
-    .order("created_at", { ascending: false }) as { data: { following_id: string }[] | null; error: unknown };
-  if (error) return [];
-  const ids = Array.from(new Set((data ?? []).map(r => r.following_id)));
-  if (!ids.length) return [];
-  const { data: profiles } = await supabase.from("profiles").select("*").in("id", ids);
-  const byId = new Map((profiles ?? []).map(p => [p.id, p as Profile]));
-  return ids.map(id => byId.get(id)).filter((p): p is Profile => !!p);
+  try {
+    const { data, error } = await supabase
+      .from("follows" as never)
+      .select("following_id")
+      .eq("follower_id", userId)
+      .order("created_at", { ascending: false }) as { data: { following_id: string }[] | null; error: unknown };
+    if (error) return [];
+    const ids = Array.from(new Set((data ?? []).map(r => r.following_id)));
+    if (!ids.length) return [];
+    let profilesData: Record<string, unknown>[] | null = null;
+    try {
+      const res = await supabase.from("profiles").select("*").in("id", ids);
+      profilesData = res.data as Record<string, unknown>[] | null;
+    } catch { /* batch failed */ }
+    if (!profilesData || profilesData.length === 0) {
+      const single: Profile[] = [];
+      for (const id of ids) {
+        try { const p = await fetchProfileById(id); if (p) single.push(p); } catch { /* ignore */ }
+      }
+      return single;
+    }
+    const byId = new Map(profilesData.map(p => [p.id, p as Profile]));
+    return ids.map(id => byId.get(id)).filter((p): p is Profile => !!p);
+  } catch { return []; }
 }
+

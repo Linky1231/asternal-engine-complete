@@ -168,8 +168,8 @@ function OrbesPage() {
 
       <main className="flex-1 max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto w-full px-3 py-4 pb-24 space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
         {/* Balance card */}
-        <section className="relative overflow-hidden rounded-3xl border border-primary/25 grad-brand-soft p-5 shadow-[0_18px_36px_-26px_oklch(0.48_0.13_250/0.48)]">
-          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-primary/15 blur-3xl" />
+        <section className="relative overflow-hidden rounded-3xl border border-primary/30 grad-brand-soft p-5 shadow-lg">
+          <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-primary/20 blur-3xl" />
           <div className="relative">
             <div className="text-[10px] font-display tracking-[0.2em] text-muted-foreground">SALDO ACTUAL</div>
             <div className="flex items-baseline gap-2 mt-2">
@@ -200,24 +200,24 @@ function OrbesPage() {
 
         {/* Juegos involucrados: con qué juegos hubo movimientos de orbes */}
         <section className="rounded-lg border border-border/70 bg-surface p-3 space-y-2">
-          <div className="flex flex-col items-start gap-1.5 px-0.5 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+          <div className="flex items-center justify-between px-0.5 gap-2">
             <h2 className="font-display text-[11px] tracking-widest text-muted-foreground flex items-center gap-1.5">
               <Gamepad2 size={12} className="text-primary-glow" />
               JUEGOS INVOLUCRADOS
             </h2>
-            <span className="max-w-full text-[9px] font-mono text-muted-foreground/60">{stats.games} juego{stats.games !== 1 ? "s" : ""} con movimientos de orbes</span>
+            <span className="text-[9px] font-mono text-muted-foreground/60 shrink-0">{stats.games} juego{stats.games !== 1 ? "s" : ""} con movimientos de orbes</span>
           </div>
           {involvedIds.length === 0 ? (
             <div className="text-[11px] text-muted-foreground/60 px-0.5 pb-1">
               Aún no hay juegos con movimientos de orbes en tu cuenta. Compra o vende juegos y aparecerán aquí.
             </div>
           ) : (
-            <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none]">
+            <div className="flex flex-wrap gap-1.5">
               {involvedIds.map(id => (
                 <a
                   key={id}
                   href={`/?g=${id}`}
-                  className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-primary/25 bg-[color-mix(in_oklab,var(--primary)_10%,transparent)] px-2.5 py-1 text-[10px] font-display tracking-wide text-primary-glow transition hover:border-primary/50 hover:bg-[color-mix(in_oklab,var(--primary)_16%,transparent)]"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-display tracking-wide text-primary-glow hover:border-primary/50 hover:bg-primary/15 transition"
                 >
                   <Gamepad2 size={10} /> {gameTitles.get(id) ?? "Juego"} <ExternalLink size={9} className="opacity-60" />
                 </a>
@@ -249,7 +249,7 @@ function OrbesPage() {
               {last7.map((d, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1 min-w-0">
                   <div
-                    className="w-full rounded-md grad-brand transition-opacity hover:opacity-85"
+                    className="w-full rounded-md bg-accent/80 transition-all hover:bg-accent"
                     style={{ height: `${Math.max(6, (d.spent / maxSpent7) * 100)}%`, minHeight: 4 }}
                     title={`${d.label}: ${d.spent} orbes gastados`}
                   />

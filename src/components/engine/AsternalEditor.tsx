@@ -16,7 +16,6 @@ import { AnimationEditor } from "./AnimationEditor";
 import { PaintEditor } from "./PaintEditor";
 import { UIEditor } from "./UIEditor";
 import { ProjectManager } from "./ProjectManager";
-import { TransformInspector } from "./TransformInspector";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 import { ScriptEditor } from "./ScriptEditor";
@@ -248,7 +247,7 @@ export function AsternalEditor() {
   ];
 
   return (
-    <div className={`editor-shell flex h-screen w-full overflow-hidden ${isTablet ? "flex-row" : "flex-col"}`}>
+    <div className={`flex h-screen w-full overflow-hidden ${isTablet ? "flex-row" : "flex-col"}`}>
       {/* Left rail (tablet/desktop) */}
       {isTablet && (
         <nav className="w-[88px] border-r border-border/70 bg-card flex flex-col items-stretch py-3 gap-1 px-2 shrink-0">
@@ -363,7 +362,7 @@ export function AsternalEditor() {
                     updateScene({ ...activeScene, entities: [...activeScene.entities, copy] });
                     setSelectedId(copy.id);
                   }}
-                  className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-foreground hover:text-foreground hover:border-foreground/35 active:scale-90 transition grid place-items-center"
+                  className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-ink-2 hover:text-primary hover:border-primary/40 active:scale-90 transition grid place-items-center"
                   title="Duplicar asset (Ctrl+D)"
                   aria-label="Duplicar"
                 ><Copy size={18} /></button>
@@ -372,15 +371,15 @@ export function AsternalEditor() {
                 onClick={() => setLayersOpen(o => !o)}
                 className={`pointer-events-auto w-11 h-11 rounded-xl grid place-items-center active:scale-90 transition shadow-md ${
                   layersOpen
-                    ? "bg-muted text-foreground border border-line-strong"
-                    : "bg-card border border-line-strong text-foreground hover:text-foreground hover:border-foreground/35"
+                    ? "bg-primary text-primary-foreground border border-primary"
+                    : "bg-card border border-line-strong text-ink-2 hover:text-primary hover:border-primary/40"
                 }`}
                 title="Capas de la escena"
                 aria-label="Capas"
               ><Layers size={18} /></button>
               <button
                 onClick={() => setLibraryOpen(true)}
-                className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-foreground hover:text-foreground hover:border-foreground/35 active:scale-90 transition grid place-items-center"
+                className="pointer-events-auto w-11 h-11 rounded-xl bg-card border border-line-strong shadow-md text-ink-2 hover:text-primary hover:border-primary/40 active:scale-90 transition grid place-items-center"
                 title={t("library.title")}
                 aria-label="Librería de assets"
               ><LibraryBig size={18} /></button>
@@ -618,7 +617,7 @@ function LibrarySheet({
 function Logo() {
   return (
     <a href="/" title="Volver al menú principal" className="relative w-9 h-9 rounded-lg grad-brand grid place-items-center shadow-sm ring-1 ring-white/25 ring-inset active:scale-95 transition">
-      <span className="font-display text-lg font-black leading-none text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.22)]">A</span>
+      <span className="font-display text-lg text-primary-foreground">A</span>
     </a>
   );
 }
@@ -711,12 +710,6 @@ function InspectorPanel({
         <Slider label="Ancho" value={ent.w} min={8} max={400} step={4} onChange={v => update({ w: v })} />
         <Slider label="Alto" value={ent.h} min={8} max={400} step={4} onChange={v => update({ h: v })} />
       </div>
-      <TransformInspector
-        scene={scene}
-        entity={ent}
-        onChangeScene={onChangeScene}
-        onSelect={onSelect}
-      />
       <div>
         <label className="text-[10px] font-display tracking-widest text-muted-foreground">{t("inspector.color")}</label>
         <input
@@ -1449,7 +1442,7 @@ function importProject(): Promise<Project | null> {
 
 function HelpModal({ onClose }: { onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-background/80 backdrop-blur-md p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 grid place-items-center bg-background p-4" onClick={onClose}>
       <div className="panel rounded-xl border border-primary/40 glow-border max-w-md w-full p-5 space-y-3" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h2 className="font-display text-sm text-primary-glow glow-text tracking-[0.25em]">AYUDA RÁPIDA</h2>

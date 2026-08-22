@@ -249,7 +249,7 @@ export function TaskManager({
                         onClick={() => setStatus(t.id, "done")}
                         disabled={busyId === t.id}
                         title="Completar"
-                        className="w-7 h-7 rounded-lg border-primary/30 bg-primary/10 text-primary grid place-items-center active:scale-95 transition disabled:opacity-40"
+                        className="w-7 h-7 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 grid place-items-center active:scale-95 transition disabled:opacity-40"
                       >
                         {busyId === t.id ? <Loader2 size={11} className="animate-spin" /> : <Check size={11} />}
                       </button>
@@ -268,7 +268,7 @@ export function TaskManager({
                       <button
                         onClick={() => remove(t.id)}
                         title="Eliminar"
-                        className="w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 grid place-items-center active:scale-95 transition"
+                        className="w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-rose-300 grid place-items-center active:scale-95 transition"
                       >
                         <Trash2 size={11} />
                       </button>
@@ -499,7 +499,7 @@ export function FileManager({
                   <button
                     onClick={() => remove(f)}
                     title="Eliminar"
-                    className="w-8 h-8 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 grid place-items-center active:scale-95 transition shrink-0"
+                    className="w-8 h-8 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-rose-300 grid place-items-center active:scale-95 transition shrink-0"
                   >
                     <Trash2 size={13} />
                   </button>
@@ -631,7 +631,7 @@ export function ThreadsManager({
                       e.stopPropagation();
                       remove(t.id);
                     }}
-                    className="w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 grid place-items-center shrink-0"
+                    className="w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-rose-300 grid place-items-center shrink-0"
                   >
                     <Trash2 size={11} />
                   </span>
@@ -954,7 +954,7 @@ export function ProjectsManager({
             <span
               className={`ml-auto px-1.5 py-0.5 rounded-full text-[9px] font-bold ${
                 open.status === "done"
-                  ? "bg-primary/10 text-primary"
+                  ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                   : open.status === "active"
                     ? "bg-primary/10 text-primary"
                     : "bg-muted text-muted-foreground"
@@ -975,10 +975,10 @@ export function ProjectsManager({
             <div className="flex items-center gap-1.5 flex-wrap pt-1">
               {statusBtn(open, "planning", "PLANIFICADO", "bg-primary/15 text-primary border border-primary/40")}
               {statusBtn(open, "active", "EN CURSO", "bg-primary/15 text-primary border border-primary/40")}
-              {statusBtn(open, "done", "COMPLETADO", "bg-primary/10 text-primary border border-primary/30")}
+              {statusBtn(open, "done", "COMPLETADO", "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40")}
               <button
                 onClick={() => remove(open.id)}
-                className="ml-auto w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 grid place-items-center active:scale-95"
+                className="ml-auto w-7 h-7 rounded-lg border border-border text-muted-foreground hover:text-destructive hover:border-rose-300 grid place-items-center active:scale-95"
               >
                 <Trash2 size={12} />
               </button>
@@ -1007,7 +1007,7 @@ export function ProjectsManager({
                   <span
                     className={`text-[9px] font-bold ${
                       t.status === "done"
-                        ? "text-primary"
+                        ? "text-emerald-600 dark:text-emerald-400"
                         : t.status === "doing"
                           ? "text-primary"
                           : "text-muted-foreground"
@@ -1169,7 +1169,7 @@ export function ProjectsManager({
                     <span
                       className={`shrink-0 px-1 py-0.5 rounded-full text-[8px] font-bold ${
                         p.status === "done"
-                          ? "bg-primary/10 text-primary"
+                          ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                           : p.status === "active"
                             ? "bg-primary/10 text-primary"
                             : "bg-muted text-muted-foreground"

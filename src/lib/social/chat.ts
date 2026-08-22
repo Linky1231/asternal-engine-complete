@@ -1,7 +1,6 @@
 // @ts-nocheck — Chat adapter (same Supabase client + helpers as api.ts)
 import { supabase, hasSupabaseConfig, isSchemaMissing } from "@/integrations/supabase/client";
 import { signMediaUrls, uploadMedia } from "@/lib/social/api";
-import { syncManusRecord } from "@/lib/manus-sync";
 import type { Profile } from "@/lib/social/api";
 
 export type ChatMessage = {
@@ -105,12 +104,6 @@ function localSave(table: string, rows: unknown[]): void {
   } catch {
     /* sin espacio (modo local): se ignora */
   }
-  void syncManusRecord({
-    sourceTable: `local_${table}`,
-    sourceId: "collection",
-    payload: rows,
-    sourceUpdatedAt: new Date().toISOString(),
-  });
 }
 
 function localStorePath(path: string): string | null {
@@ -828,76 +821,19 @@ export function subscribeToPolls(
   }
 }
 
-/** Normaliza texto de búsqueda para que mayúsculas, acentos y @ no oculten un perfil. */
-function normalizeProfileSearch(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLocaleLowerCase()
-    .trim();
-}
-
-/** Escapa los comodines de ilike para que el término siga siendo texto literal. */
-function escapeProfileSearch(value: string): string {
-  return value.replace(/[\\%_]/g, "\\$&");
-}
-
 /**
- * Busca perfiles para menciones y para el panel global. Se hacen consultas
- * independientes por username y nombre visible: el adaptador local no evalúa
- * las expresiones OR de PostgREST igual que Supabase Cloud. Después se
- * normaliza, deduplica y prioriza la cuenta cuyo username o nombre coincide.
+ * Busca perfiles para las menciones @usuario (por nombre de usuario o
+ * nombre visible). Devuelve los que coinciden, limitados.
  */
 export async function searchProfilesForMention(query: string, limit = 8): Promise<Profile[]> {
-  const raw = query.trim().replace(/^@+/, "");
-  const normalized = normalizeProfileSearch(raw);
-  if (!normalized) return [];
-
-  const pattern = `%${escapeProfileSearch(raw)}%`;
-  const [usernameResult, displayNameResult, authResult] = await Promise.all([
-    supabase.from("profiles").select("*").ilike("username", pattern).limit(Math.max(limit * 2, 20)),
-    supabase.from("profiles").select("*").ilike("display_name", pattern).limit(Math.max(limit * 2, 20)),
-    supabase.auth.getUser(),
-  ]);
-
-  if (usernameResult.error && displayNameResult.error) throw usernameResult.error;
-
-  const candidates = [
-    ...((usernameResult.data ?? []) as Profile[]),
-    ...((displayNameResult.data ?? []) as Profile[]),
-  ];
-
-  // El perfil activo se consulta explícitamente. Así no desaparece en modo local
-  // aunque su registro haya sido creado después de la primera búsqueda.
-  const activeUserId = authResult.data?.user?.id;
-  if (activeUserId) {
-    const { data: activeProfile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", activeUserId)
-      .maybeSingle();
-    if (activeProfile) candidates.push(activeProfile as Profile);
-  }
-
-  const unique = new Map<string, Profile>();
-  for (const profile of candidates) {
-    if (!profile?.id) continue;
-    const username = normalizeProfileSearch(profile.username ?? "");
-    const displayName = normalizeProfileSearch(profile.display_name ?? "");
-    if (username.includes(normalized) || displayName.includes(normalized)) unique.set(profile.id, profile);
-  }
-
-  return [...unique.values()]
-    .sort((a, b) => {
-      const aUser = normalizeProfileSearch(a.username ?? "");
-      const bUser = normalizeProfileSearch(b.username ?? "");
-      const aName = normalizeProfileSearch(a.display_name ?? "");
-      const bName = normalizeProfileSearch(b.display_name ?? "");
-      const score = (username: string, name: string) =>
-        username === normalized ? 0 : name === normalized ? 1 : username.startsWith(normalized) ? 2 : name.startsWith(normalized) ? 3 : 4;
-      return score(aUser, aName) - score(bUser, bName) || aUser.localeCompare(bUser);
-    })
-    .slice(0, limit);
+  const q = query.trim().toLowerCase();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .or(`username.ilike.%${q}%,display_name.ilike.%${q}%`)
+    .limit(limit);
+  if (error) throw error;
+  return (data ?? []) as Profile[];
 }
 
 export type ChatSticker = { id: string; path: string; title: string };

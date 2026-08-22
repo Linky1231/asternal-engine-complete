@@ -88,6 +88,7 @@ create table if not exists public.profiles (
   post_effect text,
   creator_card_style jsonb,
   featured_post_id uuid,
+  trust_points smallint not null default 10,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -969,12 +970,13 @@ begin
     v_code := 'AST-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 6));
     exit when not exists (select 1 from public.profiles where user_code = v_code);
   end loop;
-  insert into public.profiles (id, username, display_name, user_code)
+  insert into public.profiles (id, username, display_name, user_code, trust_points)
   values (
     new.id,
     coalesce(new.raw_user_meta_data->>'username', split_part(new.email, '@', 1)),
     new.raw_user_meta_data->>'display_name',
-    v_code
+    v_code,
+    10
   )
   on conflict (id) do nothing;
   -- Auto-asignar rol admin a la cuenta propietaria
@@ -1044,6 +1046,42 @@ create policy "post-media owner update" on storage.objects
 drop policy if exists "post-media owner delete" on storage.objects;
 create policy "post-media owner delete" on storage.objects
   for delete to authenticated using (bucket_id = 'post-media');
+
+-- ════════════════════════════════════════════════════════════════════
+--  HISTORIAL DE PUNTOS DE CONFIANZA
+-- ════════════════════════════════════════════════════════════════════
+create table if not exists public.trust_points_history (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references public.profiles(id) on delete cascade,
+  modifier_id uuid references public.profiles(id) on delete set null,
+  action     text not null check (action in ('deduct', 'restore')),
+  amount     smallint not null check (amount > 0),
+  reason     text not null default '',
+  points_before smallint not null,
+  points_after  smallint not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.trust_points_history enable row level security;
+
+create policy "Users can read own trust history" on public.trust_points_history
+  for select using (auth.uid() = user_id);
+
+create policy "Mods can read trust history for any user" on public.trust_points_history
+  for select using (
+    exists (select 1 from public.user_roles where user_id = auth.uid() and role in ('admin', 'moderator'))
+  );
+
+create policy "Mods can insert trust history" on public.trust_points_history
+  for insert with check (
+    exists (select 1 from public.user_roles where user_id = auth.uid() and role in ('admin', 'moderator'))
+  );
+
+-- ════════════════════════════════════════════════════════════════════
+--  ASSET PRESET DATA (editor resources sold in the Tienda)
+-- ════════════════════════════════════════════════════════════════════
+alter table public.posts add column if not exists asset_preset jsonb;
+alter table public.posts add column if not exists post_type varchar(30) default null;
 
 -- ════════════════════════════════════════════════════════════════════
 --  FIN DEL SCRIPT

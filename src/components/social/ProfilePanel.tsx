@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
-import QRCode from "qrcode";
 import {
   Loader2, Camera, Save, Gamepad2, Newspaper, CheckCircle2, Star, ChevronRight,
   ImagePlus, MapPin, Cake, Palette, Tag, Sparkles as SparklesIcon, Eye, EyeOff,
   Heart, MessageCircle, ChevronDown, ChevronUp, Share2, Link2, Check,
   Youtube, Instagram, Globe, UserPlus, UserCheck, X, Fingerprint, Copy, QrCode,
+  MoreVertical, Shield, Trophy, Download,
 } from "lucide-react";
 import {
   type Profile,
@@ -15,10 +15,15 @@ import {
   fetchUserPosts,
   fetchUserGames,
   updateMyProfile,
+  getTrustPoints,
+  deductTrustPoints,
+  restoreTrustPoints,
+  DEFAULT_TRUST_POINTS,
   uploadAvatar,
   uploadBanner,
   getMyProfile,
   isPlusActive,
+  updatePlusSettings,
   getFollowStats,
   followUser,
   unfollowUser,
@@ -30,8 +35,10 @@ import { PostCard } from "./PostCard";
 import { UserName } from "./UserName";
 import { Avatar } from "./Avatar";
 import { SegmentedControl } from "@/components/ui/segmented";
+import { TrustPointsHistory } from "./TrustPointsHistory";
+import { SmartStatusPanel } from "./SmartStatusPanel";
+import { PortfolioPanel } from "./PortfolioPanel";
 import { getUserCode } from "@/lib/social/avatar";
-import { profileIdentity } from "@/lib/social/profile-identity";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -50,6 +57,7 @@ export function ProfilePanel({
   const [editing, setEditing] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
   // form state
   const [username, setUsername] = useState("");
@@ -80,11 +88,16 @@ export function ProfilePanel({
   const [contentLoading, setContentLoading] = useState(false);
   const [follow, setFollow] = useState<FollowStats>({ followers: 0, following: 0, i_follow: false });
   const [followBusy, setFollowBusy] = useState(false);
+  const [trustPoints, setTrustPoints] = useState<number>(DEFAULT_TRUST_POINTS);
+  const [trustBusy, setTrustBusy] = useState(false);
+  const [trustDeductAmt, setTrustDeductAmt] = useState(1);
+  const [trustReason, setTrustReason] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [qrOpen, setQrOpen] = useState(false);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [followList, setFollowList] = useState<null | { kind: "followers" | "following"; items: Profile[]; loading: boolean }>(null);
+  const [showTrustMenu, setShowTrustMenu] = useState(false);
+  const [showTrustPanel, setShowTrustPanel] = useState(false);
+  const [showPortfolio, setShowPortfolio] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -125,10 +138,9 @@ export function ProfilePanel({
 
   const loadFollow = async () => { try { setFollow(await getFollowStats(userId)); } catch { /* ignore */ } };
 
-  useEffect(() => { load(); loadContent(); loadFollow(); /* eslint-disable-next-line */ }, [userId]);
+  useEffect(() => { load(); loadContent(); loadFollow(); getTrustPoints(userId).then(setTrustPoints).catch(() => {}); /* eslint-disable-next-line */ }, [userId]);
 
   const toggleFollow = async () => {
-    if (!myId) { navigate({ to: "/auth" }); return; }
     if (followBusy) return;
     setFollowBusy(true);
     try {
@@ -138,13 +150,50 @@ export function ProfilePanel({
     } finally { setFollowBusy(false); }
   };
 
+  const handleDeductTrust = async () => {
+    if (trustBusy || !isMod || viewingOwn) return;
+    if (trustDeductAmt < 1) return;
+    const reason = trustReason.trim() || "Sin razón especificada";
+    if (!confirm(`¿Quitar ${trustDeductAmt} punto(s) de confianza a @${profile?.username}?\nRazón: ${reason}`)) return;
+    setTrustBusy(true);
+    try {
+      const result = await deductTrustPoints(userId, trustDeductAmt, reason);
+      setTrustPoints(result.newPoints);
+      if (result.banned) {
+        alert(`@${profile?.username} alcanzó 0 puntos y fue baneado.`);
+      }
+      setTrustReason("");
+      setTrustDeductAmt(1);
+    } catch (e) { alert((e as Error).message); }
+    finally { setTrustBusy(false); }
+  };
+
+  const handleRestoreTrust = async () => {
+    if (trustBusy || !isMod || viewingOwn) return;
+    setTrustBusy(true);
+    try {
+      const newPts = await restoreTrustPoints(userId, 1);
+      setTrustPoints(newPts);
+    } catch (e) { alert((e as Error).message); }
+    finally { setTrustBusy(false); }
+  };
+
   // ─── Compartir perfil: enlace directo + compartir en el chat grupal ───
-  const profileLink = typeof window !== "undefined" ? window.location.origin + "/profile/" + userId : "";
-  const qrLink = profileLink ? `${profileLink}?source=qr` : "";
-  const shareLink = profileLink;
+  const shareLink = typeof window !== "undefined" ? window.location.origin + "/profile/" + userId : "";
   const shareToChat = () => {
     setShareOpen(false);
-    try { sessionStorage.setItem("asternal_chat_share", shareLink); } catch { /* noop */ }
+    try {
+      sessionStorage.setItem("asternal_chat_share", shareLink);
+      window.dispatchEvent(new CustomEvent("asternal_share_chat", { detail: { text: shareLink, view: "group" as const } }));
+    } catch { /* noop */ }
+    navigate({ to: "/" });
+  };
+  const shareDirect = () => {
+    setShareOpen(false);
+    try {
+      sessionStorage.setItem("asternal_chat_share", shareLink);
+      window.dispatchEvent(new CustomEvent("asternal_share_chat", { detail: { text: shareLink, view: "dms" as const } }));
+    } catch { /* noop */ }
     navigate({ to: "/" });
   };
   const copyLink = async () => {
@@ -153,26 +202,6 @@ export function ProfilePanel({
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 1800);
   };
-  const openQr = async () => {
-    setQrOpen(true);
-    setQrDataUrl(null);
-    try {
-      const dataUrl = await QRCode.toDataURL(qrLink, {
-        width: 420,
-        margin: 2,
-        errorCorrectionLevel: "M",
-        color: { dark: "#10223f", light: "#ffffff" },
-      });
-      setQrDataUrl(dataUrl);
-    } catch { setQrDataUrl(null); }
-  };
-  const qrButton = (
-    <button onClick={() => void openQr()}
-      className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium flex items-center gap-1.5 active:scale-95 transition"
-      title="Mostrar QR del perfil">
-      <QrCode size={13} /> QR
-    </button>
-  );
   const shareMenu = (
     <div className="relative">
       <button onClick={() => setShareOpen(s => !s)}
@@ -180,14 +209,18 @@ export function ProfilePanel({
         <Share2 size={13} /> Compartir
       </button>
       {shareOpen && (
-        <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[210px] shadow-md">
+        <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[220px] shadow-md">
           <button onClick={shareToChat}
             className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-            <MessageCircle size={14} className="text-primary shrink-0" /> Compartir en el chat grupal
+            <MessageCircle size={14} className="text-primary shrink-0" /> Compartir en chat grupal
+          </button>
+          <button onClick={shareDirect}
+            className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
+            <MessageCircle size={14} className="text-primary shrink-0" /> Compartir en chat directo
           </button>
           <button onClick={() => void copyLink()}
             className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-            {copiedLink ? <Check size={14} className="text-primary shrink-0" /> : <Link2 size={14} className="text-primary shrink-0" />}
+            {copiedLink ? <Check size={14} className="text-emerald-500 shrink-0" /> : <Link2 size={14} className="text-primary shrink-0" />}
             {copiedLink ? "¡Enlace copiado!" : "Copiar enlace al perfil"}
           </button>
         </div>
@@ -248,7 +281,6 @@ export function ProfilePanel({
 
   const interestsList = (profile.interests ?? []).filter(Boolean);
   const userCode = profile.user_code || getUserCode(profile.id);
-  const identity = profileIdentity(profile.display_name, profile.username, userId.slice(0, 8));
   const copyCode = async () => {
     try { await navigator.clipboard.writeText(userCode); } catch { /* noop */ }
     setCodeCopied(true);
@@ -261,7 +293,7 @@ export function ProfilePanel({
     <button
       type="button"
       onClick={() => viewingOwn && editing && fileRef.current?.click()}
-      className={`relative w-20 h-20 rounded-2xl overflow-hidden border-[3px] border-white block shadow-[0_12px_28px_-12px_oklch(0.5_0.13_266/0.35)] ${viewingOwn && editing ? "cursor-pointer active:scale-95" : ""}`}
+      className={`relative w-20 h-20 rounded-2xl overflow-hidden border-[3px] border-white block  ${viewingOwn && editing ? "cursor-pointer active:scale-95" : ""}`}
       aria-label="Avatar"
     >
       {/* w-full h-full sin size fijo: la foto rellena exactamente la caja
@@ -283,9 +315,9 @@ export function ProfilePanel({
   );
 
   return (
-    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2 duration-300">
+    <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Header card with banner */}
-      <section className="rounded-2xl border border-border/70 bg-surface overflow-hidden">
+      <section className="rounded-lg border border-border/70 bg-surface overflow-hidden">
         <div className="relative h-28 grad-brand-soft">
           {bannerPreview && <img src={bannerPreview} alt="banner" className="absolute inset-0 w-full h-full object-cover" />}
           {viewingOwn && editing && (
@@ -298,21 +330,20 @@ export function ProfilePanel({
             onChange={e => pickBanner(e.target.files?.[0] ?? null)} />
         </div>
 
-        <div className="p-4 sm:p-5 space-y-4">
-          <div className="relative z-10 grid grid-cols-[88px_minmax(0,1fr)] sm:grid-cols-[88px_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-3 -mt-10">
-            {/* El avatar es el único elemento que cruza la portada. La identidad queda
-                enteramente dentro del contenido para evitar choques con el fondo. */}
-            <div className="relative z-10 flex h-[84px] w-[84px] shrink-0 items-center justify-center">
-              {frameRing ? (
-                <div className="relative rounded-[18px] p-[2px] shadow-[0_10px_24px_-14px_oklch(0.50_0.13_250/0.55)]" style={{ background: frameRing }}>
-                  {avatarButton}
-                </div>
-              ) : (
-                avatarButton
-              )}
-            </div>
+        <div className="p-4 space-y-3">
+          <div className="flex items-start gap-3 -mt-12">
+            {/* Avatar: marco de degradado ceñido a la foto (mismo lenguaje que PostCard),
+                en vez del anillo animado flotante que se veía como un borde roto. */}
+            {frameRing ? (
+              <div className="relative shrink-0 rounded-2xl p-[2px]" style={{ background: frameRing }}>
+                {avatarButton}
+              </div>
+            ) : (
+              avatarButton
+            )}
 
-            <div className="min-w-0 self-start pt-11 sm:pt-10">
+
+            <div className="flex-1 min-w-0 pt-12">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -323,22 +354,24 @@ export function ProfilePanel({
               ) : (
                 <>
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    {identity.displayName && <UserName p={profile} size="lg" showBadge={false} className="max-w-full" />}
+                    <UserName p={profile} size="lg" showBadge={false} />
                     {isPlusActive(profile) && profile.show_plus_badge !== false && (
                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-display font-bold text-white shrink-0"
                         style={{ background: "var(--gradient-plus)" }}>PLUS</span>
                     )}
                   </div>
-                  <div className={`max-w-full truncate font-mono text-muted-foreground ${identity.displayName ? "text-[11px]" : "pt-0.5 text-sm font-medium text-foreground"}`}>
-                    {identity.handle}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
+                  <div className="text-[11px] font-mono text-muted-foreground truncate">
+                    @{profile.username}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
-                  <button onClick={() => void copyCode()}
-                    className="mt-1 inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
-                    title="ID de usuario · toca para copiar">
-                    <Fingerprint size={10} className="text-primary-glow" />
-                    {userCode}
-                    {codeCopied ? <Check size={9} className="text-primary" /> : <Copy size={9} className="opacity-60" />}
-                  </button>
+                  {!editing && (
+                    <button onClick={() => void copyCode()}
+                      className="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
+                      title="ID de usuario · toca para copiar">
+                      <Fingerprint size={10} className="text-primary-glow" />
+                      {userCode}
+                      {codeCopied ? <Check size={9} className="text-emerald-500" /> : <Copy size={9} className="opacity-60" />}
+                    </button>
+                  )}
                   {profile.custom_title && (
                     <div className="text-[11px] mt-0.5" style={{ color: profile.accent_color ?? "var(--primary)" }}>
                       {profile.custom_title}
@@ -348,37 +381,77 @@ export function ProfilePanel({
               )}
             </div>
 
-            <div className="col-span-2 sm:col-span-1 sm:col-start-3 sm:row-start-1 sm:mt-12 flex min-w-0 flex-wrap items-center justify-start sm:justify-end gap-2">
-              {viewingOwn ? (
-                editing ? (
-                  <button onClick={save} disabled={saving}
-                    className="h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60">
-                    {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
-                  </button>
-                ) : (
-                  <>
-                    <button onClick={() => setEditing(true)}
-                      className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
-                    {qrButton}
-                    {shareMenu}
-                  </>
-                )
+            {viewingOwn ? (
+              editing ? (
+                <button onClick={save} disabled={saving}
+                  className="mt-12 h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60">
+                  {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
+                </button>
               ) : (
-                <>
-                  <button onClick={toggleFollow} disabled={followBusy}
-                    className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
-                    {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
+                <div className="mt-12 flex items-center gap-2">
+                  <button onClick={() => setEditing(true)}
+                    className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
+                  <button onClick={() => setShowQR(v => !v)}
+                    className={`h-9 px-2.5 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
+                    <QrCode size={13} />
                   </button>
-                  {qrButton}
                   {shareMenu}
-                </>
-              )}
-            </div>
+                  <div className="relative">
+                    <button onClick={() => setShowTrustMenu(v => !v)}
+                      className="h-9 w-9 rounded-lg border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+                      <MoreVertical size={14} />
+                    </button>
+                    {showTrustMenu && (
+                      <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[200px] shadow-md animate-in fade-in slide-in-from-top-1 duration-150">
+                        <button onClick={() => { setShowTrustMenu(false); setShowTrustPanel(true); }}
+                          className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
+                          <Shield size={14} className="text-primary shrink-0" /> Puntos de confianza
+                        </button>
+                        <button onClick={() => { setShowTrustMenu(false); setShowPortfolio(true); }}
+                          className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
+                          <Trophy size={14} className="text-primary shrink-0" /> Portafolio
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            ) : (
+              <div className="mt-12 flex items-center gap-2">
+                <button onClick={toggleFollow} disabled={followBusy}
+                  className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
+                  {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
+                </button>
+                <button onClick={() => setShowQR(v => !v)}
+                  className={`h-9 px-2.5 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
+                  <QrCode size={13} />
+                </button>
+                {shareMenu}
+                <div className="relative">
+                  <button onClick={() => setShowTrustMenu(v => !v)}
+                    className="h-9 w-9 rounded-lg border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+                    <MoreVertical size={14} />
+                  </button>
+                  {showTrustMenu && (
+                    <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[200px] shadow-md animate-in fade-in slide-in-from-top-1 duration-150">
+                      <button onClick={() => { setShowTrustMenu(false); setShowTrustPanel(true); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
+                        <Shield size={14} className="text-primary shrink-0" /> Puntos de confianza
+                      </button>
+                      <button onClick={() => { setShowTrustMenu(false); setShowPortfolio(true); }}
+                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
+                        <Trophy size={14} className="text-primary shrink-0" /> Portafolio
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Follow counts (tocables: muestran la lista de personas) */}
           {!editing && (
-            <div className="flex items-center gap-1 pt-1 text-[11px]">
+            <div className="flex items-center gap-1 text-[11px]">
               <button onClick={() => openFollowList("followers")}
                 className="flex items-center gap-1 px-2 py-1 -mx-1 rounded-lg hover:bg-muted/40 active:scale-95 transition text-left">
                 <b className="text-foreground tabular-nums">{follow.followers}</b>
@@ -395,29 +468,7 @@ export function ProfilePanel({
 
           {followList && <FollowListModal list={followList} myId={myId} onClose={() => setFollowList(null)} onChanged={loadFollow} />}
 
-          {qrOpen && (
-            <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/55 p-4" role="dialog" aria-modal="true" aria-label="Código QR del perfil">
-              <div className="w-full max-w-sm rounded-2xl border border-border bg-surface p-5 shadow-2xl">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h2 className="font-display text-base font-bold">Comparte tu perfil</h2>
-                    <p className="mt-1 text-xs text-muted-foreground">Escanea este código para abrir directamente el perfil en Asternal.</p>
-                  </div>
-                  <button onClick={() => setQrOpen(false)} className="grid h-8 w-8 shrink-0 place-items-center rounded-lg hover:bg-muted/60" aria-label="Cerrar QR">
-                    <X size={16} />
-                  </button>
-                </div>
-                <div className="mt-5 grid place-items-center rounded-xl bg-white p-4">
-                  {qrDataUrl ? <img src={qrDataUrl} alt={`Código QR del perfil de ${profile.display_name || profile.username || "usuario"}`} className="h-64 w-64" /> : <Loader2 size={22} className="animate-spin text-primary" />}
-                </div>
-                <div className="mt-4 flex items-center justify-between gap-2">
-                  <span className="min-w-0 truncate font-mono text-[10px] text-muted-foreground">{shareLink}</span>
-                  {qrDataUrl && <a href={qrDataUrl} download={`asternal-perfil-${profile.username || userId}.png`}
- className="shrink-0 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white">Descargar</a>}
-                </div>
-              </div>
-            </div>
-          )}
+
 
           {/* Social links (Plus feature, always shown if present and Plus active) */}
           {!editing && isPlusActive(profile) && profile.social_links && (
@@ -460,6 +511,13 @@ export function ProfilePanel({
                   #{t}
                 </span>
               ))}
+            </div>
+          )}
+
+          {/* QR Code: personalizable */}
+          {!editing && showQR && (
+            <div className="pt-3 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200">
+              <QRCustomizer userId={userId} username={profile.username ?? "user"} qrStyle={profile.qr_style ?? null} isPlus={viewingOwn && isPlusActive(profile)} viewingOwn={viewingOwn} />
             </div>
           )}
 
@@ -570,13 +628,13 @@ export function ProfilePanel({
         items={[
           { id: "games", label: <>JUEGOS · {games.length}</>, icon: <Gamepad2 size={13} className="hidden sm:block shrink-0" /> },
           { id: "posts", label: <>POSTS · {posts.length}</>, icon: <Newspaper size={13} className="hidden sm:block shrink-0" /> },
-          { id: "gallery", label: <>GALERÍA · {artworks.length}</>, icon: <Palette size={13} className="hidden sm:block shrink-0" /> },
+          { id: "gallery", label: <>TIENDA · {artworks.length}</>, icon: <Palette size={13} className="hidden sm:block shrink-0" /> },
         ]}
         value={tab}
         onChange={setTab}
       />
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {contentLoading ? (
           <div className="p-8 text-center text-xs text-muted-foreground"><Loader2 className="animate-spin inline mr-2" size={14} /></div>
         ) : tab === "games" ? (
@@ -607,7 +665,7 @@ export function ProfilePanel({
                           <SparklesIcon size={9} /> {price}
                         </span>
                       ) : (
-                        <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full text-[9px] font-semibold bg-primary/10 text-primary border border-primary/25">
+                        <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full text-[9px] font-semibold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
                           GRATIS
                         </span>
                       )}
@@ -616,7 +674,7 @@ export function ProfilePanel({
                       <div className="text-xs font-display truncate font-semibold tracking-tight">{title}</div>
                       <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <Heart size={10} className={a.likes > 0 ? "text-primary" : ""} /> {a.likes}
+                          <Heart size={10} className={a.likes > 0 ? "text-rose-400" : ""} /> {a.likes}
                         </span>
                         <span className="flex items-center gap-1">
                           <MessageCircle size={10} /> {a.comments_count}
@@ -634,8 +692,328 @@ export function ProfilePanel({
         ) : (
           posts.length === 0 ? (
             <div className="px-4 py-8 text-center text-xs text-muted-foreground rounded-lg border border-dashed border-border bg-surface">Sin publicaciones</div>
-          ) : <div className="space-y-4" aria-label="Publicaciones del perfil">{posts.map(p => <PostCard key={p.id} post={p} myId={myId} isMod={isMod} onChange={loadContent} />)}</div>
+          ) : posts.map(p => <PostCard key={p.id} post={p} myId={myId} isMod={isMod} onChange={loadContent} />)
         )}
+      </div>
+
+      {/* Smart Status */}
+      <div className="px-3 py-1">
+        <SmartStatusPanel userId={userId} />
+      </div>
+
+      {/* Trust Points panel (full, from three-dot menu) */}
+      {showTrustPanel && (
+        <TrustPointsPanel
+          userId={userId}
+          trustPoints={trustPoints}
+          isMod={isMod}
+          viewingOwn={viewingOwn}
+          onClose={() => setShowTrustPanel(false)}
+          onTrustChange={setTrustPoints}
+        />
+      )}
+
+      {/* Portfolio panel (from three-dot menu) */}
+      {showPortfolio && (
+        <PortfolioPanel
+          userId={userId}
+          profile={profile}
+          viewingOwn={viewingOwn}
+          onClose={() => setShowPortfolio(false)}
+        />
+      )}
+    </div>
+  );
+}
+
+/** Panel de código QR — personalizable solo para Plus, sincronizado con DB */
+function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
+  userId: string; username: string; qrStyle: import("@/lib/social/api").QRStyle | null;
+  isPlus: boolean; viewingOwn: boolean;
+}) {
+  const profileUrl = typeof window !== "undefined" ? `${window.location.origin}/profile/${userId}` : `/profile/${userId}`;
+  const defaultStyle = { fg: "#000000", bg: "#ffffff", size: 180, cornerStyle: "square" as const };
+  const [style, setStyle] = useState<Required<import("@/lib/social/api").QRStyle> & { cornerStyle: string }>(
+    qrStyle ? { ...defaultStyle, ...qrStyle } : defaultStyle
+  );
+  const [copied, setCopied] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Sync from DB when qrStyle prop changes (e.g. viewing another user's profile)
+  useEffect(() => {
+    if (qrStyle) setStyle({ ...defaultStyle, ...qrStyle });
+  }, [qrStyle?.fg, qrStyle?.bg, qrStyle?.size, qrStyle?.cornerStyle]);
+
+  const persist = async (next: typeof style) => {
+    setStyle(next);
+    if (viewingOwn && isPlus) {
+      setSaving(true);
+      try { await updatePlusSettings({ qr_style: next }); } catch { /* noop */ }
+      finally { setSaving(false); }
+    }
+  };
+
+  const PRESETS = [
+    { label: "Clásico", fg: "#000000", bg: "#ffffff" },
+    { label: "Azul", fg: "#2563eb", bg: "#f0f7ff" },
+    { label: "Oscuro", fg: "#ffffff", bg: "#1a1a2e" },
+    { label: "Primario", fg: "var(--primary)", bg: "#ffffff" },
+    { label: "Gradiente", fg: "#6366f1", bg: "#f5f3ff" },
+    { label: "Rosa", fg: "#ec4899", bg: "#fdf2f8" },
+  ] as const;
+
+  const SIZES = [120, 160, 200, 240] as const;
+  const CORNERS = [
+    { id: "square", label: "Cuadrados" },
+    { id: "rounded", label: "Redondeados" },
+    { id: "dots", label: "Puntos" },
+  ] as const;
+
+  const qrSrc = (() => {
+    const fg = style.fg.startsWith("#") ? style.fg.replace("#", "") : "000000";
+    const bg = style.bg.startsWith("#") ? style.bg.replace("#", "") : "ffffff";
+    const sz = style.size || 180;
+    return `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(profileUrl)}&size=${sz}x${sz}&margin=6&format=svg&color=${fg}&bgcolor=${bg}`;
+  })();
+
+  const handleDownload = async () => {
+    try {
+      const res = await fetch(qrSrc);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `qr_${username}.svg`; a.click();
+      URL.revokeObjectURL(url);
+    } catch { /* noop */ }
+  };
+
+  const handleCopy = async () => {
+    try { await navigator.clipboard.writeText(profileUrl); setCopied(true); setTimeout(() => setCopied(false), 1500); } catch { /* noop */ }
+  };
+
+  const canCustomize = viewingOwn && isPlus;
+
+  return (
+    <div className="space-y-3 animate-in fade-in duration-200">
+      {/* Preview */}
+      <div className="flex flex-col items-center gap-2">
+        <div className="border border-border/40 bg-card shadow-sm" style={{ background: style.bg, borderRadius: style.cornerStyle === "rounded" ? 16 : style.cornerStyle === "dots" ? "50%" : 8, padding: style.cornerStyle === "dots" ? 24 : style.cornerStyle === "rounded" ? 12 : 12 }}>
+          <img src={qrSrc} alt={`QR de ${username}`} width={style.size || 180} height={style.size || 180} className="block" />
+        </div>
+        <div className="text-[9px] font-mono text-muted-foreground/40 text-center truncate max-w-[200px]">{profileUrl}</div>
+      </div>
+
+      {/* Botón de guardar (solo Plus propio) */}
+      {canCustomize && (
+        <div className="text-center">
+          {saving && <span className="text-[10px] text-muted-foreground/50">Guardando…</span>}
+        </div>
+      )}
+
+      {/* Aviso para usuarios no-Plus */}
+      {!canCustomize && !viewingOwn && (
+        <div className="text-center text-[10px] text-muted-foreground/50">
+          Escanea para ver el perfil de {username}
+        </div>
+      )}
+
+      {!canCustomize && viewingOwn && (
+        <div className="text-center py-2 px-3 rounded-lg bg-primary/5 border border-primary/15">
+          <div className="text-[11px] text-primary font-medium">Personaliza tu QR con Plus</div>
+          <div className="text-[10px] text-muted-foreground/50 mt-0.5">Cambia colores, estilos y tamaño</div>
+        </div>
+      )}
+
+      {/* Panel de personalización — solo usuarios Plus en su propio perfil */}
+      {canCustomize && (
+        <>
+          {/* Presets de color */}
+          <div>
+            <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Color</div>
+            <div className="flex gap-1.5 flex-wrap">
+              {PRESETS.map(p => {
+                const active = style.fg === p.fg && style.bg === p.bg;
+                return (
+                  <button key={p.label} onClick={() => persist({ ...style, fg: p.fg, bg: p.bg })}
+                    className={`h-8 px-2.5 rounded-lg text-[10px] font-medium border transition active:scale-95 ${active ? "border-primary/40 bg-primary/10 text-primary" : "border-border/40 bg-surface text-muted-foreground hover:text-foreground"}`}>
+                    {p.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Colores personalizados */}
+          <div className="flex gap-3 items-center">
+            <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <span>Color</span>
+              <input type="color" value={style.fg.startsWith("#") ? style.fg : "#000000"} onChange={e => persist({ ...style, fg: e.target.value })}
+                className="w-6 h-6 rounded border-0 cursor-pointer bg-transparent" />
+            </label>
+            <label className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <span>Fondo</span>
+              <input type="color" value={style.bg.startsWith("#") ? style.bg : "#ffffff"} onChange={e => persist({ ...style, bg: e.target.value })}
+                className="w-6 h-6 rounded border-0 cursor-pointer bg-transparent" />
+            </label>
+          </div>
+
+          {/* Tamaño */}
+          <div>
+            <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Tamaño</div>
+            <div className="flex gap-1.5">
+              {SIZES.map(s => (
+                <button key={s} onClick={() => persist({ ...style, size: s })}
+                  className={`h-8 px-2.5 rounded-lg text-[10px] font-mono border transition active:scale-95 ${style.size === s ? "border-primary/40 bg-primary/10 text-primary" : "border-border/40 bg-surface text-muted-foreground hover:text-foreground"}`}>
+                  {s}px
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Estilo de esquinas */}
+          <div>
+            <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Estilo</div>
+            <div className="flex gap-1.5">
+              {CORNERS.map(c => (
+                <button key={c.id} onClick={() => persist({ ...style, cornerStyle: c.id })}
+                  className={`h-8 px-2.5 rounded-lg text-[10px] font-medium border transition active:scale-95 ${style.cornerStyle === c.id ? "border-primary/40 bg-primary/10 text-primary" : "border-border/40 bg-surface text-muted-foreground hover:text-foreground"}`}>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Acciones */}
+      <div className="flex gap-2">
+        <button onClick={handleDownload}
+          className="flex-1 h-9 rounded-lg border border-border/50 bg-surface text-[11px] font-medium flex items-center justify-center gap-1.5 active:scale-95 transition hover:bg-muted/40">
+          <Download size={12} /> Descargar
+        </button>
+        <button onClick={handleCopy}
+          className="flex-1 h-9 rounded-lg border border-border/50 bg-surface text-[11px] font-medium flex items-center justify-center gap-1.5 active:scale-95 transition hover:bg-muted/40">
+          {copied ? <><Check size={12} className="text-primary" /> Copiado</> : <><Link2 size={12} /> Copiar enlace</>}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** Panel completo de puntos de confianza — se abre desde el menú de tres puntos */
+function TrustPointsPanel({ userId, trustPoints, isMod, viewingOwn, onClose, onTrustChange }: {
+  userId: string;
+  trustPoints: number;
+  isMod: boolean;
+  viewingOwn: boolean;
+  onClose: () => void;
+  onTrustChange: (pts: number) => void;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [deductAmt, setDeductAmt] = useState(1);
+  const [reason, setReason] = useState("");
+
+  const handleDeduct = async () => {
+    if (busy || !isMod || viewingOwn || deductAmt < 1) return;
+    const r = reason.trim() || "Sin razón especificada";
+    if (!confirm(`¿Quitar ${deductAmt} punto(s) de confianza?\nRazón: ${r}`)) return;
+    setBusy(true);
+    try {
+      const result = await deductTrustPoints(userId, deductAmt, r);
+      onTrustChange(result.newPoints);
+      if (result.banned) alert("El usuario alcanzó 0 puntos y fue baneado.");
+      setReason(""); setDeductAmt(1);
+    } catch (e) { alert((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  const handleRestore = async () => {
+    if (busy || !isMod || viewingOwn) return;
+    setBusy(true);
+    try {
+      const newPts = await restoreTrustPoints(userId, 1);
+      onTrustChange(newPts);
+    } catch (e) { alert((e as Error).message); }
+    finally { setBusy(false); }
+  };
+
+  const level = trustPoints <= 2 ? "crítico" : trustPoints <= 5 ? "bajo" : "normal";
+  const levelColor = trustPoints <= 2 ? "text-red-500" : trustPoints <= 6 ? "text-amber-500" : "text-emerald-500";
+  const levelBg = trustPoints <= 2 ? "bg-red-50 border-red-200/60" : trustPoints <= 6 ? "bg-amber-50 border-amber-200/60" : "bg-emerald-50 border-emerald-200/60";
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+      <button aria-label="Cerrar" onClick={onClose}
+        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" />
+      <div className="relative w-full sm:max-w-md rounded-t-2xl sm:rounded-lg border border-border bg-surface shadow-md animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[85vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60">
+          <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0" style={{ background: "var(--gradient)" }}>
+            <Shield size={16} className="text-white" />
+          </div>
+          <div className="flex-1">
+            <div className="text-sm font-display font-semibold">Puntos de confianza</div>
+            <div className="text-[10px] text-muted-foreground">Nivel de reputación en la plataforma</div>
+          </div>
+          <button onClick={onClose}
+            className="w-8 h-8 rounded-md border border-border grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+            <X size={14} />
+          </button>
+        </div>
+
+        {/* Score display */}
+        <div className={`mx-4 mt-4 p-4 rounded-xl border ${levelBg} text-center`}
+          >
+          <div className="text-4xl font-display font-bold tabular-nums" style={{ color: "var(--primary)" }}>{trustPoints}</div>
+          <div className="text-[11px] text-muted-foreground mt-1">de 10 puntos</div>
+          <div className={`text-[10px] font-semibold uppercase tracking-wider mt-2 ${levelColor}`}>Nivel: {level}</div>
+          <div className="w-full h-1.5 rounded-full bg-muted/40 mt-3">
+            <div className="h-full rounded-full transition-all duration-500"
+              style={{ width: `${(trustPoints / DEFAULT_TRUST_POINTS) * 100}%`, background: trustPoints <= 2 ? "#ef4444" : trustPoints <= 6 ? "#f59e0b" : "#10b981" }} />
+          </div>
+        </div>
+
+        {/* Info */}
+        <div className="mx-4 mt-3 p-3 rounded-xl bg-muted/20 border border-border/30">
+          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            Los puntos de confianza reflejan tu comportamiento en la plataforma. Si llegan a 0, tu cuenta será bloqueada automáticamente. Los moderadores pueden ajustar puntos según las reglas de la comunidad.
+          </p>
+        </div>
+
+        {/* Moderator controls */}
+        {isMod && !viewingOwn && (
+          <div className="mx-4 mt-3 p-3 rounded-xl bg-muted/30 border border-border/30 space-y-2">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-primary-glow">Control de moderador</div>
+            <div className="flex items-center gap-2">
+              <button onClick={handleRestore} disabled={busy || trustPoints >= DEFAULT_TRUST_POINTS}
+                className="h-8 px-3 rounded-md border border-border/50 bg-surface text-[11px] font-medium text-primary hover:bg-primary/10 active:scale-95 transition disabled:opacity-40">
+                Restaurar +1
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="number" min={1} max={10} value={deductAmt}
+                onChange={e => setDeductAmt(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                className="w-14 h-8 px-1.5 rounded-md bg-card border border-border/50 text-[11px] text-center font-mono outline-none focus:border-primary/40"
+              />
+              <input value={reason} onChange={e => setReason(e.target.value)}
+                placeholder="Razón para quitar puntos…"
+                className="flex-1 h-8 px-2.5 rounded-md bg-card border border-border/50 text-[11px] outline-none focus:border-primary/40 placeholder:text-muted-foreground/30"
+              />
+              <button onClick={handleDeduct} disabled={busy || trustPoints <= 0}
+                className="h-8 px-3 rounded-md bg-red-500 text-white text-[10px] font-semibold active:scale-95 transition disabled:opacity-50">
+                {busy ? "…" : "Quitar"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* History link */}
+        <div className="px-4 pb-4 pt-3">
+          <button onClick={() => { onClose(); }}
+            className="w-full text-center text-[11px] text-muted-foreground hover:text-primary transition py-2">
+            Ver historial completo de puntos
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -650,6 +1028,11 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [items, setItems] = useState<Profile[]>(list.items);
   const [iFollow, setIFollow] = useState<Set<string>>(new Set());
+
+  // Sync items when parent re-renders with new data
+  useEffect(() => {
+    setItems(list.items);
+  }, [list.items]);
 
   // Estado "¿yo sigo a esta persona?" para cada perfil de la lista.
   useEffect(() => {

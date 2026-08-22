@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { SubPageHeader } from "@/components/social/SubPageHeader";
 import { ProfilePanel } from "@/components/social/ProfilePanel";
 import { isMod as checkMod } from "@/lib/social/api";
-import { setPendingQrProfile } from "@/lib/auth-redirect";
 
 export const Route = createFileRoute("/profile/$userId")({
   head: () => ({ meta: [{ title: "Perfil · Asternal" }] }),
@@ -20,16 +19,13 @@ function ProfileByIdPage() {
   useEffect(() => {
     (async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session && typeof window !== "undefined" && new URLSearchParams(window.location.search).get("source") === "qr") {
-        setPendingQrProfile(`/profile/${encodeURIComponent(userId)}`);
-        navigate({ to: "/auth" });
-        return;
-      }
-      setMyId(session?.user?.id ?? null);
-      if (session) setMod(await checkMod());
+      if (!session) { navigate({ to: "/auth", search: { returnTo: `/profile/${userId}` } }); return; }
+      setMyId(session.user.id);
+      setMod(await checkMod());
     })();
-  }, [navigate, userId]);
+  }, [navigate]);
 
+  if (!myId) return null;
   const viewingOwn = myId === userId;
   return (
     <div className="min-h-screen w-full flex flex-col bg-background text-foreground">

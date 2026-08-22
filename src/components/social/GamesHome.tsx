@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Play, Flame, Rocket, Heart, Sparkles as SparklesIcon, Users, ChevronRight, Gamepad2, Trophy, Joystick, Crown, CloudOff, Loader2, CheckCircle2 } from "lucide-react";
+import { Play, Flame, Rocket, Heart, Sparkles as SparklesIcon, Sparkles, Users, ChevronRight, Gamepad2, Trophy, Joystick, Crown, CloudOff, Loader2, CheckCircle2, Compass } from "lucide-react";
+import { FaGamepad } from "react-icons/fa";
 import type { PostWithMeta } from "@/lib/social/api";
 import { fetchGamePlayCounts24h } from "@/lib/social/api";
 import { SUPABASE_ACCESS_TOKEN, runGamePlaysSchemaSetup } from "@/lib/supabase/setup";
 import { GameIcon } from "./GameIcon";
 import { GameCard } from "./GameCard";
-import { GamePageSection } from "./GamePageSection";
 
 function extractTitle(content: string): string {
   const line = content.split("\n")[0] || "Juego";
@@ -15,13 +15,25 @@ function extractTitle(content: string): string {
 
 type TrendTab = "hot" | "growing" | "rated" | "new";
 
+
+
 export function GamesHome({
-  games, myId, isMod, onChange,
+  games, myId, isMod, onChange, onOpenGame,
 }: {
-  games: PostWithMeta[]; myId: string | null; isMod: boolean; onChange: () => void;
+  games: PostWithMeta[]; myId: string | null; isMod: boolean; onChange: () => void; onOpenGame?: (gameId: string) => void;
 }) {
   const [selected, setSelected] = useState<PostWithMeta | null>(null);
+
+  // When any game is selected, open the full-screen game page
+  const openGame = (g: PostWithMeta) => {
+    if (onOpenGame) {
+      onOpenGame(g.id);
+    } else {
+      setSelected(g);
+    }
+  };
   const [trend, setTrend] = useState<TrendTab>("hot");
+  const [forYouGenre, setForYouGenre] = useState<string | null>(null);
   const [playCounts, setPlayCounts] = useState<Record<string, number>>({});
   // Estado de la sincronización del ranking: null = comprobando, true = nube OK,
   // false = la tabla game_plays no existe (solo hay conteo local del navegador).
@@ -111,6 +123,76 @@ export function GamesHome({
     return { featured, continuePlaying, recommended, trends: { hot, growing, rated, new: brandNew } };
   }, [games, myId, playCounts]);
 
+  // ── "Para ti" algoritmo avanzado ───────────────────────────────────
+  // Basado en los juegos que el usuario ha JUGADO (owned), no publicado.
+  const forYou = useMemo(() => {
+    if (!games.length) return { items: [], userGenres: [] };
+
+    // 1. Géneros de los juegos que YO he JUGADO (owned o los míos)
+    const myPlayed = games.filter(g => g.owned === true || g.author_id === myId);
+    const genreCounts: Record<string, number> = {};
+    for (const g of myPlayed) {
+      const genre = g.game_genre?.trim();
+      if (genre) genreCounts[genre] = (genreCounts[genre] || 0) + 1;
+    }
+    const userGenres = Object.entries(genreCounts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([g]) => g);
+
+    // Si no hay géneros conocidos, devolver trending popular como fallback
+    if (!userGenres.length) {
+      const fallback = [...games]
+        .sort((a, b) => (b.likes + b.favorites * 2 + b.comments_count) - (a.likes + a.favorites * 2 + a.comments_count))
+        .slice(0, 12);
+      return { items: fallback, userGenres: [] };
+    }
+
+    // 2. Scoring avanzado de juegos que NO he jugado
+    const now = Date.now();
+    const day = 1000 * 60 * 60 * 24;
+    const week = day * 7;
+    const playedIds = new Set(myPlayed.map(g => g.id));
+    const candidates = games.filter(g => !playedIds.has(g.id));
+
+    const scored = candidates.map(g => {
+      let score = 0;
+      const genre = g.game_genre?.trim();
+      const isGenreMatch = genre && userGenres.includes(genre);
+      const genreRank = genre ? userGenres.indexOf(genre) : -1;
+
+      if (isGenreMatch) {
+        score += 30 * (1 / (genreRank + 1));
+        score += 10 * (genreCounts[genre!] || 1);
+      }
+
+      score += g.likes * 1;
+      score += g.favorites * 2;
+      score += g.comments_count * 1.5;
+      const playCount = playCounts[g.id] ?? 0;
+      score += playCount * 3;
+
+      const age = now - new Date(g.created_at).getTime();
+      if (age < day) score += 20;
+      else if (age < week) score += 12;
+      else if (age < week * 4) score += 6;
+
+      return { g, score, isGenreMatch };
+    });
+
+    // 3. Filtrar según el chip seleccionado
+    const filtered = forYouGenre
+      ? scored.filter(s => s.g.game_genre?.trim() === forYouGenre)
+      : scored.filter(s => s.isGenreMatch);
+
+    // 4. Ordenar por score y devolver top 20
+    const items = filtered
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20)
+      .map(s => s.g);
+
+    return { items, userGenres };
+  }, [games, myId, playCounts, forYouGenre]);
+
   if (!sections) {
     return (
       <div className="rounded-lg border border-dashed border-border bg-surface p-8 text-center space-y-3">
@@ -129,12 +211,13 @@ export function GamesHome({
   }
 
   const { featured, continuePlaying, recommended, trends } = sections;
+  const forYouIds = new Set(forYou.items.map(g => g.id));
   const trendList = trends[trend];
 
   return (
     <div className="space-y-5">
       {/* 1. Banner destacado */}
-      <FeaturedBanner post={featured} plays24={playCounts[featured.id] ?? 0} onPlay={() => setSelected(featured)} />
+      <FeaturedBanner post={featured} plays24={playCounts[featured.id] ?? 0} onPlay={() => openGame(featured)} />
 
       {/* 2. Ranking · Más jugados en las últimas 24h */}
       {rankCloud === false && games.length > 0 && (
@@ -144,23 +227,34 @@ export function GamesHome({
           onInstall={installRankingTable}
         />
       )}
-      <Ranking24 games={ranking24} totalGames={games.length} onOpen={setSelected} />
+      <Ranking24 games={ranking24} totalGames={games.length} onOpen={openGame} />
 
-      {/* 3. Continuar jugando */}
+      {/* 3. Para ti — recomendaciones personalizadas */}
+      {forYou.items.length > 0 && (
+        <ForYouSection
+          items={forYou.items}
+          userGenres={forYou.userGenres}
+          activeGenre={forYouGenre}
+          onSelectGenre={setForYouGenre}
+          onOpen={openGame}
+          playCounts={playCounts}
+        />
+      )}
+
+      {/* 4. Continuar jugando */}
       {continuePlaying.length > 0 && (
         <Section title="Continuar jugando" subtitle="Retoma donde lo dejaste">
-          <IconRow games={continuePlaying} onOpen={setSelected} />
+          <IconRow games={continuePlaying} onOpen={openGame} />
         </Section>
       )}
 
-      {/* 4. Recomendados para ti */}
+      {/* 5. Recomendados para ti */}
       {recommended.length > 0 && (
-        <Section title="Recomendados para ti" subtitle="En base a lo que juega la comunidad">
-          <IconRow games={recommended} onOpen={setSelected} />
+        <Section title="Recomendados para ti" subtitle="En base a lo que juega la comunidad">            <IconRow games={recommended} onOpen={openGame} />
         </Section>
       )}
 
-      {/* 5. Tendencias */}
+      {/* 6. Tendencias */}
       <div className="space-y-2">
         <div className="flex items-end justify-between px-1">
           <div>
@@ -176,12 +270,12 @@ export function GamesHome({
         </div>
         <div className="grid grid-cols-4 xs:grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 gap-y-4 pt-1">
           {trendList.slice(0, 18).map(g => (
-            <GameIcon key={g.id} post={g} onOpen={() => setSelected(g)} />
+            <GameIcon key={g.id} post={g} onOpen={() => openGame(g)} />
           ))}
         </div>
       </div>
 
-      {selected && <GamePageSection game={selected} myId={myId} isMod={isMod} onClose={() => setSelected(null)} onChange={onChange} />}
+
     </div>
   );
 }
@@ -274,7 +368,7 @@ function Ranking24({ games, totalGames, onOpen }: {
           <Trophy size={17} className="text-primary" />
         </div>
         <div className="min-w-0">
-          <div className="font-display text-[13px] leading-tight">Juego más jugado · últimas 24 h</div>
+          <div className="font-display text-[13px] leading-tight">Ranking · Más jugados (24h)</div>
           <div className="text-[11px] text-muted-foreground">
             {totalGames > 0
               ? "Aún no hay jugadas registradas hoy. ¡Dale a JUGAR y sube a la cima!"
@@ -285,14 +379,13 @@ function Ranking24({ games, totalGames, onOpen }: {
     );
   }
 
-  // El podio usa la paleta de marca y un neutro para mantener contraste sobre la superficie clara.
-  const medals = ["text-primary", "text-muted-foreground", "text-primary/80"];
+  const medals = ["text-primary", "text-primary-glow", "text-blue-400"];
 
   return (
     <section className="rounded-2xl border border-primary/20 grad-brand-soft p-3.5 space-y-2.5">
       <div className="flex items-center gap-2">
         <Trophy size={15} className="text-primary" />
-        <div className="font-display text-[13px] leading-tight">Juego más jugado · últimas 24 h</div>
+        <div className="font-display text-[13px] leading-tight">Ranking · Más jugados (24h)</div>
         <span className="px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[9px] font-mono font-bold tracking-wider">TOP 3</span>
         <span className="ml-auto text-[9px] font-mono text-muted-foreground/60">en vivo</span>
       </div>
@@ -334,6 +427,65 @@ function Ranking24({ games, totalGames, onOpen }: {
   );
 }
 
+function ForYouSection({ items, userGenres, activeGenre, onSelectGenre, onOpen, playCounts }: {
+  items: PostWithMeta[];
+  userGenres: string[];
+  activeGenre: string | null;
+  onSelectGenre: (g: string | null) => void;
+  onOpen: (g: PostWithMeta) => void;
+  playCounts: Record<string, number>;
+}) {
+  return (
+    <section className="space-y-2.5">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-1">
+        <Compass size={18} className="text-primary" />
+        <div className="flex-1 min-w-0">
+          <div className="font-display text-base leading-tight">Para ti</div>
+          <div className="text-[11px] text-muted-foreground">{userGenres.length ? "Según lo que juegas" : "Los más populares de la comunidad"}</div>
+        </div>
+
+      </div>
+
+      {/* Genre filter chips */}
+      {userGenres.length > 1 && (
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-1 px-1 pb-0.5">
+          <button
+            onClick={() => onSelectGenre(null)}
+            className={`shrink-0 flex items-center gap-1 px-3 h-7 rounded-lg text-[11px] font-medium transition-all duration-200 active:scale-[0.96] ${
+              activeGenre === null
+                ? "grad-brand text-white shadow-sm"
+                : "bg-card border border-line-strong text-ink-2 hover:border-primary/30 hover:text-primary"
+            }`}
+          >
+            <Sparkles size={11} /> Todos
+          </button>
+          {userGenres.map(g => (
+            <button
+              key={g}
+              onClick={() => onSelectGenre(activeGenre === g ? null : g)}
+              className={`shrink-0 flex items-center gap-1 px-3 h-7 rounded-lg text-[11px] font-medium transition-all duration-200 active:scale-[0.96] ${
+                activeGenre === g
+                  ? "grad-brand text-white shadow-sm"
+                  : "bg-card border border-line-strong text-ink-2 hover:border-primary/30 hover:text-primary"
+              }`}
+            >
+              {g}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Games grid */}
+      <div className="grid grid-cols-4 xs:grid-cols-5 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 gap-y-4">
+        {items.map(g => (
+          <GameIcon key={g.id} post={g} onOpen={() => onOpen(g)} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24?: number; onPlay: () => void }) {
   const title = extractTitle(post.content);
   const active = plays24 && plays24 > 0 ? plays24 : 1 + Math.floor((post.likes + post.comments_count) * 1.3);
@@ -354,7 +506,7 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
             <div className="absolute inset-0 grad-brand" />
             {/* Marca de agua: icono de juego translúcido de fondo */}
             <div className="absolute inset-0 grid place-items-center">
-              <Joystick size={150} strokeWidth={1} className="text-white/[0.13] drop-shadow-[0_12px_32px_rgba(0,0,0,0.35)]" />
+              <FaGamepad size={180} className="text-white/[0.18]" />
             </div>
           </>
         )}
@@ -372,7 +524,7 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
         {/* Textura de grano sutil sobre el degradado: nunca plano, nunca “de algoritmo”. */}
         <div className="absolute inset-0 pointer-events-none noise-overlay opacity-[0.16] mix-blend-overlay" />
         <div className="badge-glow absolute top-3 left-3 flex items-center gap-1.5 px-2.5 h-6 rounded-full bg-primary/95 text-primary-foreground text-[10px] font-display tracking-widest ring-1 ring-white/30 ring-inset">
-          <Crown size={11} fill="currentColor" /> MEJOR JUEGO
+          <Crown size={11} fill="currentColor" /> JUEGO MÁS JUGADO
         </div>
       </div>
       <div className="absolute inset-x-0 bottom-0 p-4 space-y-3">
@@ -385,7 +537,7 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
         <div className="flex items-center gap-2">
           <button
             onClick={onPlay}
-            className="flex-1 h-11 rounded-xl bg-white text-primary font-display tracking-widest text-xs flex items-center justify-center gap-2 active:scale-95 transition shadow-[0_12px_28px_-10px_oklch(0.25_0.06_262/0.4)]"
+            className="flex-1 h-11 rounded-xl bg-white text-primary font-display tracking-widest text-xs flex items-center justify-center gap-2  transition "
           >
             <Play size={16} fill="currentColor" /> JUGAR
           </button>
@@ -403,14 +555,14 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
   );
 }
 
-function GamePlayModal({
+export function GamePlayModal({
   post, myId, isMod, onClose, onChange,
 }: {
   post: PostWithMeta; myId: string | null; isMod: boolean; onClose: () => void; onChange: () => void;
 }) {
   return (
     <div
-      className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm p-3 flex items-start justify-center pt-16 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-[90] bg-black/70 p-3 flex items-start justify-center pt-16 overflow-y-auto animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
@@ -420,7 +572,7 @@ function GamePlayModal({
         <GameCard post={post} myId={myId} isMod={isMod} onChange={onChange} />
         <button
           onClick={onClose}
-          className="mt-3 w-full h-10 rounded-xl bg-white/10 text-white text-xs font-display tracking-widest border border-white/20 active:scale-95"
+          className="mt-3 w-full h-10 rounded-xl bg-white/10 text-white text-xs font-display tracking-widest border border-white/20 "
         >
           CERRAR
         </button>

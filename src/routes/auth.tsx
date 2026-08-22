@@ -1,10 +1,9 @@
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useSearch, Link } from "@tanstack/react-router";
 import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
-import { consumePendingQrProfile, getPendingQrProfile } from "@/lib/auth-redirect";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Play, RefreshCw,
+  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw,
 } from "lucide-react";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
@@ -28,6 +27,9 @@ function friendlyAuthError(msg: string): string {
 }
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    returnTo: typeof search.returnTo === "string" ? search.returnTo : "/",
+  }),
   head: () => ({ meta: [{ title: "Asternal — Acceso a la plataforma" }] }),
   component: AuthPage,
 });
@@ -125,8 +127,8 @@ function CreatorRobot() {
     <div className="relative">
       {/* Head */}
       <div className="w-12 h-11 rounded-[10px] bg-gradient-to-b from-white to-white/70 border-2 border-primary/25 shadow-lg flex items-center justify-center gap-[3px]">
-        <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_oklch(0.55_0.14_262/0.55)]" />
-        <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_6px_oklch(0.55_0.14_262/0.55)]" />
+        <div className="w-2 h-2 rounded-full bg-primary " />
+        <div className="w-2 h-2 rounded-full bg-primary " />
       </div>
       {/* Neck */}
       <div className="w-1.5 h-2 bg-primary/20 mx-auto" />
@@ -228,7 +230,7 @@ function HeroScene() {
               <div className="w-5 h-8 rounded-t-lg rounded-b-sm grad-brand shadow-lg shadow-accent/30 rotate-12" />
             </div>
             {/* Disc */}
-            <div className="relative -mt-1 z-10 w-[250px] h-[54px] rounded-[50%] bg-gradient-to-b from-white/90 to-white/40 border border-white/70 shadow-[0_25px_60px_-15px_oklch(0.55_0.14_262/0.35)]">
+            <div className="relative -mt-1 z-10 w-[250px] h-[54px] rounded-[50%] bg-gradient-to-b from-white/90 to-white/40 border border-white/70 shadow-md">
               <div className="absolute inset-0 rounded-[50%] overflow-hidden opacity-40"
                 style={{
                   background:
@@ -375,10 +377,10 @@ function Logo({ loaded }: { loaded: boolean }) {
     <div style={{ animation: loaded ? 'scale-in 700ms 0ms cubic-bezier(0.16,1,0.3,1) both' : 'none' }}>
       <Link to="/" className="inline-flex items-center gap-3 group">
         <div className="relative">
-          <div className="absolute inset-0 rounded-xl bg-primary/20 blur-lg scale-125 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="relative w-10 h-10 rounded-xl border border-primary/20 bg-surface grid place-items-center shadow-sm"
+          <div className="absolute inset-0 rounded-2xl bg-primary/30 blur-xl scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="relative w-11 h-11 rounded-2xl grad-brand grid place-items-center shadow-lg shadow-primary/30"
             style={{ animation: "bob-slow 5s ease-in-out infinite" }}>
-            <Gamepad2 size={20} className="text-primary" />
+            <Gamepad2 size={22} className="text-white" />
           </div>
           <div className="absolute -right-1 -top-1 w-2.5 h-2.5 rounded-full bg-accent border-2 border-background animate-pulse" />
         </div>
@@ -393,6 +395,7 @@ function Logo({ loaded }: { loaded: boolean }) {
 /* ─── Main ─── */
 function AuthPage() {
   const navigate = useNavigate();
+  const { returnTo } = useSearch({ from: "/auth" });
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const email = useFieldState();
   const password = useFieldState();
@@ -402,20 +405,14 @@ function AuthPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string | null>>({});
   const [showPw, setShowPw] = useState(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [pendingQrProfile, setPendingQrProfile] = useState<string | null>(() => getPendingQrProfile());
   const [loaded, setLoaded] = useState(false);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const usernameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const pendingDestination = getPendingQrProfile();
-    setPendingQrProfile(pendingDestination);
     supabase.auth.getSession().then(({ data }) => {
-      if (data?.session) {
-        if (pendingDestination) window.location.assign(pendingDestination);
-        else navigate({ to: "/" });
-      }
+      if (data?.session) navigate({ to: returnTo || "/" });
     });
     requestAnimationFrame(() => setLoaded(true));
   }, [navigate]);
@@ -427,15 +424,6 @@ function AuthPage() {
   const resetConnection = () => {
     clearSupabaseCredentials();
     window.location.reload();
-  };
-
-  const finishAuthentication = () => {
-    const destination = consumePendingQrProfile();
-    if (destination) {
-      window.location.assign(destination);
-      return;
-    }
-    navigate({ to: "/" });
   };
 
   const switchMode = (m: "signin" | "signup") => {
@@ -488,14 +476,14 @@ function AuthPage() {
         });
         if (error) throw error;
         setSuccessMsg("Cuenta creada correctamente");
-        setTimeout(finishAuthentication, 1000);
+        setTimeout(() => navigate({ to: returnTo || "/" }), 1000);
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: resolveLoginEmail(email.value),
           password: password.value,
         });
         if (error) throw error;
-        finishAuthentication();
+        navigate({ to: returnTo || "/" });
       }
     } catch (e) {
       const msg = (e as Error).message;
@@ -515,7 +503,7 @@ function AuthPage() {
 
       {/* ─── Background layers ─── */}
       <div className="fixed inset-0 pointer-events-none select-none overflow-hidden" style={{ transform: "translateZ(0)" }}>
-        {/* Atmósfera clara y rejilla de taller: una sola capa de firma, no una superficie de marketing. */}
+        {/* Base glow */}
         <div className="absolute inset-0 grad-brand-soft" />
         {/* Mesh blobs */}
         {/* Dot grid */}
@@ -550,13 +538,13 @@ function AuthPage() {
               <HeroScene />
             </div>
 
-            {/* Contexto de producto */}
+            {/* Personality line */}
             <div style={{
               animation: loaded ? 'fade-in-up 500ms 300ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
-              <div className="inline-flex items-center gap-2 border-y border-primary/15 py-1.5 text-[11px] font-display font-medium tracking-wide text-primary/80 -mt-1 lg:-mt-3">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-primary/15 bg-surface text-[11px] font-display font-medium tracking-wide text-primary/80 shadow-sm -mt-1 lg:-mt-3">
                 <Sparkles size={12} className="text-accent" />
-                Taller de creación social
+                Todo comienza con una idea
               </div>
             </div>
 
@@ -566,7 +554,7 @@ function AuthPage() {
             }}>
               <h1 className="text-[clamp(1.8rem,3.6vw,2.9rem)] font-display font-bold tracking-tight leading-[1.08] text-foreground mt-4 mb-3 max-w-lg mx-auto">
                 Crea juegos desde{' '}
-                <span className="text-primary">
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-[length:200%_100%] animate-shimmer-text">
                   cualquier navegador.
                 </span>
               </h1>
@@ -577,29 +565,29 @@ function AuthPage() {
               animation: loaded ? 'fade-in-up 600ms 540ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
               <p className="text-[15px] leading-relaxed text-muted-foreground/80 max-w-md mx-auto mb-8">
-                Construye, prueba y comparte en un mismo lugar: editor visual, lógica con bloques y comunidad para tus juegos.
+                Un estudio completo en la nube: editor visual, lógica con bloques,
+                publicación al instante y una comunidad activa. Sin instalaciones.
               </p>
             </div>
 
-            {/* Secuencia de trabajo, no una cuadrícula de tarjetas genéricas. */}
-            <div className="hidden sm:block max-w-sm mx-auto w-full text-left">
-              <div className="text-[10px] font-mono tracking-[0.16em] text-muted-foreground/70 mb-2">RECORRIDO DEL ESTUDIO</div>
-              <div className="border-l border-primary/25 pl-4 space-y-0">
+            {/* Feature chips (solo pantallas grandes) */}
+            <div className="hidden sm:grid grid-cols-2 gap-2.5 max-w-sm mx-auto w-full">
               {[
-                { icon: PencilRuler, label: "Construye", desc: "Sprites, escenas y animaciones" },
-                { icon: Blocks, label: "Prueba", desc: "Lógica visual y controles" },
-                { icon: Rocket, label: "Comparte", desc: "Publica y recibe partidas" },
+                { icon: PencilRuler, label: "Editor visual", desc: "Sprites y animaciones" },
+                { icon: Blocks, label: "Lógica con bloques", desc: "Sin código" },
+                { icon: Rocket, label: "Publica al instante", desc: "Con un solo clic" },
+                { icon: Users, label: "Comunidad activa", desc: "Remixa y colabora" },
               ].map((f, i) => (
-                <div key={f.label} className="group/step relative py-2.5 border-b border-border/55 last:border-b-0" style={{ animation: loaded ? `fade-in-up 500ms ${860 + i * 120}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
-                  <span className="absolute -left-[21px] top-4 grid h-3.5 w-3.5 place-items-center rounded-full border border-primary/35 bg-background"><span className="h-1.5 w-1.5 rounded-full bg-primary" /></span>
-                    <div className="flex items-center gap-1.5 text-[12px] font-display font-semibold text-foreground group-hover/step:text-primary transition-colors duration-200">
-                      <f.icon size={13} className="text-primary/70" />
+                <div key={f.label} className="group/card" style={{ animation: loaded ? `fade-in-up 900ms ${1000 + i * 280}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
+                  <div className="p-2.5 rounded-xl border border-border/50 bg-surface transition-all duration-400 group-hover/card:bg-white/80 group-hover/card:border-primary/30 group-hover/card:shadow-lg group-hover/card:shadow-primary/5 group-hover/card:-translate-y-0.5">
+                    <div className="flex items-center gap-1.5 text-[12px] font-display font-semibold text-foreground mb-0.5 group-hover/card:text-primary transition-colors duration-300">
+                      <f.icon size={12} className="text-primary/60 group-hover/card:text-primary transition-colors duration-300" />
                       {f.label}
                     </div>
-                    <div className="ml-[19px] text-[10px] text-muted-foreground/70 leading-snug">{f.desc}</div>
+                    <div className="text-[10px] text-muted-foreground/60 leading-snug">{f.desc}</div>
+                  </div>
                 </div>
               ))}
-              </div>
             </div>
           </div>
 
@@ -608,30 +596,37 @@ function AuthPage() {
             <div className="w-full max-w-[400px]" style={{
               animation: loaded ? 'fade-in-up 800ms 700ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
-                <div className="relative rounded-2xl border border-border bg-surface shadow-[var(--shadow-md)]">
-                  <div className="relative p-6 sm:p-7 overflow-hidden group/form-card">
+                {/* Tarjeta premium: borde degradado + sombras en capas + radius 24px */}
+                <div className="relative rounded-3xl border border-primary/15 shadow-md">
+                  <div className="relative bg-card rounded-3xl p-7 overflow-hidden group/form-card">
+
+                    {/* Shine superior */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-3/4 bg-gradient-to-r from-transparent via-white/90 to-transparent" />
+                    {/* Glow interno */}
+                    <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-32 bg-primary/5 blur-2xl rounded-full pointer-events-none" />
 
                     {/* Header */}
                     <div className="text-center mb-6 relative">
-                      <div className="w-10 h-10 rounded-xl border border-primary/20 bg-primary/[0.07] grid place-items-center mx-auto mb-3">
-                        <Gamepad2 size={19} className="text-primary" />
+                      <div className="w-12 h-12 rounded-2xl grad-brand grid place-items-center mx-auto mb-3  relative">
+                        <div className="absolute inset-0 rounded-2xl bg-primary/20 blur-lg scale-125 animate-pulse" style={{ animationDuration: '3s' }} />
+                        <Gamepad2 size={22} className="text-white relative" />
                       </div>
                       <h2 className="text-lg font-display font-semibold tracking-tight text-foreground mb-0.5">
                         {mode === "signin" ? "Bienvenido de nuevo" : "Crea tu cuenta"}
                       </h2>
                       <p className="text-sm text-muted-foreground/70">
-                        {mode === "signin" ? "Vuelve a tu mesa de trabajo" : "Abre tu espacio de creación"}
+                        {mode === "signin" ? "Accede a tu estudio en la nube" : "Únete a la comunidad Asternal"}
                       </p>
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex bg-surface-2 rounded-lg p-1 mb-5 relative">
-                      <div className="absolute top-1 bottom-1 w-[calc(50%_-_4px)] rounded-md grad-brand shadow-sm transition-all duration-300"
+                    <div className="flex bg-muted/60 rounded-xl p-0.5 mb-5 relative">
+                      <div className="absolute top-0.5 bottom-0.5 w-[calc(50%_-_2px)] rounded-[10px] bg-white shadow-sm transition-all duration-400"
                         style={{ left: mode === "signin" ? "2px" : "calc(50% + 0px)" }} />
                       {(["signin", "signup"] as const).map(m => (
                         <button key={m} type="button" onClick={() => switchMode(m)}
-                          className={`relative flex-1 py-2 rounded-md text-xs font-display font-semibold tracking-wide transition-colors duration-200 z-10 ${
-                            mode === m ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                          className={`relative flex-1 py-2 rounded-[10px] text-xs font-display font-semibold tracking-wider transition-all duration-300 z-10 ${
+                            mode === m ? "text-foreground" : "text-muted-foreground/50 hover:text-muted-foreground/80"
                           }`}>
                           {m === "signin" ? "ACCEDER" : "REGISTRARSE"}
                         </button>
@@ -709,27 +704,57 @@ function AuthPage() {
                       {/* Submit button */}
                       <div style={{ animation: 'slide-in-up 300ms cubic-bezier(0.22,1,0.36,1) both', animationDelay: '240ms' }}>
                         <button disabled={busy}
-                          className="relative w-full py-3 rounded-lg grad-brand text-white text-sm font-display font-semibold tracking-wide shadow-sm hover:brightness-[1.03] active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+                          className="relative w-full py-2.5 rounded-xl grad-brand text-white text-sm font-display font-semibold tracking-wide shadow-lg shadow-primary/20 hover:shadow-md hover:shadow-primary/30 active:scale-[0.98] transition-all duration-300 disabled:opacity-50 overflow-hidden group/btn"
                         >
+                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 ease-in-out" />
+                          <div className="absolute inset-0 bg-white/[0.06] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-500" />
                           <span className="relative z-10 flex items-center justify-center gap-2">
                             {busy ? (
                               <><Loader2 size={14} className="animate-spin" />{mode === "signin" ? "Accediendo…" : "Creando…"}</>
                             ) : (
-                              <><span>{mode === "signin" ? "ACCEDER" : "CREAR CUENTA"}</span><ArrowRight size={13} /></>
+                              <><span>{mode === "signin" ? "ACCEDER" : "CREAR CUENTA"}</span><ArrowRight size={13} className="group-hover/btn:translate-x-0.5 transition-transform" /></>
                             )}
                           </span>
                         </button>
                       </div>
 
+                      {mode === "signin" && (
+                        <div className="text-center pt-1">
+                          <button type="button" onClick={async () => {
+                            if (!email.value.trim()) { setFieldErrors({ email: "Escribe tu usuario o correo primero" }); return; }
+                            setBusy(true); clearErrors(); setSuccessMsg(null);
+                            try {
+                              const { error } = await supabase.auth.resetPasswordForEmail(resolveLoginEmail(email.value));
+                              if (error) throw error;
+                              setSuccessMsg("Revisa tu bandeja de entrada (o si usaste solo usuario, tu correo @asternal.app)");
+                            } catch (e) { setErr(friendlyAuthError((e as Error).message)); }
+                            finally { setBusy(false); }
+                          }} className="text-[12px] text-muted-foreground/50 hover:text-primary transition-colors">
+                            ¿Olvidaste tu contraseña?
+                          </button>
+                        </div>
+                      )}
                     </form>
 
-                    {pendingQrProfile && (
-                      <div className="mt-4 flex items-start gap-2.5 rounded-xl border border-primary/15 bg-primary/[0.045] px-3.5 py-3 text-xs text-primary/80 animate-[scale-in_220ms_ease-out]">
-                        <ArrowRight size={14} className="mt-0.5 shrink-0" />
-                        <p>You must log in to view this profile</p>
-                      </div>
-                    )}
-
+                    <div className="mt-5 pt-4 border-t border-border/40">
+                      {returnTo && returnTo.startsWith("/profile/") && (
+                        <div className="mb-3 p-3 rounded-xl border border-primary/20 bg-primary/[0.04] text-center">
+                          <p className="text-[11px] text-primary font-medium">
+                            Inicia sesión o crea una cuenta para ver este perfil
+                          </p>
+                          <p className="text-[9px] text-muted-foreground mt-1 font-mono">
+                            Serás redirigido al perfil después de iniciar sesión
+                          </p>
+                        </div>
+                      )}
+                      <p className="text-[10px] text-muted-foreground/30 text-center font-mono tracking-wider">
+                        Tus creaciones se sincronizan en la nube
+                      </p>
+                      <button type="button" onClick={resetConnection}
+                        className="mt-2 w-full text-center text-[10px] text-muted-foreground/30 hover:text-primary transition-colors underline underline-offset-2">
+                        ¿Problemas de conexión? Restablecer Supabase
+                      </button>
+                    </div>
                   </div>
                 </div>
             </div>

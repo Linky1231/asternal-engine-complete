@@ -12,14 +12,13 @@ export default defineConfig({
   plugins: [react(), vlyPlugin(), tailwindcss()],
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "./src"),
+      "@": path.resolve(__dirname, "./src"),
     },
     // Force a single copy of React across all packages (including vlyPlugin).
     // Without this, @vly-ai/integrations can resolve its own React copy, which
     // triggers "Invalid hook calls" errors at runtime.
     dedupe: ["react", "react/jsx-runtime", "react-dom", "react-dom/client"],
   },
-  publicDir: path.resolve(import.meta.dirname, "client", "public"),
   build: {
     sourcemap: false,
     rollupOptions: {
@@ -78,7 +77,6 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: [".manus.computer"],
     port: 5173,
     hmr: {
       overlay: false,

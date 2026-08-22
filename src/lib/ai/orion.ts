@@ -1,36 +1,22 @@
 /**
  * Orión — asistente de IA para desarrolladores de juegos de Asternal.
  *
- * Se conecta a Yielding Bear (gateway OpenAI-compatible) con enrutado
- * inteligente Grizzly para minimizar costes. La clave se lee de la variable
- * del proyecto en orden: YIELDINGBEAR_API_KEY → VITE_YIELDINGBEAR_API_KEY,
- * con respaldo a la clave por defecto del proyecto.
+ * Usa VLY Integration (Freebuff) como servicio principal.
+ * OmegaTech como respaldo si VLY no está disponible.
  */
 import { ENGINE_KNOWLEDGE } from "./engine-knowledge";
 
-export const ORION_BASE_URL = "https://yieldingbear.com/api/v1";
-export const ORION_PROXY_URL =
-  "https://gxpgczwkovertezeydkt.supabase.co/functions/v1/orion-proxy";
-export const ORION_MODEL = "yieldingbear/grizzly-1.0g";
-export const ORION_MODEL_CODING = "yieldingbear/grizzly-1.0g-coding";
+/** VLY Integration — gateway directo (OpenAI-compatible) */
+const VLY_GATEWAY = "https://integrations.vly.ai/v1/llm/chat/completions";
+const VLY_TOKEN = "sk_ae7ab002fe96d25409052e0db06fc906eb3b34d098762378af114911bf70cff4";
 
-/** Clave por defecto del proyecto (la del tab Keys si existe la variable). */
-const DEFAULT_KEY =
-  "yb_live_sk_bdf8187db17e80a81fe265fc5691b7a22d1f8530a93a2e3aefff166e5e670ba4";
+/** OmegaTech — respaldo gratuito sin clave */
+const OMEGATECH_MODELS = ["Gpt-4-mini", "Gpt-3.5-turbo", "Gemini"];
+const OMEGATECH_BASE = "https://api.omegatech.app/api/ai";
 
+/** La API de OmegaTech no requiere clave. Se mantiene getOrionApiKey por compatibilidad. */
 export function getOrionApiKey(): string {
-  if (typeof window !== "undefined") {
-    const ls = window.localStorage.getItem("orion_api_key");
-    if (ls) return ls;
-  }
-  if (typeof import.meta !== "undefined") {
-    const v = (import.meta as unknown as Record<string, unknown>).env as Record<string, unknown> | undefined;
-    const direct = v?.YIELDINGBEAR_API_KEY;
-    const vite = v?.VITE_YIELDINGBEAR_API_KEY;
-    if (typeof direct === "string" && direct) return direct;
-    if (typeof vite === "string" && vite) return vite;
-  }
-  return DEFAULT_KEY;
+  return "omegatech-free";
 }
 
 export type OrionRole = "system" | "user" | "assistant";
@@ -147,11 +133,8 @@ A continuación tienes el conocimiento del motor (código fuente). Úsalo como r
 ${ENGINE_KNOWLEDGE}`;
 
 /** Construye los mensajes con el system prompt + historial. */
-export function buildOrionMessages(history: OrionMessage[], voiceMode = false): OrionMessage[] {
-  const voiceInstruction = voiceMode
-    ? "\n\n=== MODO VOZ ===\nResponde para una conversación por turnos. Habla siempre en español, con un máximo de dos frases breves (unas 65 palabras), sin markdown, listas ni código leído en voz alta. Si hace falta código, di que has dejado el ejemplo en el chat y da solo el siguiente paso concreto. Termina de forma natural para ceder el turno a la persona."
-    : "";
-  return [{ role: "system", content: `${SYSTEM_PROMPT}${voiceInstruction}` }, ...history];
+export function buildOrionMessages(history: OrionMessage[]): OrionMessage[] {
+  return [{ role: "system", content: SYSTEM_PROMPT }, ...history];
 }
 
 /** Detecta si la pregunta pide resolver código (usa el router de código). */
@@ -161,244 +144,112 @@ export function needsCodingModel(q: string): boolean {
   );
 }
 
-function buildPayload(
-  history: OrionMessage[],
-  opts: { coding?: boolean; maxTokens?: number; temperature?: number; stream?: boolean; voice?: boolean } = {}
-) {
-  const messages = buildOrionMessages(history, Boolean(opts.voice));
-  return {
-    model: opts.coding ? ORION_MODEL_CODING : ORION_MODEL,
-    messages,
-    max_tokens: opts.maxTokens ?? 900,
-    temperature: opts.temperature ?? 0.7,
-    ...(opts.stream ? { stream: true } : {}),
-  };
-}
-
-function parseErrorBody(res: Response, text: string): string {
-  try {
-    const j = JSON.parse(text) as { error?: { message?: string } | string; message?: string };
-    const detail = typeof j.error === "string" ? j.error : j.error?.message ?? j.message ?? "";
-    return detail || `(HTTP ${res.status})`;
-  } catch {
-    return text.slice(0, 200) || `(HTTP ${res.status})`;
-  }
-}
-
-function orionErrorForStatus(status: number, detail: string): Error {
-  if (status === 401 || status === 403) {
-    return new Error("La clave de la API de Orión no es válida o no tiene permisos.");
-  }
-  if (status === 429) {
-    return new Error("Límite de peticiones alcanzado. Espera unos segundos y reintenta.");
-  }
-  return new Error(`Orión respondió con un error (${status}).${detail ? ` ${detail}` : ""}`);
+/**
+ * Combina el system prompt + historial en un solo `message` para OmegaTech.
+ * OmegaTech no acepta array de mensajes, solo un campo `message`.
+ */
+function buildSingleMessage(history: OrionMessage[]): string {
+  const systemMsg = buildOrionMessages(history).find(m => m.role === "system")?.content ?? "";
+  const userMsgs = history
+    .filter(m => m.role === "user")
+    .map(m => m.content)
+    .join("\n\n");
+  const assistantMsgs = history
+    .filter(m => m.role === "assistant")
+    .map(m => `Asistente: ${m.content}`)
+    .join("\n\n");
+  const parts = [systemMsg];
+  if (assistantMsgs) parts.push(assistantMsgs);
+  if (userMsgs) parts.push(`Usuario: ${userMsgs}`);
+  return parts.join("\n\n---\n\n");
 }
 
 /**
- * Envía una petición de chat a Yielding Bear (OpenAI-compatible) por el proxy
- * y devuelve el texto completo. Sin streaming: útil como respaldo.
+ * Intenta VLY Integration — llama directamente al gateway VLY
+ * (formato OpenAI-compatible: messages array → choices[0].message.content).
+ * El gateway VLY funciona dentro del entorno de ejecución de Freebuff.
+ */
+async function tryVly(history: OrionMessage[]): Promise<OrionResult | null> {
+  const messages = buildOrionMessages(history);
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    const res = await fetch(VLY_GATEWAY, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${VLY_TOKEN}`,
+      },
+      body: JSON.stringify({ model: "gpt-4o-mini", messages }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => ({}));
+    const content = data?.choices?.[0]?.message?.content;
+    if (content) {
+      return { content, model: data?.model ?? "gpt-4o-mini", costUsd: 0, balanceUsd: 0 };
+    }
+    return null;
+  } catch { return null; }
+}
+
+/** Intenta OmegaTech (formato simple: message → answer). */
+async function tryOmegaTech(modelName: string, message: string): Promise<{ ok: boolean; answer?: string; model?: string }> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch(`${OMEGATECH_BASE}/${modelName}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const data = await res.json().catch(() => ({}));
+      if (data?.answer) return { ok: true, answer: data.answer, model: data.model ?? modelName };
+    }
+    return { ok: false };
+  } catch { return { ok: false }; }
+}
+
+/**
+ * Envía una petición de chat a Orión.
+ * Primero intenta VLY Integration, luego OmegaTech como respaldo.
  */
 export async function orionChat(
   history: OrionMessage[],
-  opts: { coding?: boolean; maxTokens?: number; temperature?: number; voice?: boolean } = {}
+  opts: { coding?: boolean; maxTokens?: number; temperature?: number } = {}
 ): Promise<OrionResult> {
-  const key = getOrionApiKey();
-  if (!key) {
-    throw new Error("Falta la clave de la API de Orión (Yielding Bear).");
-  }
-  const messages = buildOrionMessages(history, Boolean(opts.voice));
+  // 1. Intentar VLY Integration (Freebuff)
+  const vlyResult = await tryVly(history);
+  if (vlyResult) return vlyResult;
 
-  const payload = {
-    model: opts.coding ? ORION_MODEL_CODING : ORION_MODEL,
-    messages,
-    max_tokens: opts.maxTokens ?? 900,
-    temperature: opts.temperature ?? 0.7,
-  };
-
-  let res: Response;
-  try {
-    // Vía Edge Function de Supabase (CORS habilitado desde el navegador).
-    res = await fetch(ORION_PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok && res.status !== 401 && res.status !== 403 && res.status !== 429) {
-      // Si el proxy falla por una razón distinta a la clave, reintenta directo.
-      const direct = await fetch(`${ORION_BASE_URL}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${key}`,
-        },
-        body: JSON.stringify(payload),
-      });
-      res = direct;
-    }
-  } catch {
-    try {
-      res = await fetch(`${ORION_BASE_URL}/chat/completions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${key}`,
-        },
-        body: JSON.stringify(payload),
-      });
-    } catch {
-      throw new Error(
-        "No se pudo conectar con Orión. Comprueba tu conexión a internet e inténtalo de nuevo."
-      );
+  // 2. Respaldar con OmegaTech
+  const message = buildSingleMessage(history);
+  for (const model of OMEGATECH_MODELS) {
+    const result = await tryOmegaTech(model, message);
+    if (result.ok && result.answer) {
+      return { content: result.answer, model: result.model ?? model, costUsd: 0, balanceUsd: 0 };
     }
   }
 
-  if (!res.ok) {
-    let detail = "";
-    try {
-      const j = (await res.json()) as { error?: { message?: string } | string; message?: string };
-      detail = typeof j.error === "string" ? j.error : j.error?.message ?? j.message ?? "";
-    } catch {
-      /* noop */
-    }
-    const code = res.status;
-    if (code === 401 || code === 403) {
-      throw new Error("La clave de la API de Orión no es válida o no tiene permisos.");
-    }
-    if (code === 429) {
-      throw new Error("Límite de peticiones alcanzado. Espera unos segundos y reintenta.");
-    }
-    throw new Error(`Orión respondió con un error (${code}).${detail ? ` ${detail}` : ""}`);
-  }
-
-  const data = (await res.json()) as {
-    choices?: { message?: { content?: string } }[];
-    model?: string;
-    usage?: { total_tokens?: number };
-    cost_usd?: number;
-    balance_remaining_usd?: number;
-  };
-  const content = data.choices?.[0]?.message?.content ?? "";
-  if (!content) throw new Error("Orión no devolvió ninguna respuesta.");
-  return {
-    content,
-    model: data.model ?? ORION_MODEL,
-    costUsd: data.cost_usd ?? 0,
-    balanceUsd: data.balance_remaining_usd ?? 0,
-  };
+  throw new Error(
+    "Orión no está disponible en este momento. Los servicios de IA están temporalmente fuera de servicio. Inténtalo de nuevo más tarde."
+  );
 }
 
 /**
- * Chat con streaming (SSE): el texto aparece en vivo mientras se genera.
- * onDelta recibe cada fragmento de texto según llega.
- * Si el stream falla, reintenta con orionChat (sin streaming) y entrega el
- * texto completo de una vez a través de onDelta.
+ * Chat con "streaming" sintético: entrega el texto completo de una vez.
+ * onDelta recibe el texto completo como un solo fragmento.
  */
 export async function orionChatStream(
   history: OrionMessage[],
   onDelta: (delta: string) => void,
-  opts: { coding?: boolean; maxTokens?: number; temperature?: number; signal?: AbortSignal; voice?: boolean } = {}
+  opts: { coding?: boolean; maxTokens?: number; temperature?: number; signal?: AbortSignal } = {}
 ): Promise<OrionResult> {
-  const payload = buildPayload(history, { ...opts, stream: true });
-
-  let res: Response;
-  try {
-    res = await fetch(ORION_PROXY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-      signal: opts.signal,
-    });
-  } catch {
-    // Proxy inalcanzable → intento directo (puede fallar por CORS, pero por
-    // si acaso) y si tampoco, respaldo sin streaming.
-    try {
-      const r = await orionChat(history, opts);
-      onDelta(r.content);
-      return r;
-    } catch (e) {
-      throw new Error(
-        "No se pudo conectar con Orión. Comprueba tu conexión a internet e inténtalo de nuevo."
-      );
-    }
-  }
-
-  if (!res.ok) {
-    let detail = "";
-    try {
-      const text = await res.text();
-      detail = parseErrorBody(res, text);
-    } catch {
-      /* noop */
-    }
-    // El proxy devolvió error pero puede que la clave esté bien: si el proxy
-    // falla por algo distinto a credenciales, reintenta con el chat sin stream.
-    if (res.status !== 401 && res.status !== 403 && res.status !== 429) {
-      try {
-        const r = await orionChat(history, opts);
-        onDelta(r.content);
-        return r;
-      } catch {
-        /* cae al error original */
-      }
-    }
-    throw orionErrorForStatus(res.status, detail);
-  }
-
-  if (!res.body) {
-    const r = await orionChat(history, opts);
-    onDelta(r.content);
-    return r;
-  }
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let content = "";
-  let model = ORION_MODEL;
-  let finished = false;
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop() ?? "";
-    for (const line of lines) {
-      const t = line.trim();
-      if (!t.startsWith("data:")) continue;
-      const data = t.slice(5).trim();
-      if (data.includes("[ORION_DONE]") || data === "[DONE]") {
-        finished = true;
-        break;
-      }
-      if (!data) continue;
-      try {
-        const j = JSON.parse(data) as {
-          choices?: { delta?: { content?: string | null }; message?: { content?: string } }[];
-          model?: string;
-        };
-        const delta =
-          j.choices?.[0]?.delta?.content ?? j.choices?.[0]?.message?.content ?? "";
-        if (delta) {
-          content += delta;
-          onDelta(delta);
-        }
-        if (j.model) model = j.model;
-      } catch {
-        /* fragmento no-JSON (keep-alive) → ignorar */
-      }
-    }
-    if (finished) break;
-  }
-
-  // Si el proxy respondió pero no llegó texto (p. ej. stream interrumpido a
-  // mitad), reintenta sin streaming para no dejar al usuario sin respuesta.
-  if (!content) {
-    const r = await orionChat(history, opts);
-    onDelta(r.content);
-    return r;
-  }
-
-  return { content, model, costUsd: 0, balanceUsd: 0 };
+  const r = await orionChat(history, opts);
+  onDelta(r.content);
+  return r;
 }

@@ -510,7 +510,9 @@ La transferencia prioriza la novedad funcional de la versión externa: los juego
 
 # Transferencia literal de la versión nueva
 
-- [ ] Crear un respaldo recuperable del estado publicado actual.
-- [ ] Reemplazar íntegramente los archivos del proyecto por la última versión de `Linky1231/asternal-engine`.
-- [ ] Conservar y reconciliar solo los adaptadores imprescindibles de ejecución y publicación del entorno.
-- [ ] Validar la compilación, las pruebas disponibles y la publicación de la transferencia completa.
+- [x] Crear un respaldo recuperable del estado publicado actual.
+- [x] Reemplazar íntegramente los archivos del proyecto por la última versión de `Linky1231/asternal-engine`.
+- [x] Conservar y reconciliar solo los adaptadores imprescindibles de ejecución y publicación del entorno.
+- [x] Validar la compilación, las pruebas disponibles y la publicación de la transferencia completa.
+
+La versión literal compila correctamente con `tsc -b && vite build` y se verificó en la vista de desarrollo en escritorio y móvil. El repositorio transferido no declara una orden de pruebas automatizadas; por la solicitud de conservar el código literal no se añadió una suite ajena. La única adaptación aplicada fue de entorno: habilitar el binario de compilación e instalar las dos dependencias ya importadas por el código (`react-router` y `@zumer/snapdom`).

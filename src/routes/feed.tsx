@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchFeed, getMyProfile, isMod, type PostWithMeta, type Profile } from "@/lib/social/api";
 import { PostComposer } from "@/components/social/PostComposer";
 import { PostCard } from "@/components/social/PostCard";
+import { GamePageSection } from "@/components/social/GamePageSection";
 import { NotificationBell } from "@/components/social/NotificationBell";
 import { Search, LogOut, Gamepad2, Palette, Sparkles, Inbox, X, SlidersHorizontal } from "lucide-react";
 
@@ -32,12 +33,13 @@ function FeedPage() {
   const [tag, setTag] = useState("");
   const [category, setCategory] = useState<FilterCat>("all");
   const [showFilters, setShowFilters] = useState(false);
+  const [gamePageId, setGamePageId] = useState<string | null>(null);
 
   // Categorías estáticas (sin píldora deslizante, sin refs ni medición): el
   // activo se pinta con el degradado por clases condicionales. Cero trabajo de
   // layout por frame → imposible que dé lag o se desalinee.
-  const reload = useCallback(async () => {
-    setLoading(true);
+  const reload = useCallback(async (showLoading = true) => {
+    if (showLoading) setLoading(true);
     try {
       const data = await fetchFeed({
         search: search || undefined,
@@ -46,7 +48,7 @@ function FeedPage() {
         includeGames: category === "game",
       });
       setPosts(data);
-    } finally { setLoading(false); }
+    } finally { if (showLoading) setLoading(false); }
   }, [search, tag, category]);
 
   useEffect(() => {
@@ -66,8 +68,9 @@ function FeedPage() {
   };
 
   return (
+    <>
     <div className="min-h-screen w-full flex flex-col bg-background">
-      <header className="app-header sticky top-0 z-20 bg-background/90 backdrop-blur-xl border-b border-border/70">
+      <header className="app-header sticky top-0 z-20 bg-background border-b border-border/70">
         <div className="max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto flex items-center gap-2 px-3 py-2.5">
           <Link to="/" aria-label="Volver al inicio"
             className="w-10 h-10 rounded-xl overflow-hidden ring-1 ring-line-strong shadow-sm active:scale-95 transition grid place-items-center bg-primary/10 shrink-0">
@@ -130,7 +133,7 @@ function FeedPage() {
                     className="flex-1 bg-transparent text-xs outline-none min-w-0" />
                   {tag && <button onClick={() => setTag("")} className="text-muted-foreground hover:text-foreground active:scale-[0.92] transition-transform duration-200"><X size={13} /></button>}
                 </label>
-                <button onClick={reload}
+                <button onClick={() => reload()}
                   className="sm:col-span-2 h-10 rounded-lg bg-primary text-white text-xs font-semibold active:scale-[0.98] transition">
                   Aplicar filtros
                 </button>
@@ -140,13 +143,13 @@ function FeedPage() {
         </AnimatePresence>
       </div>
 
-      <main className="flex-1 p-3 space-y-5 max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto w-full pb-[env(safe-area-inset-bottom)]">
+      <main className="flex-1 p-3 space-y-3 max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto w-full pb-8 sm:pb-6">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}>
           <PostComposer onCreated={reload} />
         </motion.div>
 
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {[0, 1, 2].map(i => (
               <div key={i} className="rounded-lg border border-border/70 bg-surface p-3 space-y-3">
                 <div className="flex items-center gap-2.5">
@@ -179,19 +182,26 @@ function FeedPage() {
             </button>
           </motion.div>
         ) : (
-          <div className="space-y-5" aria-label="Publicaciones">
+          <>
             {posts.map((p, i) => (
-              <div
-                key={p.id}
-                className="card-enter rounded-[1.35rem] bg-background/90 p-1.5 shadow-[0_8px_24px_-22px_oklch(0.35_0.04_258/0.45)]"
-                style={{ animationDelay: `${Math.min(i * 25, 180)}ms` }}
-              >
-                <PostCard post={p} myId={myId} isMod={mod} onChange={reload} />
+              <div key={p.id} className="card-enter" style={{ animationDelay: `${Math.min(i * 25, 180)}ms` }}>
+                <PostCard post={p} myId={myId} isMod={mod} onChange={() => reload(false)} onOpenGame={(id) => setGamePageId(id)} />
               </div>
             ))}
-          </div>
+          </>
         )}
       </main>
     </div>
+
+      {/* Full-screen game page */}
+      {gamePageId && (
+        <GamePageSection
+          gameId={gamePageId}
+          myId={myId}
+          isMod={mod}
+          onClose={() => setGamePageId(null)}
+        />
+      )}
+    </>
   );
 }

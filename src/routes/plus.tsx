@@ -2,8 +2,8 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   Star, Palette, Rocket, Link2, Check, Loader2,
-  Youtube, Instagram, Music2, Globe, Gift, Sparkles as SparklesIcon,
-  Wand2, IdCard,
+  Youtube, Instagram, Music2, Globe, Gift,
+  Wand2,
 } from "lucide-react";
 
 import { SubPageHeader } from "@/components/social/SubPageHeader";
@@ -11,10 +11,9 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   getMyProfile, claimPlusOrbes, updatePlusSettings,
   isPlusActive,
-  type Profile, type SocialLinks, type CreatorCardStyle,
+  type Profile, type SocialLinks,
 } from "@/lib/social/api";
-import { UserName } from "@/components/social/UserName";
-import { Avatar } from "@/components/social/Avatar";
+
 
 export const Route = createFileRoute("/plus")({
   head: () => ({
@@ -45,21 +44,8 @@ const NAME_EFFECTS: { id: string; label: string }[] = [
 // Fondos de perfil eliminados por petición del usuario.
 
 
-const POST_EFFECTS: { id: string; label: string }[] = [
-  { id: "sparkle",  label: "Destellos" },
-  { id: "wave",     label: "Ondas" },
-  { id: "confetti", label: "Confeti" },
-  { id: "glow",     label: "Resplandor" },
-  { id: "fade-up",  label: "Elegante" },
-];
 
-const CARD_THEMES: { id: NonNullable<CreatorCardStyle["theme"]>; label: string; bg: string; fg: string }[] = [
-  { id: "dark",   label: "Dark",   bg: "linear-gradient(135deg, #1a1a2e, #16213e)", fg: "#ffffff" },
-  { id: "light",  label: "Light",  bg: "linear-gradient(135deg, #f8f9fa, #e9ecef)", fg: "#212529" },
-  { id: "neon",   label: "Neon",   bg: "linear-gradient(135deg, #12121e, #1a0033)", fg: "#2FD9D2" },
-  { id: "aurora", label: "Aurora", bg: "linear-gradient(135deg, #667eea, #764ba2, #f093fb)", fg: "#ffffff" },
-  { id: "sunset", label: "Sunset", bg: "linear-gradient(135deg, #ff9a9e, #fad0c4)", fg: "#3a1a1a" },
-];
+
 
 function PlusPage() {
   const navigate = useNavigate();
@@ -128,18 +114,6 @@ function PlusPage() {
     if (!me) return;
     await updatePlusSettings({ name_effect: id });
     setMe({ ...me, name_effect: id });
-  };
-
-  const setPostFx = async (id: string | null) => {
-    if (!me) return;
-    await updatePlusSettings({ post_effect: id });
-    setMe({ ...me, post_effect: id });
-  };
-  const setCardTheme = async (theme: NonNullable<CreatorCardStyle["theme"]>) => {
-    if (!me) return;
-    const next: CreatorCardStyle = { ...(me.creator_card_style ?? {}), theme };
-    await updatePlusSettings({ creator_card_style: next });
-    setMe({ ...me, creator_card_style: next });
   };
 
   const saveSocials = async () => {
@@ -235,43 +209,6 @@ function PlusPage() {
         {/* Fondos de perfil eliminados por petición del usuario */}
 
 
-        {/* Post entrance effects — NEW */}
-        <FeatureCard icon={<SparklesIcon size={18} />} title="Efectos al publicar"
-          desc="Tus próximas publicaciones aparecerán con animación." locked={!isPlus}>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-            <button onClick={() => setPostFx(null)} disabled={!isPlus}
-              className={`h-11 rounded-xl border-2 text-xs font-display transition ${!me?.post_effect ? "border-foreground" : "border-border"} disabled:opacity-40`}>
-              Ninguno
-            </button>
-            {POST_EFFECTS.map(fx => (
-              <button key={fx.id} onClick={() => setPostFx(fx.id)} disabled={!isPlus}
-                className={`h-11 rounded-xl border-2 text-xs font-display transition ${me?.post_effect === fx.id ? "border-foreground" : "border-border"} disabled:opacity-40`}>
-                {fx.label}
-              </button>
-            ))}
-          </div>
-        </FeatureCard>
-
-        {/* Creator card — NEW */}
-        <FeatureCard icon={<IdCard size={18} />} title="Tarjeta de creador"
-          desc="Tu identidad como desarrollador en un vistazo." locked={!isPlus}>
-          <CreatorCardPreview profile={me} />
-          <div className="grid grid-cols-5 md:grid-cols-10 gap-2 mt-3">
-            {CARD_THEMES.map(t => {
-              const active = (me?.creator_card_style?.theme ?? "dark") === t.id;
-              return (
-                <button key={t.id} onClick={() => setCardTheme(t.id)} disabled={!isPlus}
-                  className={`aspect-square rounded-lg border-2 relative overflow-hidden transition ${active ? "border-foreground" : "border-transparent"} disabled:opacity-40`}
-                  style={{ background: t.bg }}>
-                  <span className="absolute inset-0 grid place-items-center text-[9px] font-display" style={{ color: t.fg }}>
-                    {t.label}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </FeatureCard>
-
         {/* Frames */}
         <FeatureCard icon={<Palette size={18} />} title="Marcos premium"
           desc="Marco animado para tu foto de perfil." locked={!isPlus}>
@@ -340,28 +277,6 @@ function PlusPage() {
           <Link to="/" className="text-[11px] text-muted-foreground underline">Volver al inicio</Link>
         </div>
       </main>
-    </div>
-  );
-}
-
-function CreatorCardPreview({ profile }: { profile: Profile | null }) {
-  const theme = profile?.creator_card_style?.theme ?? "dark";
-  const themeCfg = CARD_THEMES.find(t => t.id === theme) ?? CARD_THEMES[0];
-  return (
-    <div className="relative rounded-2xl overflow-hidden p-4 flex items-center gap-3"
-      style={{ background: themeCfg.bg, color: themeCfg.fg, minHeight: 110 }}>
-      <Avatar p={profile} size={64} rounded="xl" className="ring-2 ring-white/30" />
-      <div className="min-w-0 flex-1">
-        <div className="text-base font-display font-semibold truncate">
-          <UserName p={profile} size="md" showBadge={false} />
-        </div>
-        <div className="text-[11px] opacity-80 font-mono truncate">@{profile?.username ?? "?"}</div>
-        <div className="text-[10px] opacity-70 mt-1 truncate">{profile?.bio ?? "Creador en Asternal"}</div>
-      </div>
-      <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-display"
-        style={{ background: "rgba(255,255,255,0.15)" }}>
-        <Star size={9} fill="currentColor" /> PLUS
-      </div>
     </div>
   );
 }

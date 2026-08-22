@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Sparkles, Lock, Joystick } from "lucide-react";
+import { Sparkles, Lock } from "lucide-react";
+import { FaGamepad } from "react-icons/fa";
 import type { PostWithMeta } from "@/lib/social/api";
 
 function extractTitle(content: string): string {
@@ -51,7 +52,7 @@ export function GameIcon({
       <div
         className={`relative aspect-square w-full ${radius} overflow-hidden ${
           hasCover
-            ? "border border-white/60 shadow-[0_14px_36px_-16px_oklch(0.5_0.13_266/0.4)] transition-shadow group-hover:shadow-[0_20px_44px_-16px_oklch(0.55_0.14_262/0.42)]"
+            ? "border border-white/60  transition-shadow group-hover:"
             : "tile-blueprint"
         }`}
       >
@@ -94,29 +95,24 @@ function TileMark() {
   return (
     <span className="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden>
       {/* halo suave: profundidad sin caja ni recuadro genérico */}
-      <span className="absolute w-14 h-14 rounded-full bg-primary/10 blur-xl" />
-      <Joystick size={22} strokeWidth={1.5} className="relative text-primary/70" />
+      <span className="absolute w-14 h-14 rounded-full bg-primary/[0.06] dark:bg-primary/[0.04] blur-xl" />
+      <FaGamepad size={46} className="relative text-primary/[0.28] dark:text-primary/[0.20]" />
     </span>
   );
 }
 
-/** Ticks de las 4 esquinas (línea técnica, como marca de registro de blueprint). */
+/** Esquinas suaves: puntos sutiles en las 4 esquinas del borde. */
 function CornerTicks() {
   return (
-    <svg
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      viewBox="0 0 80 80"
-      preserveAspectRatio="none"
-      aria-hidden
-    >
-      <path
-        d="M7 22 V7 H22 M73 22 V7 H58 M73 58 V73 H58 M7 58 V73 H22"
-        fill="none"
-        stroke="oklch(0.56 0.14 262 / 0.45)"
-        strokeWidth="1.5"
-        vectorEffect="non-scaling-stroke"
-        strokeLinecap="round"
-      />
-    </svg>
+    <span className="absolute inset-0 pointer-events-none" aria-hidden>
+      {/* Esquina superior-izquierda */}
+      <span className="absolute top-0 left-0 w-2 h-2 border-t-2 border-l-2 border-primary/20 dark:border-primary/10 rounded-tl-sm" />
+      {/* Esquina superior-derecha */}
+      <span className="absolute top-0 right-0 w-2 h-2 border-t-2 border-r-2 border-primary/20 dark:border-primary/10 rounded-tr-sm" />
+      {/* Esquina inferior-izquierda */}
+      <span className="absolute bottom-0 left-0 w-2 h-2 border-b-2 border-l-2 border-primary/20 dark:border-primary/10 rounded-bl-sm" />
+      {/* Esquina inferior-derecha */}
+      <span className="absolute bottom-0 right-0 w-2 h-2 border-b-2 border-r-2 border-primary/20 dark:border-primary/10 rounded-br-sm" />
+    </span>
   );
 }

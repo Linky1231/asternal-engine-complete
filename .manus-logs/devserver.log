@@ -1063,3 +1063,205 @@
 [2026-08-22T04:41:19.952Z] 4:41:19 AM [vite] (client) hmr update /src/styles.css, /src/routes/profile.tsx, /src/routes/reset-password.tsx, /src/routes/profile.$userId.tsx, /src/routes/orbes.tsx, /src/routes/search.tsx, /src/routes/index.tsx, /src/routes/plus.tsx, /src/routes/feed.tsx, /src/routes/admin.tsx, /src/routes/auth.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/UserName.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GallerySection.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx, /src/components/social/ForumSection.tsx
 [2026-08-22T04:41:20.440Z] 4:41:20 AM [vite] (client) hmr update /src/styles.css, /src/routes/profile.tsx, /src/routes/profile.$userId.tsx, /src/routes/orbes.tsx, /src/routes/index.tsx, /src/routes/plus.tsx, /src/routes/feed.tsx, /src/routes/admin.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/UserName.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GallerySection.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx
 [2026-08-22T04:41:20.606Z] 4:41:20 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GamesHome.tsx
+[2026-08-22T04:48:37.245Z] 4:48:37 AM [vite] changed tsconfig file detected: /home/ubuntu/asternal-engine/tsconfig.json - Clearing cache and forcing full-reload to ensure TypeScript is compiled with updated config values.
+[2026-08-22T04:48:37.246Z] 4:48:37 AM [vite] (client) hmr update /vly-toolbar-readonly.tsx
+[2026-08-22T04:48:37.247Z] 4:48:37 AM [vite] (client) hmr update /src/main.tsx?v=-u4fVTqz1oHOf_-peP0Ja, /src/main.tsx?v=FI4grkdW43D5HOB16LfEz, /src/main.tsx?v=0NSZVRkA2nUFuEbHpzy-s, /src/main.tsx?v=lKo3bgtljRpigVMFqDP4X, /src/main.tsx?v=qj6JbrV71bXMkVijwb-Zy, /src/main.tsx?v=gJ5ExK9ev-IsMWDChxzKm, /src/main.tsx?v=0APoFh5Ho8lMzc-0mz6KF, /src/main.tsx?v=tkGdEUwN_DYBdV0-Lma9a, /src/main.tsx?v=e8sjUOYIKDtMMVPkFswW4, /src/main.tsx?v=k7zCXYMg66C7pZ7_ejn-_, /src/main.tsx?v=ZFYVvuEgWlR39mLGAMAuT, /src/main.tsx?v=3XqUv02h3weWm7fwWhM1V, /src/main.tsx?v=YXQm_-swae--4_Qyt7UyX, /src/styles.css
+[2026-08-22T04:48:37.248Z] 4:48:37 AM [vite] (client) hmr update /src/main.tsx?v=-u4fVTqz1oHOf_-peP0Ja, /src/main.tsx?v=FI4grkdW43D5HOB16LfEz, /src/main.tsx?v=0NSZVRkA2nUFuEbHpzy-s, /src/main.tsx?v=lKo3bgtljRpigVMFqDP4X, /src/main.tsx?v=qj6JbrV71bXMkVijwb-Zy, /src/main.tsx?v=gJ5ExK9ev-IsMWDChxzKm, /src/main.tsx?v=0APoFh5Ho8lMzc-0mz6KF, /src/main.tsx?v=tkGdEUwN_DYBdV0-Lma9a, /src/main.tsx?v=e8sjUOYIKDtMMVPkFswW4, /src/main.tsx?v=k7zCXYMg66C7pZ7_ejn-_, /src/main.tsx?v=ZFYVvuEgWlR39mLGAMAuT, /src/main.tsx?v=3XqUv02h3weWm7fwWhM1V, /src/main.tsx?v=YXQm_-swae--4_Qyt7UyX, /src/styles.css
+[2026-08-22T04:48:37.248Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.248Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.253Z] 4:48:37 AM [vite] (client) page reload isolate/index.html
+[2026-08-22T04:48:37.255Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T04:48:37.255Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.255Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/AnimationEditor.tsx
+[2026-08-22T04:48:37.255Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/AsternalEditor.tsx
+[2026-08-22T04:48:37.256Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx
+[2026-08-22T04:48:37.256Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/PaintEditor.tsx
+[2026-08-22T04:48:37.256Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/ProjectManager.tsx
+[2026-08-22T04:48:37.256Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/PublishGameDialog.tsx
+[2026-08-22T04:48:37.257Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/SceneEditor.tsx
+[2026-08-22T04:48:37.257Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-22T04:48:37.257Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/UIEditor.tsx
+[2026-08-22T04:48:37.257Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/Avatar.tsx
+[2026-08-22T04:48:37.257Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/CardMenu.tsx
+[2026-08-22T04:48:37.257Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ChatSection.tsx
+[2026-08-22T04:48:37.258Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/CommentSection.tsx
+[2026-08-22T04:48:37.258Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/EventsSection.tsx
+[2026-08-22T04:48:37.258Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ForumSection.tsx
+[2026-08-22T04:48:37.258Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GalleryCanvasPanel.tsx
+[2026-08-22T04:48:37.258Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GallerySection.tsx
+[2026-08-22T04:48:37.259Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GameCard.tsx
+[2026-08-22T04:48:37.259Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GameIcon.tsx
+[2026-08-22T04:48:37.259Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GamePageSection.tsx
+[2026-08-22T04:48:37.259Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GamesHome.tsx
+[2026-08-22T04:48:37.259Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
+[2026-08-22T04:48:37.259Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/HistorySection.tsx
+[2026-08-22T04:48:37.260Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationBell.tsx
+[2026-08-22T04:48:37.260Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationsPanel.tsx
+[2026-08-22T04:48:37.260Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/PostCard.tsx
+[2026-08-22T04:48:37.260Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/PostComposer.tsx
+[2026-08-22T04:48:37.260Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-22T04:48:37.261Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/SubPageHeader.tsx
+[2026-08-22T04:48:37.261Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.261Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/UserName.tsx
+[2026-08-22T04:48:37.262Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/WorkChatPanel.tsx
+[2026-08-22T04:48:37.262Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.262Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.262Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.262Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.262Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.263Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.263Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.263Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.263Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.263Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.264Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.264Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.264Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.264Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.264Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ui/dialog.tsx
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.265Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.266Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.267Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ui/segmented.tsx
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.268Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/components/ui/sonner.tsx, /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.269Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.270Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.270Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.270Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.270Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/AsternalEditor.tsx
+[2026-08-22T04:48:37.270Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.270Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.271Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.271Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.271Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/profile.tsx, /src/routes/reset-password.tsx, /src/routes/profile.$userId.tsx, /src/routes/orbes.tsx, /src/routes/search.tsx, /src/routes/index.tsx, /src/routes/plus.tsx, /src/routes/feed.tsx, /src/routes/admin.tsx, /src/routes/auth.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/UserName.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GallerySection.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx, /src/components/social/GamePageSection.tsx, /src/components/social/ForumSection.tsx
+[2026-08-22T04:48:37.271Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.271Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T04:48:37.272Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T04:48:37.272Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T04:48:37.272Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.272Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.272Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.272Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/AsternalEditor.tsx
+[2026-08-22T04:48:37.273Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/__root.tsx
+[2026-08-22T04:48:37.273Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.273Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ui/dialog.tsx
+[2026-08-22T04:48:37.273Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.273Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/SceneEditor.tsx, /src/components/engine/AnimationEditor.tsx
+[2026-08-22T04:48:37.274Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/index.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx
+[2026-08-22T04:48:37.274Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/PaintEditor.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/routes/index.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GameCard.tsx, /src/components/social/GalleryCanvasPanel.tsx, /src/components/engine/GameRuntime.tsx, /src/components/engine/SceneEditor.tsx, /src/components/engine/AnimationEditor.tsx, /src/components/engine/UIEditor.tsx, /src/components/engine/TransformInspector.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-22T04:48:37.274Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ForumSection.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/GameRuntime.tsx, /src/components/engine/SceneEditor.tsx, /src/components/engine/AnimationEditor.tsx, /src/components/engine/UIEditor.tsx
+[2026-08-22T04:48:37.275Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-22T04:48:37.275Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-22T04:48:37.275Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx, /src/routes/index.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GameCard.tsx
+[2026-08-22T04:48:37.275Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.276Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/profile.tsx, /src/routes/profile.$userId.tsx, /src/routes/orbes.tsx, /src/routes/index.tsx, /src/routes/plus.tsx, /src/routes/feed.tsx, /src/routes/admin.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/UserName.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GallerySection.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx, /src/components/social/GamePageSection.tsx
+[2026-08-22T04:48:37.276Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-22T04:48:37.276Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/admin.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/admin.tsx, /src/components/social/ForumSection.tsx
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GamesHome.tsx
+[2026-08-22T04:48:37.277Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.278Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.278Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.278Z] 4:48:37 AM [vite] (client) hmr update /src/routes/__root.tsx, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/routes/admin.tsx, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/main.tsx?v=-u4fVTqz1oHOf_-peP0Ja, /src/main.tsx?v=FI4grkdW43D5HOB16LfEz, /src/main.tsx?v=0NSZVRkA2nUFuEbHpzy-s, /src/main.tsx?v=lKo3bgtljRpigVMFqDP4X, /src/main.tsx?v=qj6JbrV71bXMkVijwb-Zy, /src/main.tsx?v=gJ5ExK9ev-IsMWDChxzKm, /src/main.tsx?v=0APoFh5Ho8lMzc-0mz6KF, /src/main.tsx?v=tkGdEUwN_DYBdV0-Lma9a, /src/main.tsx?v=e8sjUOYIKDtMMVPkFswW4, /src/main.tsx?v=k7zCXYMg66C7pZ7_ejn-_, /src/main.tsx?v=ZFYVvuEgWlR39mLGAMAuT, /src/main.tsx?v=3XqUv02h3weWm7fwWhM1V, /src/main.tsx?v=YXQm_-swae--4_Qyt7UyX, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/routes/feed.tsx, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/routes/history.tsx, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
+[2026-08-22T04:48:37.279Z] 4:48:37 AM [vite] (client) hmr update /src/routes/orbes.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/routes/paint.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/routes/plus.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/routes/profile.$userId.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/routes/profile.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/routes/reset-password.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/routes/search.tsx, /src/styles.css
+[2026-08-22T04:48:37.280Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.282Z] 4:48:37 AM [vite] (client) page reload index.html
+[2026-08-22T04:48:37.284Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.284Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.284Z] 4:48:37 AM [vite] (client) hmr update /src/main.tsx?v=-u4fVTqz1oHOf_-peP0Ja, /src/styles.css, /src/main.tsx?v=FI4grkdW43D5HOB16LfEz, /src/main.tsx?v=0NSZVRkA2nUFuEbHpzy-s, /src/main.tsx?v=lKo3bgtljRpigVMFqDP4X, /src/main.tsx?v=qj6JbrV71bXMkVijwb-Zy, /src/main.tsx?v=gJ5ExK9ev-IsMWDChxzKm, /src/main.tsx?v=0APoFh5Ho8lMzc-0mz6KF, /src/main.tsx?v=tkGdEUwN_DYBdV0-Lma9a, /src/main.tsx?v=e8sjUOYIKDtMMVPkFswW4, /src/main.tsx?v=k7zCXYMg66C7pZ7_ejn-_, /src/main.tsx?v=ZFYVvuEgWlR39mLGAMAuT, /src/main.tsx?v=3XqUv02h3weWm7fwWhM1V, /src/main.tsx?v=YXQm_-swae--4_Qyt7UyX
+[2026-08-22T04:48:37.317Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/TransformInspector.tsx
+[2026-08-22T04:48:37.317Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.317Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/ai/OrionPanel.tsx
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/profile.$userId.tsx, /src/routes/auth.tsx
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/main.tsx?v=-u4fVTqz1oHOf_-peP0Ja, /src/routes/profile.tsx, /src/routes/profile.$userId.tsx, /src/routes/orbes.tsx, /src/routes/index.tsx, /src/routes/plus.tsx, /src/routes/feed.tsx, /src/routes/admin.tsx, /src/components/social/ProfilePanel.tsx, /src/components/social/PostComposer.tsx, /src/components/social/PostCard.tsx, /src/components/social/GamesHome.tsx, /src/components/social/NotificationsPanel.tsx, /src/components/social/NotificationBell.tsx, /src/components/social/UserName.tsx, /src/components/social/EventsSection.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/social/ChatSection.tsx, /src/components/social/WorkChatPanel.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GallerySection.tsx, /src/components/social/HistorySection.tsx, /src/components/social/GameCard.tsx, /src/components/social/CommentSection.tsx, /src/components/engine/PublishGameDialog.tsx, /src/components/social/GamePageSection.tsx, /src/main.tsx?v=FI4grkdW43D5HOB16LfEz, /src/main.tsx?v=0NSZVRkA2nUFuEbHpzy-s, /src/main.tsx?v=lKo3bgtljRpigVMFqDP4X, /src/main.tsx?v=qj6JbrV71bXMkVijwb-Zy, /src/main.tsx?v=gJ5ExK9ev-IsMWDChxzKm, /src/main.tsx?v=0APoFh5Ho8lMzc-0mz6KF, /src/main.tsx?v=tkGdEUwN_DYBdV0-Lma9a, /src/main.tsx?v=e8sjUOYIKDtMMVPkFswW4, /src/main.tsx?v=k7zCXYMg66C7pZ7_ejn-_, /src/main.tsx?v=ZFYVvuEgWlR39mLGAMAuT, /src/main.tsx?v=3XqUv02h3weWm7fwWhM1V, /src/main.tsx?v=YXQm_-swae--4_Qyt7UyX, /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/engine/GameRuntime.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx, /src/routes/index.tsx, /src/components/engine/AsternalEditor.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GameCard.tsx, /src/components/engine/GameRuntime.tsx, /src/components/engine/SceneEditor.tsx
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/HistorySection.tsx
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/NotificationsPanel.tsx
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.318Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-22T04:48:37.319Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GlobalSearchPanel.tsx
+[2026-08-22T04:48:37.319Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css, /src/components/social/GamePageSection.tsx
+[2026-08-22T04:48:37.319Z] 4:48:37 AM [vite] (client) hmr update /src/styles.css
+[2026-08-22T04:48:37.319Z] 4:48:37 AM [vite] (client) page reload client/index.html
+[2026-08-22T04:48:37.427Z] 4:48:37 AM [tsx] unlink in ./shared/const.ts Restarting...
+[2026-08-22T04:48:37.578Z] node:internal/modules/run_main:122
+[2026-08-22T04:48:37.578Z] triggerUncaughtException(
+[2026-08-22T04:48:37.578Z] ^
+[2026-08-22T04:48:37.578Z] Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/home/ubuntu/asternal-engine/server/_core/index.ts' imported from /home/ubuntu/asternal-engine/
+[2026-08-22T04:48:37.579Z] at finalizeResolution (node:internal/modules/esm/resolve:275:11)
+[2026-08-22T04:48:37.579Z] at moduleResolve (node:internal/modules/esm/resolve:932:10)
+[2026-08-22T04:48:37.579Z] at defaultResolve (node:internal/modules/esm/resolve:1056:11)
+[2026-08-22T04:48:37.579Z] at nextResolve (node:internal/modules/esm/hooks:748:28)
+[2026-08-22T04:48:37.579Z] at resolveBase (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:10334)
+[2026-08-22T04:48:37.579Z] at resolveDirectory (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:11421)
+[2026-08-22T04:48:37.579Z] at resolveTsPaths (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:13062)
+[2026-08-22T04:48:37.579Z] at resolve (file:///home/ubuntu/asternal-engine/node_modules/.pnpm/tsx@4.23.12/node_modules/tsx/dist/register-C4vWVmug.mjs:2:14748)
+[2026-08-22T04:48:37.579Z] at nextResolve (node:internal/modules/esm/hooks:748:28)
+[2026-08-22T04:48:37.579Z] at Hooks.resolve (node:internal/modules/esm/hooks:240:30) {
+[2026-08-22T04:48:37.579Z] code: 'ERR_MODULE_NOT_FOUND',
+[2026-08-22T04:48:37.579Z] url: 'file:///home/ubuntu/asternal-engine/server/_core/index.ts'
+[2026-08-22T04:48:37.579Z] }
+[2026-08-22T04:48:37.579Z] Node.js v22.13.0
+[2026-08-22T04:48:42.443Z] Dev server exited with code 0
+[2026-08-22T04:50:16.137Z] Starting dev server with command: pnpm run dev
+[2026-08-22T04:50:16.446Z] $ vite
+[2026-08-22T04:50:16.751Z] 4:50:16 AM [vite] (client) Re-optimizing dependencies because lockfile has changed
+[2026-08-22T04:50:16.767Z] VITE v7.3.6  ready in 294 ms
+[2026-08-22T04:50:16.767Z] ➜  Local:   http://localhost:5173/
+[2026-08-22T04:50:16.767Z] ➜  Network: http://169.254.0.21:5173/

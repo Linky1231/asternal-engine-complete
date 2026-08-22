@@ -6,6 +6,8 @@
  * lives in the browser via localStorage.
  */
 
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from './types';
 
 // ───── Types ─────
 
@@ -148,27 +150,6 @@ function saveSession(user: LocalUser): LocalSession {
 }
 function clearSession(): void { localStorage.removeItem('_local_auth_session'); }
 
-async function hydrateServerSession(): Promise<LocalSession | null> {
-  try {
-    const response = await fetch('/api/auth/session', { credentials: 'include' });
-    if (!response.ok) return null;
-    const payload = await response.json() as { session?: { user?: { id?: string; email?: string | null }; expires_at?: number } | null };
-    const user = payload.session?.user;
-    if (!user?.id) return null;
-    const session: LocalSession = {
-      userId: user.id,
-      email: user.email ?? `${user.id}@manus.local`,
-      accessToken: 'asternal-cookie-session',
-      expiresAt: new Date((payload.session?.expires_at ?? (Date.now() / 1000 + 365 * 86400)) * 1000).toISOString(),
-    };
-    localStorage.setItem('_local_auth_session', JSON.stringify(session));
-    ensureProfileExists(session.userId, session.email);
-    return session;
-  } catch {
-    return null;
-  }
-}
-
 function ensureProfileExists(userId: string, email: string, username?: string): void {
   const profiles = getTableData('profiles');
   if (profiles.find(p => (p as Record<string, unknown>).id === userId)) return;
@@ -213,7 +194,7 @@ function makeSignInResult(u: LocalUser, s: LocalSession) {
 
 const localAuth = {
   getSession: async () => {
-    const s = getSession() ?? await hydrateServerSession();
+    const s = getSession();
     return { data: { session: s ? { user: { id: s.userId, email: s.email }, access_token: s.accessToken, expires_at: new Date(s.expiresAt).getTime() / 1000 } : null }, error: null };
   },
   getUser: async () => {
@@ -239,12 +220,7 @@ const localAuth = {
     return makeSignInResult(user, session) as { data: { user: Record<string, unknown>; session: Record<string, unknown> }; error: null };
   },
   signInWithOAuth: async () => ({ data: null, error: new Error('OAuth no disponible en modo local') }),
-  signOut: async () => {
-    clearSession();
-    try { await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }); } catch { /* local logout remains effective */ }
-    notifyAuth('SIGNED_OUT', null);
-    return { error: null };
-  },
+  signOut: async () => { clearSession(); notifyAuth('SIGNED_OUT', null); return { error: null }; },
   resetPasswordForEmail: async (email: string) => {
     const users = getAuthUsers();
     const user = users.find(u => u.email === email.toLowerCase());
@@ -496,38 +472,6 @@ const localStorageBackend = { from: (bucket: string) => makeStorageBucket(bucket
 const localRpc = async (fn: string, _args?: Record<string, unknown>) => {
   switch (fn) {
     case 'purchase_game': return { data: { ok: true, free: true }, error: null };
-    case 'donate_orbes': {
-      const postId = _args?._post_id as string;
-      const amount = Number(_args?._amount);
-      if (!postId || !Number.isInteger(amount) || amount <= 0) {
-        return { data: { ok: false, error: 'Cantidad inválida' }, error: null };
-      }
-      const { data: { user } } = await localAuth.getUser();
-      if (!user) return { data: { ok: false, error: 'No autenticado' }, error: null };
-      const posts = getTableData<Record<string, unknown>>('posts');
-      const post = posts.find(p => p.id === postId);
-      if (!post || post.category !== 'game') return { data: { ok: false, error: 'Juego no encontrado' }, error: null };
-      const authorId = post.author_id as string;
-      if (authorId === user.id) return { data: { ok: false, error: 'No puedes donar a tu propio juego' }, error: null };
-      const profiles = getTableData<Record<string, unknown>>('profiles');
-      const donorIndex = profiles.findIndex(p => p.id === user.id);
-      const creatorIndex = profiles.findIndex(p => p.id === authorId);
-      if (donorIndex < 0 || creatorIndex < 0) return { data: { ok: false, error: 'No se encontró la cuenta' }, error: null };
-      const donorBalance = Number(profiles[donorIndex].orbes ?? 0);
-      if (donorBalance < amount) return { data: { ok: false, error: 'No tienes suficientes orbes', balance: donorBalance }, error: null };
-      const creatorBalance = Number(profiles[creatorIndex].orbes ?? 0);
-      profiles[donorIndex] = { ...profiles[donorIndex], orbes: donorBalance - amount, updated_at: now() };
-      profiles[creatorIndex] = { ...profiles[creatorIndex], orbes: creatorBalance + amount, updated_at: now() };
-      saveTableData('profiles', profiles);
-      const transactions = getTableData<Record<string, unknown>>('orbe_transactions');
-      const createdAt = now();
-      transactions.push(
-        { id: uid(), user_id: user.id, amount: -amount, kind: 'donation_sent', post_id: postId, description: 'Donación a un juego', created_at: createdAt },
-        { id: uid(), user_id: authorId, amount, kind: 'donation_received', post_id: postId, description: 'Donación recibida por un juego', created_at: createdAt },
-      );
-      saveTableData('orbe_transactions', transactions);
-      return { data: { ok: true, balance: donorBalance - amount }, error: null };
-    }
     case 'purchase_artwork': {
       const postId = _args?._post_id as string;
       if (!postId) return { data: { ok: false, paid: 0 }, error: null };
@@ -865,8 +809,18 @@ export function isSchemaMissing(err: unknown): boolean {
 }
 
 function createSupabaseClient(): LocalClient {
-  // Mantener el nombre exportado por retrocompatibilidad, pero usar siempre la
-  // fachada local sincronizable con Manus. No se inicializa ningún SDK Supabase.
+  const url = getSupabaseUrl();
+  const anonKey = getSupabaseAnonKey();
+  if (url && anonKey) {
+    try {
+      // Real Supabase: auth, data, storage and RPC all work against the cloud.
+      return createClient<Database>(url, anonKey, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
+      }) as unknown as LocalClient;
+    } catch (e) {
+      console.warn('[supabase] Error creando el cliente real, usando modo local:', e);
+    }
+  }
   return createLocalClient();
 }
 

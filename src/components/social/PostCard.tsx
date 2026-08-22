@@ -1,15 +1,16 @@
 import { memo, useState } from "react";
+import { toast } from "sonner";
 import { Avatar } from "./Avatar";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { type PostWithMeta, toggleReaction, toggleRepost, deletePost, updatePost, reportContent, votePoll, isPlusActive, fetchPostById } from "@/lib/social/api";
+import { type PostWithMeta, toggleReaction, toggleRepost, deletePost, updatePost, reportContent, votePoll, isPlusActive } from "@/lib/social/api";
 import { CommentSection } from "./CommentSection";
-import { GameCard } from "./GameCard";
+import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
-  FileText, Download, Lock, Gamepad2, Code2, Link2, Loader2,
+  FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
 } from "lucide-react";
 
 function timeAgo(iso: string) {
@@ -21,17 +22,16 @@ function timeAgo(iso: string) {
 }
 
 export const PostCard = memo(function PostCard({
-  post, myId, isMod, onChange,
+  post, myId, isMod, onChange, onOpenGame,
 }: {
-  post: PostWithMeta; myId: string | null; isMod: boolean; onChange: () => void;
+  post: PostWithMeta; myId: string | null; isMod: boolean; onChange: () => void; onOpenGame?: (gameId: string) => void;
 }) {
   const [openComments, setOpenComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const [showHtml, setShowHtml] = useState(false);
-  const [attachedGame, setAttachedGame] = useState<PostWithMeta | null>(null);
-  const [attachedGameLoading, setAttachedGameLoading] = useState(false);
-  const [attachedGameError, setAttachedGameError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const [showShare, setShowShare] = useState(false);
   const menu = useCardMenuAnchor<HTMLButtonElement>();
 
   const mine = myId === post.author_id;
@@ -47,43 +47,49 @@ export const PostCard = memo(function PostCard({
 
   const react = async (type: "like" | "favorite") => { await toggleReaction({ postId: post.id, type }); onChange(); };
   const repost = async () => { await toggleRepost(post.id); onChange(); };
-  const remove = async () => { if (!confirm("¿Borrar publicación?")) return; await deletePost(post.id); onChange(); };
+  const remove = () => {
+    toast("¿Eliminar publicación?", {
+      description: "Esta acción no se puede deshacer.",
+      action: {
+        label: "Eliminar",
+        onClick: async () => {
+          setDeleting(true);
+          try {
+            await deletePost(post.id);
+            toast.success("Publicación eliminada");
+            onChange();
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Error al borrar");
+          } finally {
+            setDeleting(false);
+          }
+        },
+      },
+    });
+  };
   const saveEdit = async () => { await updatePost(post.id, { content: editContent }); setEditing(false); onChange(); };
-  const report = async () => {
-    const reason = prompt("Motivo del reporte:");
-    if (!reason) return;
-    await reportContent({ postId: post.id, reason });
-    alert("Reporte enviado");
+  const report = () => {
     menu.close();
+    toast("Reportar publicación", {
+      description: "Señalará esta publicación a los moderadores.",
+      action: {
+        label: "Reportar",
+        onClick: async () => {
+          try {
+            await reportContent({ postId: post.id, reason: "Reporte desde el feed" });
+            toast.success("Reporte enviado");
+          } catch (e) {
+            toast.error(e instanceof Error ? e.message : "Error al reportar");
+          }
+        },
+      },
+    });
   };
-  const share = async () => {
-    const url = window.location.origin + "/feed?p=" + post.id;
-    try { await navigator.share({ url, text: post.content.slice(0, 80) }); }
-    catch { navigator.clipboard.writeText(url); alert("Enlace copiado"); }
-  };
+  const share = () => { setShowShare(true); menu.close(); };
   const vote = async (i: number) => {
     if (!post.poll) return;
     await votePoll(post.poll.id, i);
     onChange();
-  };
-
-  // El adjunto solo contiene título y portada. Se hidrata el juego completo
-  // antes de abrir el GameCard, que ya conoce el runtime y el control de compra.
-  const openAttachedGame = async () => {
-    if (!post.pinned_game?.id || attachedGameLoading) return;
-    setAttachedGameLoading(true);
-    setAttachedGameError(null);
-    try {
-      const game = await fetchPostById(post.pinned_game.id);
-      if (!game || game.category !== "game" || !game.signed_media[0]) {
-        throw new Error("Este juego ya no está disponible para jugar.");
-      }
-      setAttachedGame(game);
-    } catch (e) {
-      setAttachedGameError((e as Error).message || "No se pudo abrir el juego adjunto.");
-    } finally {
-      setAttachedGameLoading(false);
-    }
   };
 
   const avatarInner = <Avatar p={author} className="w-full h-full" />;
@@ -94,8 +100,25 @@ export const PostCard = memo(function PostCard({
     </span>
   ) : null;
 
+  const postType = (post as Record<string, unknown>).post_type as string | undefined;
+  const postTypeLabels: Record<string, { label: string; color: string }> = {
+    update: { label: "Actualización", color: "bg-blue-500/10 text-blue-600 border-blue-500/20" },
+    progress: { label: "Progreso", color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" },
+    tutorial: { label: "Tutorial", color: "bg-violet-500/10 text-violet-600 border-violet-500/20" },
+    question: { label: "Pregunta", color: "bg-amber-500/10 text-amber-600 border-amber-500/20" },
+    resource: { label: "Recurso", color: "bg-cyan-500/10 text-cyan-600 border-cyan-500/20" },
+    achievement: { label: "Logro", color: "bg-yellow-500/10 text-yellow-600 border-yellow-500/20" },
+    announcement: { label: "Anuncio", color: "bg-rose-500/10 text-rose-600 border-rose-500/20" },
+  };
+  const postTypeInfo = postType && postType !== "general" ? postTypeLabels[postType] : null;
+  const postTypeLabel = postTypeInfo ? (
+    <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${postTypeInfo.color}`}>
+      {postTypeInfo.label}
+    </div>
+  ) : null;
+
   return (
-    <article className={`group panel rounded-2xl border border-border/70 bg-card shadow-[0_4px_14px_-8px_oklch(0.28_0.03_258/0.22)] transition-[border-color,box-shadow,transform] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-[0_10px_24px_-14px_oklch(0.35_0.12_258/0.3)] ${entranceClass}`}>
+    <article className={`group panel rounded-2xl border border-border/60 transition-[border-color,box-shadow] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-sm ${entranceClass}`}>
       {/* Hairline degradado superior */}
       <div className="h-[3px] w-full rounded-t-2xl grad-brand-fade opacity-70 pointer-fine:group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -104,7 +127,7 @@ export const PostCard = memo(function PostCard({
           <Link to="/profile/$userId" params={{ userId: post.author_id }}
             className="relative shrink-0 transition-transform duration-150 ease-out active:scale-95 pointer-fine:group-hover:scale-[1.06]">
             {frame ? (
-              <div className="w-10 h-10 rounded-full p-[2px] shadow-[0_2px_10px_-2px_oklch(0.62_0.12_220/0.45)]" style={{ background: frameCss(frame) }}>
+              <div className="w-10 h-10 rounded-full p-[2px] " style={{ background: frameCss(frame) }}>
                 <div className="w-full h-full rounded-full overflow-hidden bg-background font-display text-xs text-primary-glow">
                   {avatarInner}
                 </div>
@@ -124,7 +147,7 @@ export const PostCard = memo(function PostCard({
               @{author?.username ?? "?"} · <span className="text-primary font-medium">{timeAgo(post.created_at)}</span>
             </div>
           </Link>
-          <button ref={menu.anchorRef} onClick={menu.toggle}
+          <button type="button" ref={menu.anchorRef} onClick={menu.toggle}
             className="w-8 h-8 rounded-lg border border-border text-primary-glow grid place-items-center transition-[transform,background-color,color] duration-150 ease-out pointer-fine:hover:bg-primary/10 pointer-fine:hover:text-primary active:scale-[0.94]"
             aria-label="Menú de la publicación">
             <MoreHorizontal size={15} />
@@ -137,14 +160,16 @@ export const PostCard = memo(function PostCard({
           </CardMenu>
         </header>
 
+        {postTypeLabel}
+
         {editing ? (
           <div className="space-y-2">
             <textarea value={editContent} onChange={e => setEditContent(e.target.value)} rows={3}
               className="w-full bg-input/40 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/40" />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setEditing(false)}
+              <button type="button" onClick={() => setEditing(false)}
                 className="text-xs px-3.5 py-1.5 rounded-xl border border-border hover:bg-muted/40 transition-colors duration-200">Cancelar</button>
-              <button onClick={saveEdit}
+              <button type="button" onClick={saveEdit}
                 className="text-xs px-3.5 py-1.5 rounded-xl bg-primary text-white active:scale-[0.96] transition-transform duration-300 ease-out">Guardar</button>
             </div>
           </div>
@@ -190,7 +215,7 @@ export const PostCard = memo(function PostCard({
         {/* HTML embebido */}
         {post.html_content && (
           <div className="border border-border rounded-xl overflow-hidden">
-            <button onClick={() => setShowHtml(s => !s)}
+            <button type="button" onClick={() => setShowHtml(s => !s)}
               className="w-full flex items-center gap-2 px-3 py-2.5 text-xs bg-muted/30 pointer-fine:hover:bg-muted/50 transition-colors duration-300">
               <Code2 size={13} className="text-primary" />
               <span className="flex-1 text-left font-medium">Contenido HTML {showHtml ? "(ocultar)" : "(mostrar)"}</span>
@@ -207,13 +232,10 @@ export const PostCard = memo(function PostCard({
 
         {/* Juego fijado */}
         {post.pinned_game && (
-          <div className="space-y-1.5">
           <button
             type="button"
-            onClick={openAttachedGame}
-            disabled={attachedGameLoading}
-            className="group/game w-full flex items-center gap-3 rounded-2xl p-2 pr-3 bg-primary/[0.04] border border-primary/20 text-left pointer-fine:hover:border-primary/40 transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md disabled:cursor-wait disabled:opacity-70"
-          >
+            onClick={() => onOpenGame?.(post.pinned_game!.id)}
+            className="group/game flex items-center gap-3 rounded-2xl p-2 pr-3 bg-primary/[0.04] border border-primary/20 pointer-fine:hover:border-primary/40 transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md w-full text-left cursor-pointer">
             {post.pinned_game.cover_url ? (
               <img src={post.pinned_game.cover_url} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0 ring-1 ring-border/50" />
             ) : (
@@ -225,12 +247,10 @@ export const PostCard = memo(function PostCard({
               <div className="text-[9px] font-display tracking-[0.18em] text-primary-glow uppercase">Juego fijado</div>
               <div className="text-sm font-display truncate mt-0.5">{post.pinned_game.title}</div>
             </div>
-            <span className="w-7 h-7 rounded-full bg-primary/10 grid place-items-center text-primary-glow transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">
-              {attachedGameLoading ? <Loader2 size={14} className="animate-spin" /> : "▶"}
+            <span className="w-8 h-8 rounded-full bg-primary/10 grid place-items-center transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">
+              <Play size={14} className="text-primary ml-0.5" fill="currentColor" />
             </span>
           </button>
-          {attachedGameError && <p className="px-1 text-[10px] text-rose-600">{attachedGameError}</p>}
-          </div>
         )}
 
         {/* Encuesta */}
@@ -285,8 +305,8 @@ export const PostCard = memo(function PostCard({
         )}
       </div>
 
-      <footer className="flex items-center border-t border-border/50 bg-muted/15 px-2 py-1 text-[11px] text-muted-foreground">
-        <button onClick={() => react("like")}
+      <footer className="flex items-center border-t border-border/50 bg-muted/15 px-1 py-0.5 text-[11px] text-muted-foreground">
+        <button type="button" onClick={() => react("like")}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_like ? "text-rose-500" : "pointer-fine:hover:bg-rose-500/10 pointer-fine:hover:text-rose-500"}`}>
           <motion.span
             key={post.my_like ? "liked" : "unliked"}
@@ -299,7 +319,7 @@ export const PostCard = memo(function PostCard({
           </motion.span>
           <span className="tabular-nums font-medium">{post.likes}</span>
         </button>
-        <button onClick={() => react("favorite")}
+        <button type="button" onClick={() => react("favorite")}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_favorite ? "text-amber-500" : "pointer-fine:hover:bg-amber-500/10 pointer-fine:hover:text-amber-500"}`}>
           <motion.span
             key={post.my_favorite ? "favd" : "unfavd"}
@@ -312,12 +332,12 @@ export const PostCard = memo(function PostCard({
           </motion.span>
           <span className="tabular-nums font-medium">{post.favorites}</span>
         </button>
-        <button onClick={() => setOpenComments(o => !o)}
+        <button type="button" onClick={() => setOpenComments(o => !o)}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${openComments ? "text-primary-glow bg-primary/10" : "pointer-fine:hover:bg-primary/10 pointer-fine:hover:text-primary-glow"}`}>
           <MessageCircle size={15} className={openComments ? "fill-primary/20" : ""} />
           <span className="tabular-nums font-medium">{post.comments_count}</span>
         </button>
-        <button onClick={repost}
+        <button type="button" onClick={repost}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_repost ? "text-emerald-600" : "pointer-fine:hover:bg-emerald-500/10 pointer-fine:hover:text-emerald-600"}`}>
           <motion.span
             key={post.my_repost ? "reposted" : "unreposted"}
@@ -334,19 +354,7 @@ export const PostCard = memo(function PostCard({
 
       {openComments && <div className="border-t border-border/50 bg-muted/10 px-3 py-2.5"><CommentSection postId={post.id} myId={myId} isMod={isMod} onChange={onChange} /></div>}
 
-      {attachedGame && (
-        <div
-          className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm p-3 flex items-start justify-center pt-16 overflow-y-auto"
-          onClick={() => setAttachedGame(null)}
-        >
-          <div className="w-full max-w-lg" onClick={e => e.stopPropagation()}>
-            <GameCard post={attachedGame} myId={myId} isMod={isMod} onChange={onChange} />
-            <button type="button" onClick={() => setAttachedGame(null)} className="mt-3 w-full h-10 rounded-xl bg-white/10 text-white text-xs font-display tracking-widest border border-white/20 active:scale-95">
-              CERRAR
-            </button>
-          </div>
-        </div>
-      )}
+      <SharePostModal postId={post.id} postContent={post.content} open={showShare} onClose={() => setShowShare(false)} />
     </article>
   );
 });

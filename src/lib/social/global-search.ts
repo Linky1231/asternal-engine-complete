@@ -3,7 +3,7 @@
 // archivos de los chats de trabajo, con filtros por persona, canal y fecha.
 // Funciona igual en modo local y con Supabase conectado.
 
-import { fetchArtworks, fetchFeed, type PostWithMeta, type Profile } from "./api";
+import type { Profile } from "./api";
 import {
   getCommunityChat,
   fetchMyDmChats,
@@ -18,9 +18,6 @@ import {
   type WorkFile,
 } from "./work";
 import { supabase } from "@/integrations/supabase/client";
-import { messagePreview } from "./search-utils";
-
-export { messagePreview } from "./search-utils";
 
 export type SearchScope = "all" | "community" | "work";
 
@@ -44,7 +41,6 @@ export type SearchMessage = {
 };
 
 export type SearchProject = { id: string; name: string; updatedAt: number };
-export type SearchPost = PostWithMeta;
 
 export type SearchFilters = {
   scope: SearchScope;
@@ -114,6 +110,19 @@ function matchDate(iso: string, from: string, to: string): boolean {
     if (isFinite(d) && t > d) return false;
   }
   return true;
+}
+
+/** Etiqueta legible de un mensaje según su contenido/media. */
+export function messagePreview(m: Pick<SearchMessage, "kind" | "media_type" | "content">): string {
+  const media = (m.media_type ?? "").toLowerCase();
+  if (media.startsWith("video")) return "🎬 Vídeo";
+  if (media === "audio") return "🎤 Audio de voz";
+  if (media === "sticker") return "🖼️ Sticker";
+  if (media.startsWith("image")) return "🖼️ Foto";
+  if (m.kind === "poll") return `📊 Encuesta: ${m.content ?? ""}`;
+  if (m.kind === "gift") return `🎁 Paquete de regalos: ${m.content ?? ""}`;
+  if (m.kind === "announcement") return `📢 Aviso: ${m.content ?? ""}`;
+  return m.content ?? "";
 }
 
 /** Busca mensajes en todos los chats (y en los hilos de los chats de trabajo). */
@@ -186,18 +195,6 @@ export async function searchUsers(q: string): Promise<Profile[]> {
   if (!query) return [];
   try {
     return await searchProfilesForMention(query, 20);
-  } catch {
-    return [];
-  }
-}
-
-/** Busca publicaciones públicas y separa posts, juegos y obras de galería por categoría. */
-export async function searchPosts(q: string, category: "post" | "game" | "artwork" = "post"): Promise<SearchPost[]> {
-  const query = q.trim();
-  if (!query) return [];
-  try {
-    if (category === "artwork") return await fetchArtworks({ search: query });
-    return await fetchFeed({ search: query, category: category === "game" ? "game" : undefined, includeGames: category === "game" });
   } catch {
     return [];
   }
