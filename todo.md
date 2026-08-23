@@ -912,3 +912,13 @@ La Galería ahora descarta en la consulta y en la interfaz toda publicación con
 - [x] Validar el Perfil responsive, pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 19 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida redirige de forma estable a Acceso sin sesión en 390 × 844 y 1440 × 900. El botón QR es neutro en reposo y adquiere azul exclusivamente al abrir su panel; el banner predeterminado y el acceso Centro Plus también se neutralizaron para que no parezcan estados seleccionados.
+
+---
+
+# Centro Plus y compactación de Perfil
+
+- [x] Restaurar los colores propios de Centro Plus en su acceso dentro de Perfil.
+- [x] Reducir la altura de la tarjeta de Perfil y mantener visible su información principal en móvil.
+- [x] Validar el perfil compacto en móvil y escritorio, con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 19 pruebas y `pnpm build` finalizó correctamente. Se verificó la ruta protegida en 390 × 844; sin sesión redirige correctamente a Acceso. La cabecera compacta reduce el banner, avatar, márgenes y acciones a una sola fila, mientras Centro Plus recupera su identidad Aurora.
