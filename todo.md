@@ -922,3 +922,14 @@ Validación: `pnpm test` completó 19 pruebas y `pnpm build` finalizó correctam
 - [x] Validar el perfil compacto en móvil y escritorio, con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 19 pruebas y `pnpm build` finalizó correctamente. Se verificó la ruta protegida en 390 × 844; sin sesión redirige correctamente a Acceso. La cabecera compacta reduce el banner, avatar, márgenes y acciones a una sola fila, mientras Centro Plus recupera su identidad Aurora.
+
+---
+
+# Pantalla QR y espaciado de Perfil
+
+- [x] Separar los botones compactos de Perfil para evitar que se vean pegados.
+- [x] Convertir el editor de QR en una pantalla dedicada desde Perfil.
+- [x] Corregir el margen de seguridad del QR para que los tres marcadores queden completos.
+- [x] Validar el editor QR y Perfil responsive, con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta protegida sigue redirigiendo correctamente a Acceso sin sesión en 390 × 844. El editor QR ya no expande la tarjeta de Perfil: se abre en una pantalla dedicada y usa un marco con zona silenciosa calculada para no recortar los tres marcadores.

@@ -3,6 +3,7 @@ import { friendlyAuthError } from "../src/lib/auth/friendly-error";
 import { profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
+import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
 
 describe("mensajes de acceso", () => {
   it("traduce el fallo técnico de credenciales a una explicación clara", () => {
@@ -31,6 +32,11 @@ describe("estado visual de acciones sociales", () => {
     const active = profileControlStateClass(true);
     expect(active).toContain("bg-primary");
     expect(active).toContain("text-primary-foreground");
+  });
+
+  it("reserva un margen de seguridad que evita recortar los marcadores del QR", () => {
+    expect(qrPreviewGeometry(240, "square")).toEqual({ padding: 16, frameSize: 272 });
+    expect(qrPreviewGeometry(240, "dots")).toEqual({ padding: 28, frameSize: 296 });
   });
 });
 

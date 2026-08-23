@@ -42,6 +42,7 @@ import { PortfolioPanel } from "./PortfolioPanel";
 import { getUserCode } from "@/lib/social/avatar";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
 import { profileControlStateClass } from "@/lib/social/interaction-state";
+import { qrPreviewGeometry } from "@/lib/social/qr-preview";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -60,7 +61,7 @@ export function ProfilePanel({
   const [editing, setEditing] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
-  const [showQR, setShowQR] = useState(false);
+  const [showQREditor, setShowQREditor] = useState(false);
 
   // form state
   const [username, setUsername] = useState("");
@@ -390,7 +391,7 @@ export function ProfilePanel({
               )}
             </div>
 
-            <div className="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_2.25rem_2.25rem] gap-2 sm:flex sm:items-center">
+            <div className="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_2.75rem_2.75rem] gap-3 sm:flex sm:items-center sm:gap-3">
             {viewingOwn ? (
               editing ? (
                 <button onClick={save} disabled={saving}
@@ -401,9 +402,9 @@ export function ProfilePanel({
                 <>
                   <button onClick={() => setEditing(true)}
                     className="h-9 px-2 rounded-xl border border-border bg-surface text-xs font-medium text-foreground hover:bg-muted/60 active:scale-95">Editar</button>
-                  <button onClick={() => setShowQR(v => !v)}
-                    aria-expanded={showQR}
-                    className={`h-9 px-2 rounded-xl border text-xs font-semibold active:scale-95 flex items-center justify-center gap-1.5 transition-colors ${profileControlStateClass(showQR)}`}>
+                  <button onClick={() => setShowQREditor(true)}
+                    aria-haspopup="dialog"
+                    className={`h-9 px-2 rounded-xl border text-xs font-semibold active:scale-95 flex items-center justify-center gap-1.5 transition-colors ${profileControlStateClass(false)}`}>
                     <QrCode size={15} /><span>Código QR</span>
                   </button>
                   {shareMenu}
@@ -433,9 +434,9 @@ export function ProfilePanel({
                   className={`h-9 px-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border-border bg-muted/60 text-foreground" : "border-border bg-surface text-foreground hover:bg-muted/60"}`}>
                   {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
                 </button>
-                <button onClick={() => setShowQR(v => !v)}
-                  aria-expanded={showQR}
-                  className={`h-9 px-2 rounded-xl border text-xs font-semibold active:scale-95 flex items-center justify-center gap-1.5 transition-colors ${profileControlStateClass(showQR)}`}>
+                <button onClick={() => setShowQREditor(true)}
+                  aria-haspopup="dialog"
+                  className={`h-9 px-2 rounded-xl border text-xs font-semibold active:scale-95 flex items-center justify-center gap-1.5 transition-colors ${profileControlStateClass(false)}`}>
                   <QrCode size={15} /><span>Código QR</span>
                 </button>
                 {shareMenu}
@@ -524,13 +525,6 @@ export function ProfilePanel({
                   #{t}
                 </span>
               ))}
-            </div>
-          )}
-
-          {/* QR Code: personalizable */}
-          {!editing && showQR && (
-            <div className="pt-3 border-t border-border/30 animate-in fade-in slide-in-from-top-2 duration-200">
-              <QRCustomizer userId={userId} username={profile.username ?? "user"} qrStyle={profile.qr_style ?? null} isPlus={viewingOwn && isPlusActive(profile)} viewingOwn={viewingOwn} />
             </div>
           )}
 
@@ -711,6 +705,25 @@ export function ProfilePanel({
         </div>
       )}
 
+      {showQREditor && (
+        <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-md overflow-y-auto" role="dialog" aria-modal="true" aria-label="Editor de código QR" onClick={() => setShowQREditor(false)}>
+          <div className="min-h-full max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-8" onClick={event => event.stopPropagation()}>
+            <div className="rounded-2xl border border-border/70 bg-card shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200">
+              <header className="flex items-center justify-between gap-3 border-b border-border/50 px-4 py-3 sm:px-5">
+                <div className="min-w-0">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Perfil</div>
+                  <h2 className="font-display text-base font-bold truncate">Código QR</h2>
+                </div>
+                <button type="button" onClick={() => setShowQREditor(false)} className="h-9 w-9 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground hover:bg-muted/60 active:scale-95 transition" aria-label="Cerrar editor QR"><X size={16} /></button>
+              </header>
+              <div className="p-4 sm:p-5">
+                <QRCustomizer userId={userId} username={profile.username ?? "user"} qrStyle={profile.qr_style ?? null} isPlus={viewingOwn && isPlusActive(profile)} viewingOwn={viewingOwn} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Smart Status */}
       <div className="px-3 py-1">
         <SmartStatusPanel userId={userId} />
@@ -807,15 +820,16 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
   };
 
   const canCustomize = viewingOwn && isPlus;
+  const { padding: qrPadding, frameSize } = qrPreviewGeometry(style.size || 180, style.cornerStyle);
 
   return (
-    <div className="space-y-3 animate-in fade-in duration-200">
+    <div className="space-y-4 animate-in fade-in duration-200">
       {/* Preview */}
-      <div className="flex flex-col items-center gap-2">
-        <div className="border border-border/40 bg-card shadow-sm" style={{ background: style.bg, borderRadius: style.cornerStyle === "rounded" ? 16 : style.cornerStyle === "dots" ? "50%" : 8, padding: style.cornerStyle === "dots" ? 24 : style.cornerStyle === "rounded" ? 12 : 12 }}>
-          <img src={qrSrc} alt={`QR de ${username}`} width={style.size || 180} height={style.size || 180} className="block" />
+      <div className="flex flex-col items-center gap-3">
+        <div className="border border-border/40 bg-card shadow-sm" style={{ background: style.bg, borderRadius: style.cornerStyle === "rounded" ? 16 : style.cornerStyle === "dots" ? "50%" : 8, boxSizing: "border-box", width: `min(100%, ${frameSize}px)`, padding: qrPadding }}>
+          <img src={qrSrc} alt={`QR de ${username}`} width={style.size || 180} height={style.size || 180} className="block h-auto w-full max-w-full" />
         </div>
-        <div className="text-[9px] font-mono text-muted-foreground/40 text-center truncate max-w-[200px]">{profileUrl}</div>
+        <div className="text-[9px] font-mono text-muted-foreground/60 text-center truncate max-w-full">{profileUrl}</div>
       </div>
 
       {/* Botón de guardar (solo Plus propio) */}
