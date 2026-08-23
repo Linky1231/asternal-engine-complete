@@ -682,6 +682,15 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Confirmación obligatoria de donación de orbes
+
+- [x] Localizar todos los disparadores de donación de orbes en la ficha de juego.
+- [x] Mostrar un diálogo de confirmación con importe, destinatario y opciones de cancelar o donar.
+- [x] Ejecutar la donación únicamente después de la confirmación explícita.
+- [x] Validar cancelación, confirmación, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

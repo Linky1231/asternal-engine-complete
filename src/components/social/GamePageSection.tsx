@@ -2,6 +2,17 @@ import { useState, useEffect, useCallback } from "react";
 import { X, Gamepad2, HandCoins, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { type PostWithMeta, fetchGames, donateOrbs, getMyOrbes } from "@/lib/social/api";
+import { donationValidationMessage } from "@/lib/social/donation-confirmation";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { GameCard } from "./GameCard";
 
 const PRESET_AMOUNTS = [5, 10, 25, 50, 100];
@@ -31,6 +42,7 @@ export function GamePageSection({
   const [error, setError] = useState<string | null>(null);
   const [myBalance, setMyBalance] = useState(0);
   const [donating, setDonating] = useState(false);
+  const [pendingDonation, setPendingDonation] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,16 +72,30 @@ export function GamePageSection({
     return () => { cancelled = true; };
   }, [gameId]);
 
-  const handleDonate = useCallback(async (amount: number) => {
+  const requestDonation = useCallback((amount: number) => {
     if (!game || donating) return;
     if (myId === game.author_id) {
       toast.error("No puedes donar a tu propio juego");
       return;
     }
-    if (amount > myBalance) {
-      toast.error("No tienes suficientes orbes");
+    const validationMessage = donationValidationMessage(amount, myBalance);
+    if (validationMessage) {
+      toast.error(validationMessage);
       return;
     }
+    setPendingDonation(amount);
+  }, [game, myBalance, myId, donating]);
+
+  const confirmDonation = useCallback(async () => {
+    const amount = pendingDonation;
+    if (!game || !amount || donating) return;
+    const validationMessage = donationValidationMessage(amount, myBalance);
+    if (validationMessage) {
+      toast.error(validationMessage);
+      setPendingDonation(null);
+      return;
+    }
+    setPendingDonation(null);
     setDonating(true);
     try {
       const result = await donateOrbs(game.id, amount);
@@ -86,7 +112,7 @@ export function GamePageSection({
     } finally {
       setDonating(false);
     }
-  }, [game, myBalance, myId, donating]);
+  }, [game, myBalance, pendingDonation, donating]);
 
   const isOwnGame = myId === game?.author_id;
   const title = game ? extractTitle(game.content) : "";
@@ -171,7 +197,7 @@ export function GamePageSection({
                     </div>
                   </div>
 
-                  {/* Preset amounts */}
+                  {/* Cada importe solicita confirmación antes de transferir orbes. */}
                   <div className="grid grid-cols-5 gap-2">
                     {PRESET_AMOUNTS.map((amt) => {
                       const disabled = donating || amt > myBalance;
@@ -180,7 +206,7 @@ export function GamePageSection({
                           key={amt}
                           type="button"
                           disabled={disabled}
-                          onClick={() => handleDonate(amt)}
+                          onClick={() => requestDonation(amt)}
                           className={`h-10 rounded-xl text-xs font-display font-semibold border transition active:scale-95 disabled:opacity-40 disabled:active:scale-100 ${
                             amt <= myBalance
                               ? "border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 hover:border-primary/50"
@@ -197,7 +223,7 @@ export function GamePageSection({
                   <CustomDonateButton
                     maxAmount={myBalance}
                     donating={donating}
-                    onDonate={handleDonate}
+                    onDonate={requestDonation}
                   />
                 </div>
               )}
@@ -205,6 +231,42 @@ export function GamePageSection({
           )}
         </div>
       </div>
+
+      <AlertDialog
+        open={pendingDonation !== null}
+        onOpenChange={(open) => {
+          if (!open && !donating) setPendingDonation(null);
+        }}
+      >
+        <AlertDialogContent className="max-w-sm rounded-2xl border-border/70 bg-background/95 p-5 backdrop-blur-xl">
+          <AlertDialogHeader className="text-left">
+            <AlertDialogTitle className="font-display text-base text-foreground">
+              ¿Confirmar donación?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="leading-relaxed">
+              Vas a donar <span className="font-semibold text-foreground">{pendingDonation ?? 0} orbes</span>{" "}
+              a <span className="font-semibold text-foreground">@{game?.author?.username || "el autor"}</span>.
+              Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="rounded-xl border border-primary/15 bg-primary/[0.06] px-3 py-2.5 text-center">
+            <span className="font-mono text-lg font-semibold text-primary">{pendingDonation ?? 0}</span>
+            <span className="ml-1.5 text-xs font-medium text-muted-foreground">ORBES</span>
+          </div>
+          <AlertDialogFooter className="gap-2 sm:space-x-0">
+            <AlertDialogCancel disabled={donating} className="rounded-xl border-border/60">
+              CANCELAR
+            </AlertDialogCancel>
+            <AlertDialogAction
+              disabled={donating || pendingDonation === null}
+              onClick={confirmDonation}
+              className="rounded-xl grad-brand text-white hover:opacity-95"
+            >
+              {donating ? "DONANDO…" : "CONFIRMAR DONACIÓN"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
