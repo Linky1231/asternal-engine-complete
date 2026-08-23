@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 
 /**
- * Control segmentado con indicador celeste medido (patrón estable de Asternal).
+ * Control segmentado con píldora de pestaña activa (patrón estable de Asternal).
  *
  * Centraliza la implementación que estaba duplicada en el inicio (/), el panel
  * de perfil y admin: la píldora se mide por la posición REAL de cada botón y se
@@ -83,7 +83,7 @@ export function SegmentedControl<T extends string>({
             title={it.title}
             onClick={() => onChange(it.id)}
             className={`relative z-10 flex-1 min-w-0 flex items-center justify-center gap-1.5 px-2 py-2 rounded-[10px] text-[10px] sm:text-[11px] font-display font-semibold tracking-wide whitespace-nowrap transition-colors duration-200 ${
-              active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              active ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
             } ${buttonClassName}`}
           >
             {it.icon && <span className="shrink-0">{it.icon}</span>}
@@ -93,7 +93,7 @@ export function SegmentedControl<T extends string>({
       })}
       <div
         aria-hidden
-        className={`absolute top-0.5 bottom-0.5 rounded-[10px] border border-primary/35 bg-primary/10 shadow-[inset_0_1px_0_oklch(1_0_0_/_0.58)] transition-transform duration-300 ease-out will-change-transform ${pillClassName}`}
+        className={`absolute top-0.5 bottom-0.5 rounded-[10px] grad-brand shadow-sm transition-transform duration-300 ease-out will-change-transform ${pillClassName}`}
         style={{
           left: 0,
           width: pill?.width ?? 0,

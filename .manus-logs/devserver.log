@@ -1570,3 +1570,5 @@
 [2026-08-23T17:02:35.230Z] 5:02:35 PM [vite] (client) hmr update /src/styles.css, /src/components/ui/segmented.tsx
 [2026-08-23T17:02:35.233Z] 5:02:35 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
 [2026-08-23T17:02:57.525Z] 5:02:57 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PostCard.tsx
+[2026-08-23T17:08:00.075Z] 5:08:00 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PostCard.tsx
+[2026-08-23T17:08:04.806Z] 5:08:04 PM [vite] (client) hmr update /src/styles.css, /src/components/ui/segmented.tsx

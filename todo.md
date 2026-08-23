@@ -1036,3 +1036,11 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Sustituir esos estados por indicadores celestes sutiles, sin apariencia de botón.
 - [x] Eliminar el bloque y la edición de «Un mensaje personalizado» del perfil.
 - [x] Validar publicaciones y Perfil en móvil y escritorio, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Corrección de selectores invertidos
+
+- [x] Confirmar la asignación invertida entre el selector del Perfil y las acciones de publicaciones.
+- [x] Aplicar la pestaña azul activa al selector del Perfil y el contorno celeste a las acciones de publicación.
+- [x] Validar Perfil y publicaciones en móvil y escritorio, ejecutar pruebas, compilar y publicar.

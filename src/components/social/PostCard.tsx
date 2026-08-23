@@ -317,7 +317,7 @@ export const PostCard = memo(function PostCard({
       <footer className="flex items-center border-t border-border/50 bg-muted/15 px-1 py-0.5 text-[11px] text-muted-foreground">
         <button type="button" onClick={() => { chooseFooterAction("like"); void react("like"); }}
           aria-pressed={activeFooterAction === "like"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-none border border-transparent border-b-2 transition-[transform,color,background-color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "like" ? "border-b-primary/70 bg-primary/[0.035] text-primary" : `${socialActionStateClass(false)} border-b-transparent`}`}>
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "like" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <motion.span
             key={post.my_like ? "liked" : "unliked"}
             initial={{ scale: 0.4, rotate: -18 }}
@@ -331,7 +331,7 @@ export const PostCard = memo(function PostCard({
         </button>
         <button type="button" onClick={() => { chooseFooterAction("favorite"); void react("favorite"); }}
           aria-pressed={activeFooterAction === "favorite"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-none border border-transparent border-b-2 transition-[transform,color,background-color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "favorite" ? "border-b-primary/70 bg-primary/[0.035] text-primary" : `${socialActionStateClass(false)} border-b-transparent`}`}>
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "favorite" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <motion.span
             key={post.my_favorite ? "favd" : "unfavd"}
             initial={{ scale: 0.4, rotate: 18 }}
@@ -345,13 +345,13 @@ export const PostCard = memo(function PostCard({
         </button>
         <button type="button" onClick={() => chooseFooterAction("comments")}
           aria-expanded={activeFooterAction === "comments"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-none border border-transparent border-b-2 transition-[transform,color,background-color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "comments" ? "border-b-primary/70 bg-primary/[0.035] text-primary" : `${socialActionStateClass(false)} border-b-transparent`}`}>
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "comments" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <MessageCircle size={15} className={activeFooterAction === "comments" ? "fill-current/10" : ""} />
           <span className="tabular-nums font-medium">{post.comments_count}</span>
         </button>
         <button type="button" onClick={() => { chooseFooterAction("repost"); void repost(); }}
           aria-pressed={activeFooterAction === "repost"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-none border border-transparent border-b-2 transition-[transform,color,background-color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "repost" ? "border-b-primary/70 bg-primary/[0.035] text-primary" : `${socialActionStateClass(false)} border-b-transparent`}`}>
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "repost" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <motion.span
             key={post.my_repost ? "reposted" : "unreposted"}
             initial={{ scale: 0.6, rotate: -25 }}
