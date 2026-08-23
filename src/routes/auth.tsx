@@ -210,7 +210,7 @@ function FloatInput({
   return (
     <div className="space-y-1">
       <div className="relative group/input">
-        <div className={`glass-control relative flex items-center rounded-xl ${
+        <div className={`glass-control relative isolate flex items-center overflow-hidden rounded-xl ${
           focused
             ? AUTH_FIELD_FOCUS_CLASS
             : error

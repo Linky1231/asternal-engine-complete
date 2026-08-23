@@ -1427,3 +1427,18 @@
 [2026-08-23T01:18:26.154Z] 1:18:26 AM [vite] (client) hmr update /src/main.tsx
 [2026-08-23T01:18:26.599Z] 1:18:26 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
 [2026-08-23T01:18:26.599Z] 1:18:26 AM [vite] (client) page reload src/main.tsx
+[2026-08-23T01:43:19.557Z] Starting dev server with command: pnpm run dev
+[2026-08-23T01:43:19.809Z] $ vite --host
+[2026-08-23T01:43:20.006Z] VITE v7.3.6  ready in 174 ms
+[2026-08-23T01:43:20.006Z] ➜  Local:   http://localhost:5173/
+[2026-08-23T01:43:20.006Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-23T01:46:01.947Z] 1:46:01 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-23T01:46:02.139Z] 1:46:02 AM [vite] (client) hmr invalidate /src/routes/auth.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-23T01:46:02.139Z] 1:46:02 AM [vite] (client) hmr update /src/main.tsx
+[2026-08-23T01:46:02.176Z] 1:46:02 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-23T01:46:02.176Z] 1:46:02 AM [vite] (client) page reload src/main.tsx
+[2026-08-23T01:46:02.401Z] 1:46:02 AM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
+[2026-08-23T01:46:05.440Z] 1:46:05 AM [vite] (client) hmr invalidate /src/routes/auth.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-23T01:46:05.440Z] 1:46:05 AM [vite] (client) hmr update /src/main.tsx
+[2026-08-23T01:46:05.480Z] 1:46:05 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-23T01:46:05.480Z] 1:46:05 AM [vite] (client) page reload src/main.tsx

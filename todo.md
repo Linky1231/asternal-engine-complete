@@ -814,3 +814,13 @@ Validación: revisada en 390 × 844 y 1440 × 900. La frase completa se lee dent
 - [x] Ejecutar pruebas y compilación antes de publicar.
 
 Validación: el foco pasa de un anillo de 3 px a una sola línea de 1 px de baja opacidad; el campo elimina el contorno nativo para evitar el doble recuadro y el icono usa un contenedor propio con nivel de apilamiento superior. La composición se revisó en 390 × 844 y 1440 × 900. `pnpm test` completó 10 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Unión del icono de contraseña
+
+- [x] Revisar la división vertical desalineada junto al icono de visibilidad en contraseña.
+- [x] Integrar el icono dentro del mismo marco redondeado, sin cortes en el borde ni en el radio derecho.
+- [x] Validar en móvil y escritorio, con pruebas y compilación antes de publicar.
+
+Validación: se neutralizó el borde y la sombra globales del `input` interno, que creaban un segundo marco parcial junto al icono de visibilidad. El control compuesto usa un único contenedor aislado y con recorte, por lo que conserva un borde externo uniforme y el radio derecho completo. Se verificó en 390 × 844 y 1440 × 900; `pnpm test` completó 11 pruebas y `pnpm build` finalizó correctamente.
