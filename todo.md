@@ -859,3 +859,13 @@ Validación: tanto la Galería general como la Galería de perfil dejan la tarje
 - [x] Validar las tarjetas de Galería y Perfil con pruebas y compilación antes de publicar.
 
 Validación: las tarjetas mantienen exclusivamente obra, autor y precio. El importe se representa como un número con cifras agrupadas, alineado al extremo derecho y acompañado de un indicador discreto de orbes; título, fecha, reacciones y comentarios siguen dentro del detalle. `pnpm test` completó 16 pruebas y `pnpm build` finalizó correctamente. La pantalla se mantiene estable en 390 × 844 y 1440 × 900; la verificación visual de Galería requiere una sesión autenticada.
+
+---
+
+# Tienda y apertura de obras
+
+- [x] Localizar y retirar el saldo duplicado de orbes dentro de la Tienda.
+- [x] Añadir una transición breve y suave al abrir el detalle de una obra de Galería.
+- [x] Respetar la reducción de movimiento y validar en móvil y escritorio con pruebas y compilación.
+
+Validación: el saldo local se conserva para compras, pero ya no se renderiza junto al recuento de assets en Tienda. El detalle de obras aparece con fundido del fondo y una entrada corta de opacidad, escala y desplazamiento; el movimiento se elimina para personas que lo reducen en el sistema. `pnpm test` completó 17 pruebas y `pnpm build` finalizó correctamente. La pantalla se revisó en 390 × 844 y 1440 × 900; la transición de Galería requiere sesión para una comprobación manual con obras reales.

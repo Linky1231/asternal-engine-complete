@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Avatar } from "./Avatar";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Store, Palette, Package, Sparkles, X, Loader2, Heart, Search,
   DollarSign, Gift, Eye, ShoppingCart, Star, TrendingUp, Clock,
@@ -17,6 +17,7 @@ import {
 import { CommentSection } from "@/components/social/CommentSection";
 import { socialActionStateClass } from "@/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice } from "@/lib/social/gallery-preview";
+import { galleryDetailMotion } from "@/lib/social/gallery-detail-motion";
 
 type StoreTab = "shop" | "gallery";
 
@@ -492,6 +493,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
   const [shopFilter, setShopFilter] = useState<"all" | "free" | "paid" | "popular">("all");
   const [categoryFilter, setCategoryFilter] = useState<"all" | "player" | "platform" | "enemy" | "coin" | "goal" | "decor">("all");
   const [balance, setBalance] = useState<number | null>(null);
+  const reducedMotion = useReducedMotion();
 
   // Dialogs
   const [publishOpen, setPublishOpen] = useState(false);
@@ -502,6 +504,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
   const openImageViewer = (src: string, alt: string) => { setViewImageSrc(src); setViewImageAlt(alt); };
   const detailImage = detailPost?.signed_cover || detailPost?.signed_media?.[0] || null;
   const detailTitle = detailPost?.content.split("\n")[0].replace(/^🎮🎨\s*/, "").slice(0, 60) || "Obra de galería";
+  const detailMotion = galleryDetailMotion(Boolean(reducedMotion));
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -641,13 +644,8 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
             </div>
 
             {/* Stats bar */}
-            <div className="flex items-center gap-3 text-[10px] text-muted-foreground/60 pt-1 border-t border-border/30">
+            <div className="text-[10px] text-muted-foreground/60 pt-1 border-t border-border/30">
               <span>{shopItems.length} assets</span>
-              {balance !== null && (
-                <span className="flex items-center gap-1 ml-auto">
-                  <Sparkles size={10} className="text-primary" /> {balance} orbes
-                </span>
-              )}
             </div>
 
             {/* Grid */}
@@ -695,9 +693,27 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
       )}
 
       {/* Detail Modal */}
-      {detailPost && (
-        <div className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-md overflow-y-auto" onClick={() => setDetailPost(null)}>
-          <div className="min-h-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8" onClick={e => e.stopPropagation()}>
+      <AnimatePresence>
+        {detailPost && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={detailMotion.overlay}
+            className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-md overflow-y-auto"
+            onClick={() => setDetailPost(null)}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Detalle de ${detailTitle}`}
+          >
+            <motion.div
+              initial={detailMotion.initialPanel}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.99 }}
+              transition={detailMotion.panel}
+              className="min-h-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8"
+              onClick={e => e.stopPropagation()}
+            >
             <div className="sticky top-3 z-10 flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/90 backdrop-blur-xl px-3 py-2 shadow-sm">
               <div className="min-w-0 flex items-center gap-2">
                 <span className="w-8 h-8 rounded-xl bg-muted/70 grid place-items-center"><Palette size={15} className="text-muted-foreground" /></span>
@@ -731,9 +747,10 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
                 <div className="border-t border-border/50 pt-4"><div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">Comentarios</div><CommentSection postId={detailPost.id} myId={myId} isMod={false} onChange={load} /></div>
               </aside>
             </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Image Viewer / Lightbox */}
       <AnimatePresence>

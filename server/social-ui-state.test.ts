@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
 import { socialActionStateClass } from "../src/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice } from "../src/lib/social/gallery-preview";
+import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 
 describe("mensajes de acceso", () => {
   it("traduce el fallo técnico de credenciales a una explicación clara", () => {
@@ -32,5 +33,16 @@ describe("vista previa de obras", () => {
   it("muestra el precio como un número compacto y no negativo", () => {
     expect(galleryPreviewPrice(8195)).toBe("8195");
     expect(galleryPreviewPrice(-10)).toBe("0");
+  });
+});
+
+describe("apertura del detalle de obras", () => {
+  it("usa una transición breve y desactiva el movimiento si el usuario lo solicita", () => {
+    expect(galleryDetailMotion(false).panel.duration).toBe(0.24);
+    expect(galleryDetailMotion(true)).toEqual({
+      overlay: { duration: 0 },
+      panel: { duration: 0 },
+      initialPanel: false,
+    });
   });
 });
