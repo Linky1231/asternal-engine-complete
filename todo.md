@@ -836,3 +836,14 @@ Validación: el estado activo ya no usa un anillo separado; depende de un único
 - [x] Validar escritura en móvil y escritorio, pruebas y compilación antes de publicar.
 
 Validación: el borde activo es una capa absoluta única que cubre todo el control, desde el área del icono hasta el extremo opuesto. Hereda el radio del contenedor, no recibe eventos y el contenido queda interactivo sobre ella, por lo que no aparecen fragmentos ni recuadros duplicados. Se revisó la composición en 390 × 844 y 1440 × 900; `pnpm test` completó 11 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Estados de controles en publicaciones
+
+- [x] Localizar los controles de interacción pequeños de cada publicación y sus estados actuales.
+- [x] Diferenciar visualmente los estados activos e inactivos sin dejar acciones no seleccionadas en azul.
+- [x] Mantener el alternado de reacciones, guardado y otras acciones reversible y accesible.
+- [x] Validar la interacción en móvil y escritorio, pruebas y compilación antes de publicar.
+
+Validación: las acciones inferiores conservan un estado neutro sin superficie azul y solo adquieren una superficie tonal al estar activas; los clics aplican el cambio y el contador de forma local antes de la recarga, y revierten ante un error. Cada control expone `aria-pressed` o `aria-expanded` según corresponda. `pnpm test` completó 14 pruebas y `pnpm build` finalizó correctamente. La captura automatizada de `/feed` redirige a acceso sin una sesión autenticada, por lo que la interacción real se cubrió mediante la prueba unitaria del contrato de alternado y accesibilidad.
