@@ -1,4 +1,4 @@
-import { IDEA_HERO_COPY, IDEA_TILES } from "../src/lib/auth/idea-hero";
+import { IDEA_HERO_COPY } from "../src/lib/auth/idea-hero";
 import { describe, expect, it } from "vitest";
 
 describe("cabecera de acceso centrada en ideas", () => {
@@ -7,6 +7,6 @@ describe("cabecera de acceso centrada en ideas", () => {
 
     expect(copy).toContain("una pregunta");
     expect(copy).not.toMatch(/editor visual|lógica con bloques|publica al instante/i);
-    expect(IDEA_TILES.map(tile => tile.key)).toEqual(["pregunta", "lugar", "pulso"]);
+    expect(IDEA_HERO_COPY.description).toContain("Una escena");
   });
 });

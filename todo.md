@@ -716,3 +716,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Validar acceso en móvil y escritorio, pruebas y compilación antes de publicar.
 
 Validación: el acceso se revisó en 390 × 844 y 1440 × 900; la mascota, las notas de idea, la jerarquía tipográfica y el formulario permanecen legibles. `pnpm test` completó 7 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Escena de robot simplificada
+
+- [x] Retirar las notas, chips y adornos de la escena superior de acceso.
+- [x] Eliminar el símbolo del torso y dejar al robot sin referencias a orbes o recompensas.
+- [x] Recolocar el círculo de fondo para enmarcar al personaje desde detrás.
+- [x] Validar la composición limpia en móvil y escritorio antes de publicar.
+
+Validación: la escena se revisó en 390 × 844 y 1440 × 900. Solo aparecen el robot y los dos círculos de fondo, que ahora quedan centrados detrás del personaje; no quedan notas, chips ni iconografía asociada a orbes.

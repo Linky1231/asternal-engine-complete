@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  Check, AlertCircle, Sparkles, Lightbulb, MapPinned, Heart, RefreshCw,
+  Check, AlertCircle, Sparkles, RefreshCw,
 } from "lucide-react";
-import { IDEA_HERO_COPY, IDEA_TILES } from "@/lib/auth/idea-hero";
+import { IDEA_HERO_COPY } from "@/lib/auth/idea-hero";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
 function friendlyAuthError(msg: string): string {
@@ -104,7 +104,7 @@ function CircuitLines() {
   );
 }
 
-/* ─── Mascota y apuntes de una idea de juego ─── */
+/* ─── Mascota ─── */
 function IdeaRobot() {
   return (
     <div className="relative w-[126px] h-[152px]" aria-hidden>
@@ -118,26 +118,12 @@ function IdeaRobot() {
         <div className="absolute left-1/2 bottom-3 -translate-x-1/2 w-7 h-1.5 rounded-full bg-primary/25" />
       </div>
       <div className="absolute left-1/2 top-[75px] -translate-x-1/2 w-[78px] h-[59px] rounded-[23px] grad-brand shadow-xl shadow-primary/25">
-        <div className="absolute inset-x-4 top-3 bottom-3 rounded-[14px] bg-white/92 grid place-items-center">
-          <Sparkles size={22} className="text-primary" />
-        </div>
+        <div className="absolute inset-x-4 top-3 bottom-3 rounded-[14px] bg-white/92" />
       </div>
       <div className="absolute left-[4px] top-[86px] w-9 h-4 rounded-full bg-primary/75 -rotate-[24deg] shadow-sm" />
       <div className="absolute right-[4px] top-[86px] w-9 h-4 rounded-full bg-primary/75 rotate-[24deg] shadow-sm" />
       <div className="absolute left-[42px] bottom-0 w-4 h-7 rounded-b-full bg-primary/80" />
       <div className="absolute right-[42px] bottom-0 w-4 h-7 rounded-b-full bg-primary/80" />
-    </div>
-  );
-}
-
-function IdeaNote({ icon: Icon, label, text }: { icon: React.ElementType; label: string; text: string }) {
-  return (
-    <div className="w-[142px] rounded-2xl border border-white/80 bg-white/80 p-3 shadow-lg shadow-primary/[0.08] backdrop-blur-sm">
-      <div className="flex items-center gap-1.5 text-primary/70 mb-1.5">
-        <Icon size={13} />
-        <span className="text-[9px] font-display font-semibold tracking-wide uppercase">{label}</span>
-      </div>
-      <p className="text-[10px] leading-snug text-foreground/70">{text}</p>
     </div>
   );
 }
@@ -150,35 +136,15 @@ function HeroScene() {
         <div className="relative w-[460px] h-[460px]">
 
           {/* Ambient glows */}
-          <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[360px] h-[360px] rounded-full"
+          <div className="absolute left-1/2 top-[59%] -translate-x-1/2 -translate-y-1/2 w-[360px] h-[360px] rounded-full"
             style={{ background: "oklch(0.55 0.15 262 / 0.10)" }} />
-          <div className="absolute left-1/2 top-[42%] -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] rounded-full"
+          <div className="absolute left-1/2 top-[59%] -translate-x-1/2 -translate-y-1/2 w-[220px] h-[220px] rounded-full"
             style={{ background: "oklch(0.72 0.14 235 / 0.08)" }} />
 
 
-          <div className="absolute left-1/2 top-[57%] -translate-x-1/2">
-            <div className="absolute left-1/2 top-[45px] -translate-x-1/2 w-[260px] h-[90px] rounded-[50%] bg-primary/15 blur-3xl" />
+          <div className="absolute left-1/2 top-[55%] -translate-x-1/2">
             <div className="relative z-10 flex justify-center" style={{ animation: "bob 4s ease-in-out infinite", willChange: "transform" }}>
               <IdeaRobot />
-            </div>
-            <div className="relative -mt-2 z-10 w-[218px] h-[28px] rounded-[50%] border border-white/80 bg-white/65 shadow-sm" />
-            <div className="absolute left-1/2 -translate-x-1/2 -top-9 w-12 h-12 rounded-full bg-white/85 border border-white shadow-lg shadow-accent/20 grid place-items-center animate-float-icon">
-              <Lightbulb size={22} className="text-accent" />
-            </div>
-          </div>
-
-          <div className="absolute left-[2%] top-[21%] animate-float-icon" style={{ animationDelay: "0.4s", willChange: "transform" }}>
-            <IdeaNote icon={Lightbulb} label="¿Y si...?" text="La noche cambiara las reglas." />
-          </div>
-          <div className="absolute right-[1%] top-[27%] animate-float-icon" style={{ animationDelay: "1.1s", willChange: "transform" }}>
-            <IdeaNote icon={MapPinned} label="Un lugar" text="Una ciudad suspendida entre nubes." />
-          </div>
-          <div className="absolute right-[8%] bottom-[10%] animate-float-icon" style={{ animationDelay: "1.7s", willChange: "transform" }}>
-            <IdeaNote icon={Heart} label="Un pulso" text="Algo que merezca ser recordado." />
-          </div>
-          <div className="absolute left-[12%] bottom-[19%] animate-float-icon" style={{ animationDelay: "2.3s", willChange: "transform" }}>
-            <div className="w-10 h-10 rounded-full bg-white/85 border border-white grid place-items-center shadow-lg shadow-primary/[0.08]">
-              <Sparkles size={16} className="text-accent" />
             </div>
           </div>
 
@@ -492,20 +458,6 @@ function AuthPage() {
               </p>
             </div>
 
-            <div className="hidden sm:grid grid-cols-3 gap-2.5 max-w-lg mx-auto w-full">
-              {IDEA_TILES.map((tile, i) => {
-                const Icon = [Lightbulb, MapPinned, Heart][i];
-                return (
-                  <div key={tile.key} style={{ animation: loaded ? `fade-in-up 900ms ${1000 + i * 180}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
-                    <div className="glass-surface min-h-[98px] p-3 rounded-2xl text-left">
-                      <Icon size={14} className="text-primary/65 mb-2" />
-                      <div className="text-[11px] font-display font-semibold text-foreground mb-1">{tile.label}</div>
-                      <div className="text-[10px] text-muted-foreground/70 leading-snug">{tile.description}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
           </div>
 
           {/* ─── AUTH CARD ─── */}
