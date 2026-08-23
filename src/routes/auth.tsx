@@ -3,8 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import { supabase, clearSupabaseCredentials } from "@/integrations/supabase/client";
 import {
   Gamepad2, Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2,
-  Check, AlertCircle, Sparkles, PencilRuler, Blocks, Rocket, Users, Play, RefreshCw,
+  Check, AlertCircle, Sparkles, Lightbulb, MapPinned, Heart, RefreshCw,
 } from "lucide-react";
+import { IDEA_HERO_COPY, IDEA_TILES } from "@/lib/auth/idea-hero";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
 function friendlyAuthError(msg: string): string {
@@ -103,103 +104,40 @@ function CircuitLines() {
   );
 }
 
-/* ─── Hero scene: pixel sprite ─── */
-const SPRITE_PX = [
-  "·","·","c","c","c","c","·","·",
-  "·","c","c","c","c","c","c","·",
-  "·","c","s","s","s","s","c","·",
-  "·","s","s","s","s","s","s","·",
-  "·","s","e","s","s","e","s","·",
-  "·","s","s","s","s","s","s","·",
-  "·","b","b","b","b","b","b","·",
-  "·","b","b","b","b","b","b","·",
-];
-const PX_COLORS: Record<string, string> = {
-  c: "oklch(0.55 0.15 262)",
-  s: "oklch(0.84 0.12 85)",
-  e: "oklch(0.25 0.02 250)",
-  b: "oklch(0.62 0.14 252)",
-};
-
-/* ─── Creator robot ─── */
-function CreatorRobot() {
+/* ─── Mascota y apuntes de una idea de juego ─── */
+function IdeaRobot() {
   return (
-    <div className="relative">
-      {/* Head */}
-      <div className="w-12 h-11 rounded-[10px] bg-gradient-to-b from-white to-white/70 border-2 border-primary/25 shadow-lg flex items-center justify-center gap-[3px]">
-        <div className="w-2 h-2 rounded-full bg-primary " />
-        <div className="w-2 h-2 rounded-full bg-primary " />
+    <div className="relative w-[126px] h-[152px]" aria-hidden>
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 w-3 h-6 rounded-t-full bg-primary/35" />
+      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-2 w-4 h-4 rounded-full bg-accent border-2 border-white shadow-sm" />
+      <div className="absolute left-1/2 top-5 -translate-x-1/2 w-[98px] h-[63px] rounded-[26px] border-2 border-primary/25 bg-gradient-to-b from-white to-primary/[0.08] shadow-xl shadow-primary/15">
+        <div className="absolute inset-x-5 top-6 h-[21px] rounded-full bg-primary/10 flex items-center justify-center gap-4">
+          <span className="w-3 h-3 rounded-full bg-primary shadow-[0_0_0_3px_rgba(255,255,255,0.8)]" />
+          <span className="w-3 h-3 rounded-full bg-primary shadow-[0_0_0_3px_rgba(255,255,255,0.8)]" />
+        </div>
+        <div className="absolute left-1/2 bottom-3 -translate-x-1/2 w-7 h-1.5 rounded-full bg-primary/25" />
       </div>
-      {/* Neck */}
-      <div className="w-1.5 h-2 bg-primary/20 mx-auto" />
-      {/* Body with screen */}
-      <div className="w-11 h-12 rounded-[10px] grad-brand shadow-lg shadow-primary/30 relative overflow-hidden">
-        <div className="absolute inset-x-2 bottom-2 top-4 rounded-md bg-white/90 flex items-center justify-center">
-          <div className="w-4 h-3 rounded-sm grad-brand opacity-70" />
+      <div className="absolute left-1/2 top-[75px] -translate-x-1/2 w-[78px] h-[59px] rounded-[23px] grad-brand shadow-xl shadow-primary/25">
+        <div className="absolute inset-x-4 top-3 bottom-3 rounded-[14px] bg-white/92 grid place-items-center">
+          <Sparkles size={22} className="text-primary" />
         </div>
       </div>
-      {/* Arms */}
-      <div className="absolute -left-2 top-[32px] w-2.5 h-5 rounded-full bg-primary/70 shadow" />
-      <div className="absolute -right-2 top-[32px] w-2.5 h-5 rounded-full bg-primary/70 shadow" />
-      {/* Legs */}
-      <div className="absolute left-[11px] -bottom-2 w-2.5 h-3.5 rounded-b-full bg-primary/80" />
-      <div className="absolute right-[11px] -bottom-2 w-2.5 h-3.5 rounded-b-full bg-primary/80" />
+      <div className="absolute left-[4px] top-[86px] w-9 h-4 rounded-full bg-primary/75 -rotate-[24deg] shadow-sm" />
+      <div className="absolute right-[4px] top-[86px] w-9 h-4 rounded-full bg-primary/75 rotate-[24deg] shadow-sm" />
+      <div className="absolute left-[42px] bottom-0 w-4 h-7 rounded-b-full bg-primary/80" />
+      <div className="absolute right-[42px] bottom-0 w-4 h-7 rounded-b-full bg-primary/80" />
     </div>
   );
 }
 
-/* ─── Floating editor panel (sprite) ─── */
-function SpritePanel() {
+function IdeaNote({ icon: Icon, label, text }: { icon: React.ElementType; label: string; text: string }) {
   return (
-    <div className="w-[122px] rounded-xl p-2.5 border border-border/60 bg-white/90 shadow-sm">
-      <div className="flex items-center gap-1.5 mb-2">
-        <div className="w-2 h-2 rounded-full bg-primary" />
-        <div className="w-2 h-2 rounded-full bg-amber-400" />
-        <div className="w-2 h-2 rounded-full bg-emerald-400" />
-        <div className="ml-auto text-[8px] font-mono text-muted-foreground/50 truncate">hero.png</div>
+    <div className="w-[142px] rounded-2xl border border-white/80 bg-white/80 p-3 shadow-lg shadow-primary/[0.08] backdrop-blur-sm">
+      <div className="flex items-center gap-1.5 text-primary/70 mb-1.5">
+        <Icon size={13} />
+        <span className="text-[9px] font-display font-semibold tracking-wide uppercase">{label}</span>
       </div>
-      <div className="grid grid-cols-8 gap-[2px] w-fit mx-auto">
-        {SPRITE_PX.map((px, i) => (
-          <div key={i} className="w-[7px] h-[7px] rounded-[1px]"
-            style={{ background: px === "·" ? "transparent" : PX_COLORS[px] }} />
-        ))}
-      </div>
-      <div className="mt-2 h-[3px] rounded-full bg-primary/20 opacity-60" />
-    </div>
-  );
-}
-
-/* ─── Floating editor panel (blocks) ─── */
-function BlockPanel() {
-  return (
-    <div className="w-[112px] rounded-xl p-2.5 border border-border/60 bg-white/90 shadow-sm">
-      <div className="text-[8px] font-mono text-muted-foreground/50 mb-1.5 tracking-wider">LÓGICA</div>
-      <div className="space-y-1">
-        <div className="h-3.5 rounded-md bg-primary/80 flex items-center px-1.5 shadow-sm">
-          <span className="text-[7px] font-semibold text-white tracking-wide">mover →</span>
-        </div>
-        <div className="h-3.5 rounded-md bg-emerald-400/80 flex items-center px-1.5 shadow-sm">
-          <span className="text-[7px] font-semibold text-white tracking-wide">si · toca</span>
-        </div>
-        <div className="h-3.5 rounded-md bg-amber-400/80 flex items-center px-1.5 shadow-sm">
-          <span className="text-[7px] font-semibold text-white tracking-wide">repetir 4</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Floating play pill ─── */
-function PlayPanel() {
-  return (
-    <div className="flex items-center gap-2 rounded-full pl-2 pr-3.5 py-1.5 border border-border/60 bg-white/90 shadow-sm">
-      <div className="w-7 h-7 rounded-full grad-brand grid place-items-center shadow-md shadow-primary/30">
-        <Play size={12} className="text-white fill-white" />
-      </div>
-      <div className="text-[9px] font-semibold text-foreground/80 leading-tight">
-        Jugar ahora
-        <div className="text-[8px] font-normal text-muted-foreground/60">en tu navegador</div>
-      </div>
+      <p className="text-[10px] leading-snug text-foreground/70">{text}</p>
     </div>
   );
 }
@@ -218,44 +156,29 @@ function HeroScene() {
             style={{ background: "oklch(0.72 0.14 235 / 0.08)" }} />
 
 
-          {/* Floating island + robot */}
-          <div className="absolute left-1/2 top-[63%] -translate-x-1/2">
-            <div className="absolute left-1/2 -translate-x-1/2 top-[38px] w-[330px] h-[70px] rounded-[50%] bg-primary/10 blur-2xl" />
-            {/* Robot */}
+          <div className="absolute left-1/2 top-[57%] -translate-x-1/2">
+            <div className="absolute left-1/2 top-[45px] -translate-x-1/2 w-[260px] h-[90px] rounded-[50%] bg-primary/15 blur-3xl" />
             <div className="relative z-10 flex justify-center" style={{ animation: "bob 4s ease-in-out infinite", willChange: "transform" }}>
-              <CreatorRobot />
+              <IdeaRobot />
             </div>
-            {/* Crystal */}
-            <div className="absolute right-[12%] top-[6px] animate-float-icon" style={{ animationDelay: "0.8s" }}>
-              <div className="w-5 h-8 rounded-t-lg rounded-b-sm grad-brand shadow-lg shadow-accent/30 rotate-12" />
+            <div className="relative -mt-2 z-10 w-[218px] h-[28px] rounded-[50%] border border-white/80 bg-white/65 shadow-sm" />
+            <div className="absolute left-1/2 -translate-x-1/2 -top-9 w-12 h-12 rounded-full bg-white/85 border border-white shadow-lg shadow-accent/20 grid place-items-center animate-float-icon">
+              <Lightbulb size={22} className="text-accent" />
             </div>
-            {/* Disc */}
-            <div className="relative -mt-1 z-10 w-[250px] h-[54px] rounded-[50%] bg-gradient-to-b from-white/90 to-white/40 border border-white/70 shadow-md">
-              <div className="absolute inset-0 rounded-[50%] overflow-hidden opacity-40"
-                style={{
-                  background:
-                    "repeating-linear-gradient(90deg, transparent 0 13px, oklch(0.55 0.15 262 / 0.1) 13px 14px), repeating-linear-gradient(0deg, transparent 0 13px, oklch(0.55 0.15 262 / 0.1) 13px 14px)",
-                }} />
-              <div className="absolute left-1/2 top-0 -translate-x-1/2 w-3/4 h-[3px] rounded-full bg-white/80 blur-[1px]" />
-            </div>
-            {/* Floating rocks */}
-            <div className="absolute -left-10 top-[52px] w-14 h-7 rounded-full bg-primary/10 border border-primary/15 animate-float-icon" style={{ animationDelay: "1.2s" }} />
-            <div className="absolute -right-12 top-[60px] w-10 h-6 rounded-full bg-accent/10 border border-accent/15 animate-float-icon" style={{ animationDelay: "2s" }} />
           </div>
 
-          {/* Floating UI panels */}
-          <div className="absolute left-[3%] top-[20%] animate-float-icon" style={{ animationDelay: "0.4s", willChange: "transform" }}>
-            <SpritePanel />
+          <div className="absolute left-[2%] top-[21%] animate-float-icon" style={{ animationDelay: "0.4s", willChange: "transform" }}>
+            <IdeaNote icon={Lightbulb} label="¿Y si...?" text="La noche cambiara las reglas." />
           </div>
-          <div className="absolute right-[1%] top-[30%] animate-float-icon" style={{ animationDelay: "1.1s", willChange: "transform" }}>
-            <BlockPanel />
+          <div className="absolute right-[1%] top-[27%] animate-float-icon" style={{ animationDelay: "1.1s", willChange: "transform" }}>
+            <IdeaNote icon={MapPinned} label="Un lugar" text="Una ciudad suspendida entre nubes." />
           </div>
-          <div className="absolute right-[9%] bottom-[9%] animate-float-icon" style={{ animationDelay: "1.7s", willChange: "transform" }}>
-            <PlayPanel />
+          <div className="absolute right-[8%] bottom-[10%] animate-float-icon" style={{ animationDelay: "1.7s", willChange: "transform" }}>
+            <IdeaNote icon={Heart} label="Un pulso" text="Algo que merezca ser recordado." />
           </div>
-          <div className="absolute left-[8%] bottom-[20%] animate-float-icon" style={{ animationDelay: "2.3s", willChange: "transform" }}>
-            <div className="w-9 h-9 rounded-full bg-white/90 border border-border/60 grid place-items-center shadow-sm">
-              <Sparkles size={15} className="text-accent" />
+          <div className="absolute left-[12%] bottom-[19%] animate-float-icon" style={{ animationDelay: "2.3s", willChange: "transform" }}>
+            <div className="w-10 h-10 rounded-full bg-white/85 border border-white grid place-items-center shadow-lg shadow-primary/[0.08]">
+              <Sparkles size={16} className="text-accent" />
             </div>
           </div>
 
@@ -544,7 +467,7 @@ function AuthPage() {
             }}>
               <div className="glass-control inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-[11px] font-display font-medium tracking-wide text-primary/80 -mt-1 lg:-mt-3">
                 <Sparkles size={12} className="text-accent" />
-                Todo comienza con una idea
+                {IDEA_HERO_COPY.eyebrow}
               </div>
             </div>
 
@@ -553,9 +476,9 @@ function AuthPage() {
               animation: loaded ? 'fade-in-up 600ms 420ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
               <h1 className="text-[clamp(1.8rem,3.6vw,2.9rem)] font-display font-bold tracking-tight leading-[1.08] text-foreground mt-4 mb-3 max-w-lg mx-auto">
-                Crea juegos desde{' '}
+                {IDEA_HERO_COPY.titleLead}{' '}
                 <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-[length:200%_100%] animate-shimmer-text">
-                  cualquier navegador.
+                  {IDEA_HERO_COPY.titleAccent}
                 </span>
               </h1>
             </div>
@@ -565,29 +488,23 @@ function AuthPage() {
               animation: loaded ? 'fade-in-up 600ms 540ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
               <p className="text-[15px] leading-relaxed text-muted-foreground/80 max-w-md mx-auto mb-8">
-                Un estudio completo en la nube: editor visual, lógica con bloques,
-                publicación al instante y una comunidad activa. Sin instalaciones.
+                {IDEA_HERO_COPY.description}
               </p>
             </div>
 
-            {/* Feature chips (solo pantallas grandes) */}
-            <div className="hidden sm:grid grid-cols-2 gap-2.5 max-w-sm mx-auto w-full">
-              {[
-                { icon: PencilRuler, label: "Editor visual", desc: "Sprites y animaciones" },
-                { icon: Blocks, label: "Lógica con bloques", desc: "Sin código" },
-                { icon: Rocket, label: "Publica al instante", desc: "Con un solo clic" },
-                { icon: Users, label: "Comunidad activa", desc: "Remixa y colabora" },
-              ].map((f, i) => (
-                <div key={f.label} className="group/card" style={{ animation: loaded ? `fade-in-up 900ms ${1000 + i * 280}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
-                  <div className="glass-surface p-2.5 rounded-xl transition-all duration-400 group-hover/card:border-primary/30 group-hover/card:shadow-lg group-hover/card:shadow-primary/5 group-hover/card:-translate-y-0.5">
-                    <div className="flex items-center gap-1.5 text-[12px] font-display font-semibold text-foreground mb-0.5 group-hover/card:text-primary transition-colors duration-300">
-                      <f.icon size={12} className="text-primary/60 group-hover/card:text-primary transition-colors duration-300" />
-                      {f.label}
+            <div className="hidden sm:grid grid-cols-3 gap-2.5 max-w-lg mx-auto w-full">
+              {IDEA_TILES.map((tile, i) => {
+                const Icon = [Lightbulb, MapPinned, Heart][i];
+                return (
+                  <div key={tile.key} style={{ animation: loaded ? `fade-in-up 900ms ${1000 + i * 180}ms cubic-bezier(0.16,1,0.3,1) both` : 'none' }}>
+                    <div className="glass-surface min-h-[98px] p-3 rounded-2xl text-left">
+                      <Icon size={14} className="text-primary/65 mb-2" />
+                      <div className="text-[11px] font-display font-semibold text-foreground mb-1">{tile.label}</div>
+                      <div className="text-[10px] text-muted-foreground/70 leading-snug">{tile.description}</div>
                     </div>
-                    <div className="text-[10px] text-muted-foreground/60 leading-snug">{f.desc}</div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

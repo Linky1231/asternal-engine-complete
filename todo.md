@@ -705,3 +705,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Localizar flechas y botones de avance redundantes en carruseles pequeños.
 - [x] Retirar esos controles y reforzar el desplazamiento horizontal táctil y por trackpad.
 - [x] Validar carruseles en móvil, pruebas y compilación antes de publicar.
+
+---
+
+# Cabecera de acceso centrada en ideas
+
+- [x] Auditar la ilustración, las demostraciones ficticias y el mensaje actual del acceso.
+- [x] Sustituir la mascota ambigua por una figura de robot legible y los paneles ficticios por señales de una idea de juego.
+- [x] Reescribir el titular y el texto de apoyo con una voz concreta de Asternal.
+- [x] Validar acceso en móvil y escritorio, pruebas y compilación antes de publicar.
+
+Validación: el acceso se revisó en 390 × 844 y 1440 × 900; la mascota, las notas de idea, la jerarquía tipográfica y el formulario permanecen legibles. `pnpm test` completó 7 pruebas y `pnpm build` finalizó correctamente.
