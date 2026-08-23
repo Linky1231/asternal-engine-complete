@@ -97,7 +97,7 @@ export function GameIcon({
 export function GameIconPlaceholder({ iconSize = 46 }: { iconSize?: number }) {
   return (
     <>
-      <TileMark iconSize={iconSize} />
+      <TileMark iconSize={iconSize} prominent={iconSize >= 80} />
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-white/15 via-transparent to-black/[0.06]" />
       <CornerTicks />
     </>
@@ -105,12 +105,21 @@ export function GameIconPlaceholder({ iconSize = 46 }: { iconSize?: number }) {
 }
 
 /** Marca del tile sin portada: icono de juego de trazo fino sobre la cuadrícula blueprint. */
-function TileMark({ iconSize = 46 }: { iconSize?: number }) {
+function TileMark({ iconSize = 46, prominent = false }: { iconSize?: number; prominent?: boolean }) {
   return (
     <span className="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden>
       {/* halo suave: profundidad sin caja ni recuadro genérico */}
-      <span className="absolute w-14 h-14 rounded-full bg-primary/[0.06] dark:bg-primary/[0.04] blur-xl" />
-      <FaGamepad size={iconSize} className="relative text-primary/[0.28] dark:text-primary/[0.20]" />
+      <span className={prominent
+        ? "absolute w-28 h-28 rounded-full bg-primary/[0.08] dark:bg-primary/[0.05] blur-2xl"
+        : "absolute w-14 h-14 rounded-full bg-primary/[0.06] dark:bg-primary/[0.04] blur-xl"
+      } />
+      <FaGamepad
+        size={iconSize}
+        className={prominent
+          ? "relative text-primary/[0.38] dark:text-primary/[0.30]"
+          : "relative text-primary/[0.28] dark:text-primary/[0.20]"
+        }
+      />
     </span>
   );
 }

@@ -666,6 +666,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Marcador blueprint ampliado en ficha aislada
+
+- [x] Revisar el tamaño del marcador para juegos sin portada en la ficha aislada.
+- [x] Ampliar el icono blueprint sin cambiar el formato de portada cuadrado.
+- [x] Validar ficha, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

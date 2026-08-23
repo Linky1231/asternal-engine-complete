@@ -214,7 +214,7 @@ export function GameCard({
         <div className={`relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-muted/20 ${hasCover ? "" : "tile-blueprint"}`}>
         {hasCover ? (
           <img src={coverUrl!} alt={`Portada de ${title}`} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
-        ) : <GameIconPlaceholder />}
+        ) : <GameIconPlaceholder iconSize={112} />}
         </div>
         <div className="flex items-start justify-between gap-3 pt-3">
           <div className="min-w-0 flex items-center gap-2.5">
