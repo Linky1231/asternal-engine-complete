@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Loader2, Camera, Save, Gamepad2, Newspaper, CheckCircle2, Star, ChevronRight,
@@ -1036,10 +1037,11 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
   onClose: () => void;
   onChanged: () => void;
 }) {
-  const [busyId, setBusyId] = useState<string | null>(null);
   const [items, setItems] = useState<Profile[]>(list.items);
   const [iFollow, setIFollow] = useState<Set<string>>(new Set());
+  const [followStateReady, setFollowStateReady] = useState(false);
   const followOverrides = useRef(new Map<string, boolean>());
+  const pendingFollowIds = useRef(new Set<string>());
 
   // Sync items when parent re-renders with new data
   useEffect(() => {
@@ -1048,8 +1050,13 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
 
   // Estado "¿yo sigo a esta persona?" para cada perfil de la lista.
   useEffect(() => {
-    if (!myId || items.length === 0) return;
+    if (!myId || items.length === 0) {
+      setIFollow(new Set());
+      setFollowStateReady(true);
+      return;
+    }
     let cancelled = false;
+    setFollowStateReady(false);
     (async () => {
       const results = await Promise.all(items.map(async p => {
         try { return [p.id, (await getFollowStats(p.id)).i_follow] as const; }
@@ -1062,15 +1069,19 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
         if (following) set.add(id);
         else set.delete(id);
       }
-      if (!cancelled) setIFollow(set);
+      if (!cancelled) {
+        setIFollow(set);
+        setFollowStateReady(true);
+      }
     })();
     return () => { cancelled = true; };
   }, [items, myId]);
 
   const toggle = async (p: Profile) => {
-    if (busyId || !myId) return;
+    if (!myId || pendingFollowIds.current.has(p.id)) return;
     const wasFollowing = iFollow.has(p.id);
     const willFollow = !wasFollowing;
+    pendingFollowIds.current.add(p.id);
     followOverrides.current.set(p.id, willFollow);
     setIFollow(prev => {
       const next = new Set(prev);
@@ -1078,7 +1089,6 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
       else next.delete(p.id);
       return next;
     });
-    setBusyId(p.id);
     try {
       if (wasFollowing) await unfollowUser(p.id);
       else await followUser(p.id);
@@ -1091,14 +1101,14 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
         else next.delete(p.id);
         return next;
       });
-    } finally { setBusyId(null); }
+    } finally { pendingFollowIds.current.delete(p.id); }
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
+  const panel = (
+    <div className="fixed inset-0 z-[100] h-[100dvh] overflow-hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-label={list.kind === "followers" ? "Seguidores" : "Siguiendo"}>
       <button aria-label="Cerrar" onClick={onClose}
-        className="absolute inset-0 bg-foreground/30 backdrop-blur-[3px] animate-in fade-in duration-200" />
-      <div className="relative w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl glass-menu shadow-xl animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[80vh] flex flex-col">
+        className="absolute inset-0 bg-foreground/35 backdrop-blur-[3px] animate-in fade-in duration-200" />
+      <div className="relative w-full sm:max-w-sm max-h-[80dvh] overflow-hidden rounded-t-2xl sm:rounded-2xl glass-menu shadow-xl animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 flex flex-col">
         <div className="flex items-center gap-2 px-4 py-3.5 border-b border-border/70 bg-white/25">
           <div className="flex-1 text-sm font-semibold">
             {list.kind === "followers" ? "Seguidores" : "Siguiendo"} · {items.length}
@@ -1107,10 +1117,14 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
             <X size={14} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-surface/75 p-2.5 space-y-1.5">
           {list.loading ? (
             <div className="p-8 text-center text-xs text-muted-foreground">
               <Loader2 className="animate-spin inline mr-2" size={14} /> Cargando…
+            </div>
+          ) : !followStateReady ? (
+            <div className="p-8 text-center text-xs text-muted-foreground">
+              <Loader2 className="animate-spin inline mr-2" size={14} /> Preparando seguidores…
             </div>
           ) : items.length === 0 ? (
             <div className="p-8 text-center text-xs text-muted-foreground">
@@ -1128,8 +1142,8 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
                   </div>
                 </Link>
                 {myId && myId !== p.id && (
-                  <button onClick={() => void toggle(p)} disabled={busyId === p.id} aria-busy={busyId === p.id}
-                    className={`shrink-0 h-8 px-2.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition disabled:opacity-80 ${iFollow.has(p.id) ? "border border-primary/30 bg-primary/12 text-primary shadow-[inset_0_1px_0_oklch(1_0_0_/_0.72)]" : "grad-brand text-primary-foreground shadow-[0_5px_12px_-8px_oklch(0.47_0.14_263_/_0.8)]"}`}>
+                  <button onClick={() => void toggle(p)}
+                    className={`shrink-0 h-8 px-2.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition ${iFollow.has(p.id) ? "border border-primary/30 bg-primary/12 text-primary shadow-[inset_0_1px_0_oklch(1_0_0_/_0.72)]" : "grad-brand text-primary-foreground shadow-[0_5px_12px_-8px_oklch(0.47_0.14_263_/_0.8)]"}`}>
                     {iFollow.has(p.id) ? <><UserCheck size={11} /> Siguiendo</> : <><UserPlus size={11} /> Seguir</>}
                   </button>
                 )}
@@ -1140,6 +1154,8 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
       </div>
     </div>
   );
+
+  return createPortal(panel, document.body);
 }
 
 /** Bloque de personalización con etiqueta + descripción (separa los apartados). */

@@ -1019,3 +1019,11 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Actualizar el estado de seguimiento de forma inmediata y reversible ante error.
 - [x] Reforzar el contraste del panel de seguidores sin alterar su jerarquía ni su tamaño.
 - [x] Validar la interacción y el panel en móvil y escritorio, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Corrección final del panel de seguidores
+
+- [x] Eliminar cualquier estado visual intermedio al tocar Seguir/Siguiendo.
+- [x] Corregir el fondo residual y el desborde inferior del panel al desplazarse.
+- [x] Validar el panel en móvil y escritorio, ejecutar pruebas, compilar y publicar.
