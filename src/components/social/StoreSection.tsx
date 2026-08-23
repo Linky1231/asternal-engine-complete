@@ -16,10 +16,8 @@ import {
 } from "@/lib/social/api";
 import { CommentSection } from "@/components/social/CommentSection";
 import { socialActionStateClass } from "@/lib/social/interaction-state";
-import { galleryPreviewAuthor, galleryPreviewPrice } from "@/lib/social/gallery-preview";
+import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
 import { galleryDetailMotion } from "@/lib/social/gallery-detail-motion";
-
-type StoreTab = "shop" | "gallery";
 
 /* ═══════════════════════════════════════════════════════
    IMAGE VIEWER — Lightbox para ver imágenes completas
@@ -441,13 +439,13 @@ function BuyDialog({
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div className="w-full max-w-sm rounded-2xl bg-card border border-border/50 p-5 space-y-4 shadow-xl" onClick={e => e.stopPropagation()}>
         <div className="flex items-center justify-between">
-          <h3 className="font-display text-sm font-bold">{isFree ? "Descargar" : "Comprar asset"}</h3>
+          <h3 className="font-display text-sm font-bold">{isFree ? "Obtener obra" : "Comprar obra"}</h3>
           <button onClick={onClose} className="w-7 h-7 rounded-lg hover:bg-muted grid place-items-center"><X size={14} /></button>
         </div>
         {result === "ok" ? (
           <div className="py-6 text-center space-y-2">
             <CheckCircle2 size={32} className="text-emerald-500 mx-auto" />
-            <div className="text-sm font-semibold">{isFree ? "¡Descargado!" : "¡Comprado!"}</div>
+            <div className="text-sm font-semibold">{isFree ? "¡Obra añadida!" : "¡Obra comprada!"}</div>
           </div>
         ) : result === "insufficient" ? (
           <div className="py-6 text-center space-y-2">
@@ -459,8 +457,8 @@ function BuyDialog({
           <>
             <div className="text-sm text-muted-foreground">
               {isFree
-                ? `Descargar "${(post.content.split("\n")[0] || "Asset").slice(0, 40)}" gratis`
-                : `Comprar "${(post.content.split("\n")[0] || "Asset").slice(0, 40)}" por ${post.price_orbes} orbes`
+                ? `Obtener "${(post.content.split("\n")[0] || "Obra").slice(0, 40)}" gratis`
+                : `Comprar "${(post.content.split("\n")[0] || "Obra").slice(0, 40)}" por ${post.price_orbes} orbes`
               }
             </div>
             {!isFree && (
@@ -470,7 +468,7 @@ function BuyDialog({
             <button onClick={handleBuy} disabled={loading || !canAfford}
               className="w-full h-10 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 active:scale-[0.97] transition disabled:opacity-50">
               {loading ? <Loader2 size={14} className="animate-spin" /> : isFree ? <Gift size={14} /> : <ShoppingCart size={14} />}
-              {isFree ? "Descargar gratis" : `Pagar ${post.price_orbes} orbes`}
+              {isFree ? "Obtener gratis" : `Pagar ${post.price_orbes} orbes`}
             </button>
           </>
         )}
@@ -485,18 +483,13 @@ function BuyDialog({
 export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
   myId: string | null; isMod: boolean; onRefresh?: () => void;
 }) {
-  const [storeTab, setStoreTab] = useState<StoreTab>("shop");
   const [artworks, setArtworks] = useState<PostWithMeta[]>([]);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [searchQ, setSearchQ] = useState("");
-  const [shopFilter, setShopFilter] = useState<"all" | "free" | "paid" | "popular">("all");
-  const [categoryFilter, setCategoryFilter] = useState<"all" | "player" | "platform" | "enemy" | "coin" | "goal" | "decor">("all");
   const [balance, setBalance] = useState<number | null>(null);
   const reducedMotion = useReducedMotion();
 
   // Dialogs
-  const [publishOpen, setPublishOpen] = useState(false);
   const [buyPost, setBuyPost] = useState<PostWithMeta | null>(null);
   const [detailPost, setDetailPost] = useState<PostWithMeta | null>(null);
   const [viewImageSrc, setViewImageSrc] = useState<string | null>(null);
@@ -523,169 +516,24 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
 
   const handleBuy = () => { setBuyPost(null); load(); onRefresh?.(); };
 
-  // Tienda: solo assets del editor (tienen asset_preset)
-  const shopItems = artworks
-    .filter(a => !!a.asset_preset)
-    .filter(a => {
-      if (categoryFilter !== "all") {
-        const kind = (a.asset_preset as Record<string, unknown> | null)?.kind;
-        if (kind !== categoryFilter) return false;
-      }
-      return true;
-    })
-    .filter(a => {
-      if (shopFilter === "free") return !a.price_orbes || a.price_orbes === 0;
-      if (shopFilter === "paid") return (a.price_orbes ?? 0) > 0;
-      return true;
-    }).filter(a => {
-      if (!searchQ.trim()) return true;
-      const q = searchQ.toLowerCase();
-      return a.content.toLowerCase().includes(q) || a.author?.username?.toLowerCase().includes(q);
-    }).sort((a, b) => {
-      if (shopFilter === "popular") return (b.likes ?? 0) - (a.likes ?? 0);
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-    });
-
-  // Galería: solo obras de arte tradicionales (sin asset_preset)
+  // Galería: obras originales de artistas, no assets de la biblioteca del editor.
   const galleryItems = artworks
-    .filter(a => !a.asset_preset)
+    .filter((artwork) => isArtistGalleryArtwork(artwork.category))
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <div className="space-y-4">
-      {/* Sub-tabs: Tienda / Galería */}
-      <div className="flex gap-1 p-1 bg-muted/40 rounded-xl">
-        <button
-          onClick={() => setStoreTab("shop")}
-          className={`flex-1 h-10 rounded-lg text-[11px] font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-all ${
-            storeTab === "shop" ? "grad-brand text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Store size={13} /> Tienda
-        </button>
-        <button
-          onClick={() => setStoreTab("gallery")}
-          className={`flex-1 h-10 rounded-lg text-[11px] font-semibold tracking-wide flex items-center justify-center gap-1.5 transition-all ${
-            storeTab === "gallery" ? "grad-brand text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Palette size={13} /> Galería
-        </button>
-      </div>
+      <header className="flex items-start gap-3 rounded-2xl border border-border/50 bg-card/60 px-4 py-3">
+        <span className="w-10 h-10 shrink-0 rounded-xl bg-primary/10 grid place-items-center"><Palette size={18} className="text-primary" /></span>
+        <div className="min-w-0">
+          <h2 className="font-display text-base font-bold">Galería</h2>
+          <p className="text-[11px] leading-relaxed text-muted-foreground">Obras originales publicadas y vendidas por artistas.</p>
+        </div>
+      </header>
 
-      {/* Vender — acción independiente */}
-      {myId && (
-        <button
-          onClick={() => setPublishOpen(true)}
-          className="w-full h-10 rounded-xl grad-brand text-primary-foreground text-[11px] font-semibold flex items-center justify-center gap-1.5 shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
-        >
-          <Plus size={14} /> Publicar asset en la tienda
-        </button>
-      )}
-
-      <AnimatePresence mode="wait">
-        {storeTab === "shop" ? (
-          <motion.div key="shop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }} className="space-y-4">
-
-            {/* Search — full width */}
-            <div className="relative">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/30 pointer-events-none" />
-              <input
-                value={searchQ} onChange={e => setSearchQ(e.target.value)}
-                placeholder="Buscar assets, textures, plantillas…"
-                className="w-full h-10 pl-10 pr-4 rounded-xl bg-muted/40 border border-border/40 text-sm outline-none focus:border-primary/40 transition placeholder:text-muted-foreground/35"
-              />
-            </div>
-
-            {/* Price filters — level 1 */}
-            <div>
-              <div className="text-[9px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-1.5 px-0.5">Ordenar por</div>
-              <div className="flex gap-1.5 flex-wrap">
-                {([["all", "Todos"], ["free", "Gratis"], ["paid", "De pago"], ["popular", "Populares"]] as const).map(([id, label]) => (
-                  <button
-                    key={id} onClick={() => setShopFilter(id)}
-                    className={`h-7 px-3 rounded-lg text-[10px] font-semibold tracking-wide transition-all ${
-                      shopFilter === id
-                        ? "grad-brand text-primary-foreground border border-transparent shadow-sm"
-                        : "bg-muted/40 text-muted-foreground border border-transparent hover:text-foreground"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Categories — level 2, visually secondary */}
-            <div>
-              <div className="text-[9px] font-semibold text-muted-foreground/50 uppercase tracking-wider mb-1.5 px-0.5">Categoría</div>
-              <div className="flex gap-1.5 flex-wrap">
-                {([
-                  ["all", "Todos", Package],
-                  ["player", "Jugadores", User],
-                  ["platform", "Plataformas", Box],
-                  ["enemy", "Enemigos", Skull],
-                  ["coin", "Monedas", CircleDollarSign],
-                  ["goal", "Metas", Flag],
-                  ["decor", "Decoración", Flower2],
-                ] as const).map(([id, label, Icon]) => (
-                  <button
-                    key={id} onClick={() => setCategoryFilter(id)}
-                    className={`h-7 px-2.5 rounded-lg text-[10px] font-semibold tracking-wide flex items-center gap-1 transition-all ${
-                      categoryFilter === id
-                        ? "grad-brand text-primary-foreground border border-transparent shadow-sm"
-                        : "bg-muted/40 text-muted-foreground border border-transparent hover:text-foreground"
-                    }`}
-                  >
-                    <Icon size={10} /> {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Stats bar */}
-            <div className="text-[10px] text-muted-foreground/60 pt-1 border-t border-border/30">
-              <span>{shopItems.length} assets</span>
-            </div>
-
-            {/* Grid */}
-            {loading ? (
-              <div className="flex items-center justify-center py-12 gap-2">
-                <Loader2 size={18} className="animate-spin text-primary/40" />
-                <span className="text-xs text-muted-foreground/50">Cargando tienda…</span>
-              </div>
-            ) : shopItems.length === 0 ? (
-              <div className="text-center py-16 space-y-3">
-                <div className="w-14 h-14 mx-auto rounded-2xl bg-muted/30 border border-border/30 grid place-items-center">
-                  <Store size={22} className="text-muted-foreground/25" />
-                </div>
-                <div className="text-sm text-muted-foreground/60 font-medium">No hay assets aún</div>
-                <div className="text-[11px] text-muted-foreground/40">Sé el primero en publicar en la tienda</div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {shopItems.map(p => (
-                  <div key={p.id} className="card-enter" style={{ animationDelay: "0ms" }}>
-                    <AssetCard
-                      post={p} myId={myId}
-                      onBuy={setBuyPost}
-                      onRefresh={load}
-                      onViewImage={openImageViewer}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        ) : (
-          <motion.div key="gallery" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
-            <GallerySubSection artworks={galleryItems} loading={loading} myId={myId} profile={profile} onRefresh={load} onOpenDetail={setDetailPost} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Publish Dialog */}
-      <PublishAssetDialog open={publishOpen} onClose={() => setPublishOpen(false)} onPublished={load} />
+      <motion.div key="artist-gallery" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.12 }}>
+        <GallerySubSection artworks={galleryItems} loading={loading} myId={myId} profile={profile} onRefresh={load} onOpenDetail={setDetailPost} />
+      </motion.div>
 
       {/* Buy Dialog */}
       {buyPost && myId && balance !== null && (
@@ -744,6 +592,10 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
                 {detailPost.content.split("\n").slice(1).filter(line => line.trim() && !line.startsWith("#")).length > 0 && (
                   <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{detailPost.content.split("\n").slice(1).filter(line => line.trim() && !line.startsWith("#")).join(" ")}</p>
                 )}
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/25 px-3 py-2.5">
+                  <div><div className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">Precio</div><div className="mt-0.5 flex items-center gap-1 text-sm font-semibold tabular-nums"><Sparkles size={13} className="text-primary" />{galleryPreviewPrice(detailPost.price_orbes)} orbes</div></div>
+                  {myId && detailPost.author?.id !== myId && <button type="button" onClick={() => setBuyPost(detailPost)} className="h-9 rounded-lg grad-brand px-3 text-[11px] font-semibold text-primary-foreground shadow-sm active:scale-[0.97] transition-transform">{detailPost.price_orbes ? "Comprar obra" : "Obtener obra"}</button>}
+                </div>
                 <div className="border-t border-border/50 pt-4"><div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">Comentarios</div><CommentSection postId={detailPost.id} myId={myId} isMod={false} onChange={load} /></div>
               </aside>
             </div>
@@ -763,7 +615,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
 }
 
 /* ═══════════════════════════════════════════════════════
-   GALLERY SUB-SECTION — inside the Store
+   GALLERY SUB-SECTION — obras de artistas
    ═══════════════════════════════════════════════════════ */
 function GallerySubSection({
   artworks, loading, myId, profile: _profile, onRefresh, onOpenDetail,

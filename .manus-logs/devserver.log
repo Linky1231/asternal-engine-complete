@@ -1513,3 +1513,8 @@
 [2026-08-23T02:09:42.319Z] 2:09:42 AM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
 [2026-08-23T02:13:18.770Z] 2:13:18 AM [vite] (client) hmr update /src/styles.css, /src/components/social/StoreSection.tsx
 [2026-08-23T02:13:40.338Z] 2:13:40 AM [vite] (client) hmr update /src/styles.css, /src/components/social/StoreSection.tsx
+[2026-08-23T02:20:41.218Z] Starting dev server with command: pnpm run dev
+[2026-08-23T02:20:41.725Z] $ vite --host
+[2026-08-23T02:20:42.167Z] VITE v7.3.6  ready in 393 ms
+[2026-08-23T02:20:42.167Z] ➜  Local:   http://localhost:5173/
+[2026-08-23T02:20:42.167Z] ➜  Network: http://169.254.0.21:5173/

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
 import { socialActionStateClass } from "../src/lib/social/interaction-state";
-import { galleryPreviewAuthor, galleryPreviewPrice } from "../src/lib/social/gallery-preview";
+import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 
 describe("mensajes de acceso", () => {
@@ -33,6 +33,12 @@ describe("vista previa de obras", () => {
   it("muestra el precio como un número compacto y no negativo", () => {
     expect(galleryPreviewPrice(8195)).toBe("8195");
     expect(galleryPreviewPrice(-10)).toBe("0");
+  });
+
+  it("limita la Galería a obras artísticas y no a assets generales del editor", () => {
+    expect(isArtistGalleryArtwork("artwork")).toBe(true);
+    expect(isArtistGalleryArtwork("game_asset")).toBe(false);
+    expect(isArtistGalleryArtwork(undefined)).toBe(false);
   });
 });
 

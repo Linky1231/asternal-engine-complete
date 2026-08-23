@@ -869,3 +869,14 @@ Validación: las tarjetas mantienen exclusivamente obra, autor y precio. El impo
 - [x] Respetar la reducción de movimiento y validar en móvil y escritorio con pruebas y compilación.
 
 Validación: el saldo local se conserva para compras, pero ya no se renderiza junto al recuento de assets en Tienda. El detalle de obras aparece con fundido del fondo y una entrada corta de opacidad, escala y desplazamiento; el movimiento se elimina para personas que lo reducen en el sistema. `pnpm test` completó 17 pruebas y `pnpm build` finalizó correctamente. La pantalla se revisó en 390 × 844 y 1440 × 900; la transición de Galería requiere sesión para una comprobación manual con obras reales.
+
+---
+
+# Galería para artistas
+
+- [x] Localizar todas las referencias visibles y accesos al apartado Tienda.
+- [x] Renombrar la experiencia como Galería y retirar el lenguaje de tienda general.
+- [x] Mantener únicamente el flujo para que artistas publiquen y vendan sus obras.
+- [x] Validar navegación, textos, móvil, escritorio, pruebas y compilación antes de publicar.
+
+Validación: la navegación inferior, la búsqueda, el perfil y el panel principal usan la identidad «Galería». La experiencia general de Tienda y los assets genéricos del editor se retiraron del listado público; quedan obras originales de artistas con su publicación, detalle y compra de orbes. `pnpm test` completó 18 pruebas y `pnpm build` finalizó correctamente. La pantalla de acceso se revisó en 390 × 844 y 1440 × 900; ver la Galería con obras requiere una sesión autenticada.

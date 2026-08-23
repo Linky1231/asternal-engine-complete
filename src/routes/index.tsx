@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Avatar } from "@/components/social/Avatar";
 import { Component, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Compass, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, Store, FileText, TrendingUp } from "lucide-react";
+import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Compass, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, FileText, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { fetchFeed, fetchGames, getMyProfile, isMod, isAdmin, type PostWithMeta, type Profile } from "@/lib/social/api";
@@ -621,13 +621,13 @@ function HomePage() {
               <span className="text-[9px] font-bold tracking-wide text-primary mt-0.5">Crear</span>
             </Link>
 
-            {/* Tienda (antes Eventos) */}
+            {/* Galería de artistas */}
             <button
               onClick={() => setTab("gallery")}
               className={`relative z-10 flex-1 flex flex-col items-center gap-0.5 py-2 rounded-[10px] ${tab === "gallery" ? "text-foreground" : "text-muted-foreground/80"}`}
             >
-              <Store size={18} />
-              <span className="text-[9px] font-semibold tracking-wide">Tienda</span>
+              <Palette size={18} />
+              <span className="text-[9px] font-semibold tracking-wide">Galería</span>
             </button>
             {/* Perfil */}
             <button
