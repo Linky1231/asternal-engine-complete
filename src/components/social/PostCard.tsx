@@ -8,7 +8,7 @@ import { CommentSection } from "./CommentSection";
 import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
-import { GameIconPlaceholder } from "./GameIcon";
+import { socialActionStateClass } from "@/lib/social/interaction-state";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
   FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
@@ -236,20 +236,20 @@ export const PostCard = memo(function PostCard({
           <button
             type="button"
             onClick={() => onOpenGame?.(post.pinned_game!.id)}
-            className="group/game flex items-center gap-3 rounded-2xl p-2 pr-3 bg-primary/[0.04] border border-primary/20 pointer-fine:hover:border-primary/40 transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md w-full text-left cursor-pointer">
+            className="group/game flex items-center gap-3 rounded-2xl p-2 pr-3 bg-muted/20 border border-border/60 pointer-fine:hover:border-border-strong transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md w-full text-left cursor-pointer">
             {post.pinned_game.cover_url ? (
               <img src={post.pinned_game.cover_url} alt="" className="w-14 aspect-square rounded-2xl object-contain bg-muted/20 shrink-0 ring-1 ring-border/50" />
             ) : (
-              <div className="w-14 aspect-square rounded-2xl tile-blueprint border border-border/60 grid place-items-center shrink-0">
-                <GameIconPlaceholder iconSize={22} />
+              <div className="w-14 aspect-square rounded-2xl bg-muted/50 border border-border/60 grid place-items-center shrink-0">
+                <Gamepad2 size={22} className="text-muted-foreground/60" />
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <div className="text-[9px] font-display tracking-[0.18em] text-primary-glow uppercase">Juego fijado</div>
+              <div className="text-[9px] font-display tracking-[0.18em] text-muted-foreground uppercase">Juego fijado</div>
               <div className="text-sm font-display truncate mt-0.5">{post.pinned_game.title}</div>
             </div>
-            <span className="w-8 h-8 rounded-full bg-primary/10 grid place-items-center transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">
-              <Play size={14} className="text-primary ml-0.5" fill="currentColor" />
+            <span className="w-8 h-8 rounded-full bg-muted/70 border border-border/60 grid place-items-center transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">
+              <Play size={14} className="text-foreground ml-0.5" fill="currentColor" />
             </span>
           </button>
         )}
@@ -308,7 +308,8 @@ export const PostCard = memo(function PostCard({
 
       <footer className="flex items-center border-t border-border/50 bg-muted/15 px-1 py-0.5 text-[11px] text-muted-foreground">
         <button type="button" onClick={() => react("like")}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_like ? "text-rose-500" : "pointer-fine:hover:bg-rose-500/10 pointer-fine:hover:text-rose-500"}`}>
+          aria-pressed={post.my_like}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(post.my_like)}`}>
           <motion.span
             key={post.my_like ? "liked" : "unliked"}
             initial={{ scale: 0.4, rotate: -18 }}
@@ -316,12 +317,13 @@ export const PostCard = memo(function PostCard({
             transition={{ type: "spring", stiffness: 520, damping: 17 }}
             className="inline-flex"
           >
-            <Heart size={15} className={post.my_like ? "fill-rose-500" : ""} />
+            <Heart size={15} className={post.my_like ? "fill-current" : ""} />
           </motion.span>
           <span className="tabular-nums font-medium">{post.likes}</span>
         </button>
         <button type="button" onClick={() => react("favorite")}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_favorite ? "text-amber-500" : "pointer-fine:hover:bg-amber-500/10 pointer-fine:hover:text-amber-500"}`}>
+          aria-pressed={post.my_favorite}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(post.my_favorite)}`}>
           <motion.span
             key={post.my_favorite ? "favd" : "unfavd"}
             initial={{ scale: 0.4, rotate: 18 }}
@@ -329,17 +331,19 @@ export const PostCard = memo(function PostCard({
             transition={{ type: "spring", stiffness: 520, damping: 17 }}
             className="inline-flex"
           >
-            <Star size={15} className={post.my_favorite ? "fill-amber-500" : ""} />
+            <Star size={15} className={post.my_favorite ? "fill-current" : ""} />
           </motion.span>
           <span className="tabular-nums font-medium">{post.favorites}</span>
         </button>
         <button type="button" onClick={() => setOpenComments(o => !o)}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${openComments ? "text-primary-glow bg-primary/10" : "pointer-fine:hover:bg-primary/10 pointer-fine:hover:text-primary-glow"}`}>
-          <MessageCircle size={15} className={openComments ? "fill-primary/20" : ""} />
+          aria-expanded={openComments}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(openComments)}`}>
+          <MessageCircle size={15} className={openComments ? "fill-current/10" : ""} />
           <span className="tabular-nums font-medium">{post.comments_count}</span>
         </button>
         <button type="button" onClick={repost}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_repost ? "text-emerald-600" : "pointer-fine:hover:bg-emerald-500/10 pointer-fine:hover:text-emerald-600"}`}>
+          aria-pressed={post.my_repost}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(post.my_repost)}`}>
           <motion.span
             key={post.my_repost ? "reposted" : "unreposted"}
             initial={{ scale: 0.6, rotate: -25 }}
@@ -347,7 +351,7 @@ export const PostCard = memo(function PostCard({
             transition={{ type: "spring", stiffness: 480, damping: 16 }}
             className="inline-flex"
           >
-            <Repeat2 size={15} className={post.my_repost ? "stroke-emerald-600" : ""} />
+            <Repeat2 size={15} />
           </motion.span>
           <span className="tabular-nums font-medium">{post.reposts_count}</span>
         </button>

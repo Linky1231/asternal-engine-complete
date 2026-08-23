@@ -32,6 +32,7 @@ import {
 } from "@/lib/social/api";
 import { GameCard } from "./GameCard";
 import { PostCard } from "./PostCard";
+import { CommentSection } from "./CommentSection";
 import { UserName } from "./UserName";
 import { Avatar } from "./Avatar";
 import { SegmentedControl } from "@/components/ui/segmented";
@@ -98,6 +99,7 @@ export function ProfilePanel({
   const [showTrustMenu, setShowTrustMenu] = useState(false);
   const [showTrustPanel, setShowTrustPanel] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
+  const [artDetail, setArtDetail] = useState<PostWithMeta | null>(null);
 
   const load = async () => {
     setLoading(true);
@@ -281,6 +283,7 @@ export function ProfilePanel({
 
   const interestsList = (profile.interests ?? []).filter(Boolean);
   const userCode = profile.user_code || getUserCode(profile.id);
+  const profileHandle = profile.username?.trim() || userCode;
   const copyCode = async () => {
     try { await navigator.clipboard.writeText(userCode); } catch { /* noop */ }
     setCodeCopied(true);
@@ -361,7 +364,7 @@ export function ProfilePanel({
                     )}
                   </div>
                   <div className="text-[11px] font-mono text-muted-foreground truncate">
-                    @{profile.username}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
+                    @{profileHandle}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
                   {!editing && (
                     <button onClick={() => void copyCode()}
@@ -392,8 +395,8 @@ export function ProfilePanel({
                   <button onClick={() => setEditing(true)}
                     className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
                   <button onClick={() => setShowQR(v => !v)}
-                    className={`h-9 px-2.5 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
-                    <QrCode size={13} />
+                    className={`h-9 px-3 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1.5 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
+                    <QrCode size={14} /><span>QR</span>
                   </button>
                   {shareMenu}
                   <div className="relative">
@@ -423,8 +426,8 @@ export function ProfilePanel({
                   {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
                 </button>
                 <button onClick={() => setShowQR(v => !v)}
-                  className={`h-9 px-2.5 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
-                  <QrCode size={13} />
+                  className={`h-9 px-3 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1.5 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
+                  <QrCode size={14} /><span>QR</span>
                 </button>
                 {shareMenu}
                 <div className="relative">
@@ -642,44 +645,34 @@ export function ProfilePanel({
               {viewingOwn ? "Aún no has publicado obras en la galería" : "Este artista aún no ha publicado obras"}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {artworks.map(a => {
                 const imgUrl = a.signed_media?.[0] ?? a.signed_cover;
-                const price = a.price_orbes ?? 0;
-                const title = a.content.replace(/^🎨\s*/, "");
+                const title = (a.content.split("\n")[0] || "Obra sin título").replace(/^🎮🎨\s*/, "").replace(/^🎨\s*/, "");
                 return (
-                  <div key={a.id} className="rounded-lg border border-border/70 bg-surface overflow-hidden group">
-                    <div className="aspect-square bg-muted/20 relative overflow-hidden">
+                  <article key={a.id} className="rounded-2xl border border-border/60 bg-surface overflow-hidden group hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow]">
+                    <button type="button" onClick={() => setArtDetail(a)} className="block w-full aspect-square bg-muted/20 relative p-2 text-left" aria-label={`Abrir ${title}`}>
                       {imgUrl ? (
-                        <img src={imgUrl} alt={title} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out" />
+                        <img src={imgUrl} alt={title} className="w-full h-full object-contain rounded-xl group-hover:scale-[1.015] transition-transform duration-200" />
                       ) : (
-                        <div className="w-full h-full grid place-items-center"><Palette size={32} className="text-muted-foreground/15" /></div>
+                        <div className="w-full h-full rounded-xl border border-dashed border-border/60 grid place-items-center"><Palette size={28} className="text-muted-foreground/30" /></div>
                       )}
-                      {price > 0 ? (
-                        <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full text-[9px] font-semibold bg-primary text-white flex items-center gap-1 shadow-sm">
-                          <SparklesIcon size={9} /> {price}
-                        </span>
-                      ) : (
-                        <span className="absolute bottom-2 left-2 px-2.5 py-1 rounded-full text-[9px] font-semibold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30">
-                          GRATIS
-                        </span>
-                      )}
-                    </div>
+                    </button>
                     <div className="p-2.5 space-y-1.5">
-                      <div className="text-xs font-display truncate font-semibold tracking-tight">{title}</div>
+                      <button type="button" onClick={() => setArtDetail(a)} className="block w-full text-left text-xs font-display truncate font-semibold tracking-tight hover:text-primary">{title}</button>
                       <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Heart size={10} className={a.likes > 0 ? "text-rose-400" : ""} /> {a.likes}
                         </span>
-                        <span className="flex items-center gap-1">
+                        <button type="button" onClick={() => setArtDetail(a)} className="flex items-center gap-1 hover:text-foreground" aria-label={`Abrir comentarios de ${title}`}>
                           <MessageCircle size={10} /> {a.comments_count}
-                        </span>
+                        </button>
                         <span className="text-[9px] font-mono text-muted-foreground/50 ml-auto">
                           {new Date(a.created_at).toLocaleDateString("es", { month: "short", day: "numeric" })}
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
@@ -690,6 +683,23 @@ export function ProfilePanel({
           ) : posts.map(p => <PostCard key={p.id} post={p} myId={myId} isMod={isMod} onChange={loadContent} />)
         )}
       </div>
+
+      {artDetail && (
+        <div className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-md overflow-y-auto" onClick={() => setArtDetail(null)}>
+          <div className="min-h-full max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8" onClick={event => event.stopPropagation()}>
+            <div className="sticky top-3 z-10 rounded-2xl border border-border/60 bg-card/90 backdrop-blur-xl px-3 py-2 flex items-center justify-between gap-3">
+              <div className="min-w-0"><div className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">Galería</div><h3 className="text-sm font-display font-bold truncate">{(artDetail.content.split("\n")[0] || "Obra sin título").replace(/^🎮🎨\s*/, "").replace(/^🎨\s*/, "")}</h3></div>
+              <button type="button" onClick={() => setArtDetail(null)} className="w-9 h-9 rounded-xl border border-border/60 bg-muted/40 grid place-items-center hover:bg-muted" aria-label="Cerrar detalle de obra"><X size={15} /></button>
+            </div>
+            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+              <div className="rounded-2xl border border-border/60 bg-card aspect-square p-3 sm:p-5 grid place-items-center">
+                {artDetail.signed_media?.[0] || artDetail.signed_cover ? <img src={artDetail.signed_media?.[0] ?? artDetail.signed_cover ?? ""} alt="" className="w-full h-full object-contain rounded-xl" /> : <Palette size={36} className="text-muted-foreground/30" />}
+              </div>
+              <div className="rounded-2xl border border-border/60 bg-card p-4"><div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">Comentarios</div><CommentSection postId={artDetail.id} myId={myId} isMod={isMod} onChange={loadContent} /></div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Smart Status */}
       <div className="px-3 py-1">

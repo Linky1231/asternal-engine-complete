@@ -15,6 +15,7 @@ import {
   getMyProfile, getMyOrbes, toggleReaction,
 } from "@/lib/social/api";
 import { CommentSection } from "@/components/social/CommentSection";
+import { socialActionStateClass } from "@/lib/social/interaction-state";
 
 type StoreTab = "shop" | "gallery";
 
@@ -188,14 +189,14 @@ function AssetCard({
         })()}
 
         {/* Stats */}
-        <div className="flex items-center gap-4 text-xs text-muted-foreground/70 pt-1">
-          <button onClick={() => react("like")} className={`flex items-center gap-1.5 transition ${post.my_like ? "text-red-500" : "hover:text-red-400"}`}>
+        <div className="flex items-center gap-2 pt-1">
+          <button onClick={() => react("like")} aria-pressed={post.my_like} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(post.my_like)}`}>
             <Heart size={14} className={post.my_like ? "fill-current" : ""} /> {post.likes}
           </button>
-          <button onClick={() => setOpenComments(!openComments)} className="flex items-center gap-1.5 hover:text-primary transition">
+          <button onClick={() => setOpenComments(!openComments)} aria-expanded={openComments} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(openComments)} `}>
             <MessageCircle size={14} /> {post.comments_count}
           </button>
-          <button onClick={() => react("favorite")} className={`flex items-center gap-1.5 transition ${post.my_favorite ? "text-amber-500" : "hover:text-amber-400"}`}>
+          <button onClick={() => react("favorite")} aria-pressed={post.my_favorite} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(post.my_favorite)}`}>
             <Bookmark size={14} className={post.my_favorite ? "fill-current" : ""} /> {post.favorites}
           </button>
         </div>
@@ -498,6 +499,8 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
   const [viewImageSrc, setViewImageSrc] = useState<string | null>(null);
   const [viewImageAlt, setViewImageAlt] = useState("");
   const openImageViewer = (src: string, alt: string) => { setViewImageSrc(src); setViewImageAlt(alt); };
+  const detailImage = detailPost?.signed_cover || detailPost?.signed_media?.[0] || null;
+  const detailTitle = detailPost?.content.split("\n")[0].replace(/^🎮🎨\s*/, "").slice(0, 60) || "Obra de galería";
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -677,7 +680,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
           </motion.div>
         ) : (
           <motion.div key="gallery" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.12 }}>
-            <GallerySubSection artworks={galleryItems} loading={loading} myId={myId} profile={profile} onRefresh={load} onViewImage={openImageViewer} />
+            <GallerySubSection artworks={galleryItems} loading={loading} myId={myId} profile={profile} onRefresh={load} onOpenDetail={setDetailPost} />
           </motion.div>
         )}
       </AnimatePresence>
@@ -692,14 +695,40 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
 
       {/* Detail Modal */}
       {detailPost && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-end sm:items-center justify-center" onClick={() => setDetailPost(null)}>
-          <div className="w-full max-w-lg max-h-[85vh] bg-card rounded-t-2xl sm:rounded-2xl overflow-y-auto" onClick={e => e.stopPropagation()}>
-            <div className="sticky top-0 bg-card/90 backdrop-blur-sm border-b border-border/30 px-4 py-3 flex items-center justify-between z-10">
-              <h3 className="font-display text-sm font-bold truncate">Detalle del asset</h3>
-              <button onClick={() => setDetailPost(null)} className="w-7 h-7 rounded-lg hover:bg-muted grid place-items-center"><X size={14} /></button>
+        <div className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-md overflow-y-auto" onClick={() => setDetailPost(null)}>
+          <div className="min-h-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8" onClick={e => e.stopPropagation()}>
+            <div className="sticky top-3 z-10 flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/90 backdrop-blur-xl px-3 py-2 shadow-sm">
+              <div className="min-w-0 flex items-center gap-2">
+                <span className="w-8 h-8 rounded-xl bg-muted/70 grid place-items-center"><Palette size={15} className="text-muted-foreground" /></span>
+                <div className="min-w-0">
+                  <div className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">Galería</div>
+                  <h3 className="font-display text-sm font-bold truncate">{detailTitle}</h3>
+                </div>
+              </div>
+              <button type="button" onClick={() => setDetailPost(null)} className="w-9 h-9 shrink-0 rounded-xl border border-border/60 bg-muted/40 hover:bg-muted grid place-items-center" aria-label="Cerrar detalle de obra"><X size={15} /></button>
             </div>
-            <div className="p-4">
-              <CommentSection postId={detailPost.id} myId={myId} isMod={false} onChange={() => {}} />
+
+            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(300px,0.75fr)]">
+              <section className="rounded-2xl border border-border/60 bg-card overflow-hidden">
+                <div className="aspect-square bg-muted/30 p-3 sm:p-5 grid place-items-center">
+                  {detailImage ? (
+                    <img src={detailImage} alt={detailTitle} className="w-full h-full object-contain rounded-xl" />
+                  ) : (
+                    <div className="text-center text-muted-foreground/60 space-y-2"><Package size={34} className="mx-auto" /><p className="text-xs">Esta obra no incluye una imagen disponible.</p></div>
+                  )}
+                </div>
+              </section>
+
+              <aside className="rounded-2xl border border-border/60 bg-card p-4 space-y-4">
+                <div className="flex items-center gap-2">
+                  <Avatar p={detailPost.author} className="w-8 h-8" />
+                  <div className="min-w-0"><div className="text-sm font-medium truncate">@{detailPost.author?.username ?? "artista"}</div><div className="text-[10px] text-muted-foreground">{timeAgo(detailPost.created_at)}</div></div>
+                </div>
+                {detailPost.content.split("\n").slice(1).filter(line => line.trim() && !line.startsWith("#")).length > 0 && (
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{detailPost.content.split("\n").slice(1).filter(line => line.trim() && !line.startsWith("#")).join(" ")}</p>
+                )}
+                <div className="border-t border-border/50 pt-4"><div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">Comentarios</div><CommentSection postId={detailPost.id} myId={myId} isMod={false} onChange={load} /></div>
+              </aside>
             </div>
           </div>
         </div>
@@ -719,13 +748,12 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
    GALLERY SUB-SECTION — inside the Store
    ═══════════════════════════════════════════════════════ */
 function GallerySubSection({
-  artworks, loading, myId, profile, onRefresh, onViewImage,
+  artworks, loading, myId, profile: _profile, onRefresh, onOpenDetail,
 }: {
   artworks: PostWithMeta[]; loading: boolean; myId: string | null;
   profile: Profile | null; onRefresh: () => void;
-  onViewImage: (src: string, alt: string) => void;
+  onOpenDetail: (post: PostWithMeta) => void;
 }) {
-  const [openCommentsId, setOpenCommentsId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"recent" | "popular" | "free">("recent");
 
   const items = artworks
@@ -770,7 +798,7 @@ function GallerySubSection({
           No hay obras en la galería aún
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
           {items.map(p => {
             const lines = p.content.split("\n");
             const titleText = (lines[0] || "Sin título").replace(/^🎮🎨\s*/, "").slice(0, 60);
@@ -779,31 +807,16 @@ function GallerySubSection({
             const hashtags = p.tags?.length
               ? p.tags
               : lines.filter(l => l.startsWith("#")).flatMap(l => l.match(/#[\w-]+/g) ?? []);
-            const isOpen = openCommentsId === p.id;
+            const imageSrc = p.signed_cover || p.signed_media?.[0] || null;
 
             return (
-              <div key={p.id} className="rounded-xl border border-border/40 bg-card overflow-hidden hover:border-primary/20 transition-all group">
-                {/* Image — se adapta sin recortar */}
-                {(p.signed_cover || p.signed_media?.[0]) && (
-                  <div className="relative w-full max-h-[50vh] bg-gradient-to-br from-primary/5 to-primary/10 overflow-hidden cursor-pointer"
-                    onClick={() => onViewImage(p.signed_cover || p.signed_media?.[0] || '', (lines[0] || 'Obra').replace(/^🎮🎨\s*/, '').slice(0, 60))}>
-                    <img src={p.signed_cover || p.signed_media?.[0]} alt=""
-                      className="w-full h-full object-contain group-hover:opacity-90 transition-opacity duration-300" />
-                    {/* Zoom badge */}
-                    <div className="absolute bottom-2 right-2 w-7 h-7 rounded-lg bg-black/40 backdrop-blur-sm grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ZoomIn size={13} className="text-white" />
-                    </div>
-                    {(p.price_orbes ?? 0) > 0 && (
-                      <div className="absolute top-2 right-2">
-                        <span className="px-2 py-1 rounded-lg text-[10px] font-semibold bg-primary/10 text-primary border border-primary/15 flex items-center gap-1 tabular-nums">
-                          <Sparkles size={10} /> {p.price_orbes}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
+              <article key={p.id} className="rounded-2xl border border-border/50 bg-card overflow-hidden hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow] duration-200 group">
+                <button type="button" onClick={() => onOpenDetail(p)} className="relative block w-full aspect-square bg-muted/30 p-2 text-left" aria-label={`Abrir ${titleText}`}>
+                  {imageSrc ? <img src={imageSrc} alt={titleText} className="w-full h-full object-contain rounded-xl transition-transform duration-200 pointer-fine:group-hover:scale-[1.015]" /> : <div className="w-full h-full rounded-xl border border-dashed border-border/60 grid place-items-center"><Package size={26} className="text-muted-foreground/50" /></div>}
+                  <span className="absolute bottom-3 right-3 w-7 h-7 rounded-lg border border-white/20 bg-black/50 backdrop-blur-sm grid place-items-center opacity-0 pointer-fine:group-hover:opacity-100 transition-opacity"><ZoomIn size={13} className="text-white" /></span>
+                </button>
 
-                <div className="p-3 space-y-2">
+                <div className="p-3 space-y-2.5">
                   {/* Author */}
                   <Link to="/profile/$userId" params={{ userId: p.author_id }} className="flex items-center gap-2 hover:opacity-80 transition">
                     <Avatar p={p.author} className="w-6 h-6" />
@@ -814,13 +827,11 @@ function GallerySubSection({
                   </Link>
 
                   {/* Title */}
-                  <div className="text-sm font-bold leading-snug group-hover:text-primary transition-colors">
-                    {titleText}
-                  </div>
+                  <button type="button" onClick={() => onOpenDetail(p)} className="block w-full text-left text-sm font-bold leading-snug hover:text-primary transition-colors truncate">{titleText}</button>
 
                   {/* Description */}
                   {description && (
-                    <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3">
+                    <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
                       {description}
                     </p>
                   )}
@@ -835,14 +846,14 @@ function GallerySubSection({
                   )}
 
                   {/* Stats + Actions */}
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground/70 pt-1">
-                    <button onClick={() => react(p.id, "like")} className={`flex items-center gap-1.5 transition ${p.my_like ? "text-red-500" : "hover:text-red-400"}`}>
+                  <div className="flex items-center gap-2 pt-1">
+                    <button onClick={() => react(p.id, "like")} aria-pressed={p.my_like} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(p.my_like)}`}>
                       <Heart size={14} className={p.my_like ? "fill-current" : ""} /> {p.likes}
                     </button>
-                    <button onClick={() => setOpenCommentsId(isOpen ? null : p.id)} className={`flex items-center gap-1.5 transition ${isOpen ? "text-primary" : "hover:text-primary"}`}>
+                    <button onClick={() => onOpenDetail(p)} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(false)}`} aria-label={`Abrir comentarios de ${titleText}`}>
                       <MessageCircle size={14} /> {p.comments_count}
                     </button>
-                    <button onClick={() => react(p.id, "favorite")} className={`flex items-center gap-1.5 transition ${p.my_favorite ? "text-amber-500" : "hover:text-amber-400"}`}>
+                    <button onClick={() => react(p.id, "favorite")} aria-pressed={p.my_favorite} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(p.my_favorite)}`}>
                       <Bookmark size={14} className={p.my_favorite ? "fill-current" : ""} /> {p.favorites}
                     </button>
                     {(p.price_orbes ?? 0) > 0 && (
@@ -850,14 +861,8 @@ function GallerySubSection({
                     )}
                   </div>
 
-                  {/* Comments */}
-                  {isOpen && (
-                    <div className="pt-2 border-t border-border/30">
-                      <CommentSection postId={p.id} myId={myId} isMod={false} onChange={onRefresh} />
-                    </div>
-                  )}
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>

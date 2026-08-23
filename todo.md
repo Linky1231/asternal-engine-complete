@@ -824,3 +824,17 @@ Validación: el foco pasa de un anillo de 3 px a una sola línea de 1 px de baja
 - [x] Validar en móvil y escritorio, con pruebas y compilación antes de publicar.
 
 Validación: se neutralizó el borde y la sombra globales del `input` interno, que creaban un segundo marco parcial junto al icono de visibilidad. El control compuesto usa un único contenedor aislado y con recorte, por lo que conserva un borde externo uniforme y el radio derecho completo. Se verificó en 390 × 844 y 1440 × 900; `pnpm test` completó 11 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Correcciones sociales, galería y perfil
+
+- [x] Traducir y contextualizar el error de contraseña incorrecta, evitando el mensaje técnico “Load Failed”.
+- [x] Corregir los estados activos e inactivos de reacciones, comentarios y demás controles de publicaciones.
+- [x] Mostrar las artes exportadas como tarjetas cuadradas redondeadas sin recorte y abrir una vista aislada con comentarios.
+- [x] Limitar el azul de juegos fijados a las acciones, sin teñir el contenido ni tapar la interfaz.
+- [x] Diagnosticar y manejar de forma estable las imágenes que no cargan.
+- [x] Restaurar el nombre de usuario y el tamaño correcto de la tarjeta QR en el perfil.
+- [x] Validar los flujos en móvil y escritorio, con pruebas y compilación antes de publicar.
+
+Validación: los errores de acceso se convierten en texto comprensible; las acciones sociales diferencian selección e inactividad con grises neutrales; las obras disponen de tarjetas cuadradas sin recorte y detalle con comentarios; y los juegos fijados usan una miniatura neutra cuando no hay portada. Las rutas de almacenamiento se firman al mostrarse para recuperar imágenes que llegaban como claves internas. El perfil dispone de fallback de identificador y acción QR visible. `pnpm test` completó 14 pruebas y `pnpm build` finalizó correctamente. Se revisó el acceso en 390 × 844 y 1440 × 900; Feed, Galería y Perfil requieren iniciar sesión para comprobar manualmente datos reales.

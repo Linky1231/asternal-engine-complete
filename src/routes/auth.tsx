@@ -11,26 +11,7 @@ import {
   AUTH_FIELD_FOCUS_ICON_CLASS,
   AUTH_FIELD_INPUT_FOCUS_CLASS,
 } from "@/lib/auth/field-focus";
-
-/* ─── Traduce errores de Supabase a mensajes claros en español ─── */
-function friendlyAuthError(msg: string): string {
-  const m = msg.toLowerCase();
-  // Límite de envíos de correo de registro: se bloquea
-  // temporalmente por seguridad tras varios intentos seguidos.
-  if (/rate limit|rate_limit|over.?request.?rate|too many (requests|attempts)|email.*send/i.test(m)) {
-    return "Límite de envíos de correo alcanzado (el servicio integrado de Supabase permite ~2 por hora). Registrarte y acceder no requieren correo, así que puedes intentarlo de nuevo de inmediato.";
-  }
-  if (/invalid login credentials|invalid credentials|incorrect (email|password)|password.*does not match/i.test(m)) {
-    return "Usuario o contraseña incorrectos. Revísalos e inténtalo de nuevo.";
-  }
-  if (/user already registered|already registered|email.*already.*exist/i.test(m)) {
-    return "Ese email ya tiene una cuenta. Pulsa ACCEDER para entrar.";
-  }
-  if (/email not confirmed|confirm your email|verify your email/i.test(m)) {
-    return "Aún no has confirmado tu email. Revisa tu bandeja de entrada (y la carpeta de spam).";
-  }
-  return msg;
-}
+import { friendlyAuthError } from "@/lib/auth/friendly-error";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({
