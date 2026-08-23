@@ -814,3 +814,14 @@ Validación: revisada en 390 × 844 y 1440 × 900. La frase completa se lee dent
 - [x] Ejecutar pruebas y compilación antes de publicar.
 
 Validación: el foco pasa de un anillo de 3 px a una sola línea de 1 px de baja opacidad; el campo elimina el contorno nativo para evitar el doble recuadro y el icono usa un contenedor propio con nivel de apilamiento superior. La composición se revisó en 390 × 844 y 1440 × 900. `pnpm test` completó 10 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Contorno de foco continuo
+
+- [x] Aislar los fragmentos de borde que se recortan junto a los iconos de los campos.
+- [x] Reestructurar el campo para que el borde activo rodee el control de manera continua.
+- [x] Validar el foco de usuario/correo y contraseña en móvil y escritorio.
+- [x] Ejecutar pruebas y compilación antes de publicar.
+
+Validación: el estado activo ya no usa un anillo separado; depende de un único borde de 1 px y el contenedor recorta cualquier capa interna fuera de su radio. Los extremos junto a los iconos quedan continuos. Se comprobó la composición en 390 × 844 y 1440 × 900; `pnpm test` completó 10 pruebas y `pnpm build` finalizó correctamente.
