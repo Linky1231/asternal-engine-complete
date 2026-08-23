@@ -211,7 +211,7 @@ export function GameCard({
   return (
     <article className="panel rounded-2xl overflow-hidden border border-border/50 shadow-sm">
       <div className="p-3 pb-0">
-        <div className={`relative aspect-[16/10] overflow-hidden rounded-[18px] border border-border/60 bg-muted/20 ${hasCover ? "" : "tile-blueprint"}`}>
+        <div className={`relative aspect-square overflow-hidden rounded-2xl border border-border/60 bg-muted/20 ${hasCover ? "" : "tile-blueprint"}`}>
         {hasCover ? (
           <img src={coverUrl!} alt={`Portada de ${title}`} onError={() => setCoverFailed(true)} className="absolute inset-0 w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
         ) : <GameIconPlaceholder />}

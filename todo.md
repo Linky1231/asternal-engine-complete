@@ -657,6 +657,15 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Formato único de portada cuadrada
+
+- [x] Localizar todas las variantes de proporción de portada en vistas de juegos.
+- [x] Aplicar un marco cuadrado con esquinas redondeadas como único formato público.
+- [x] Conservar el encuadre guardado y los marcadores blueprint dentro del formato único.
+- [x] Validar las vistas, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

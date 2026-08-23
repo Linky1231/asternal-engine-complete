@@ -8,6 +8,8 @@ import {
 import { Avatar } from "./Avatar";
 import { fetchGames, fetchFeed, fetchArtworks, type PostWithMeta, type Profile } from "@/lib/social/api";
 import { searchUsers } from "@/lib/social/global-search";
+import { coverFrameFromPreset, coverFrameStyle } from "@/lib/social/cover-frame";
+import { GameIconPlaceholder } from "./GameIcon";
 
 /* ─── Types ─── */
 type Tab = "all" | "users" | "games" | "posts" | "gallery";
@@ -95,18 +97,18 @@ function UserRow({ user, query }: { user: Profile; query: string }) {
 /* ═══════════ GAME ROW ═══════════ */
 function GameRow({ post, query }: { post: PostWithMeta; query: string }) {
   const title = extractTitle(post.content);
+  const visualUrl = post.signed_cover ?? post.signed_screenshots[0] ?? null;
+  const coverFrame = coverFrameFromPreset(post.asset_preset);
   return (
     <Link
       to="/"
       className="flex items-center gap-3.5 p-3 rounded-xl border border-border/40 bg-card hover:border-primary/25 hover:bg-primary/[0.02] transition-all duration-200 group"
     >
-      <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden border border-border/40 bg-surface group-hover:border-primary/20 transition-all">
-        {post.signed_cover ? (
-          <img src={post.signed_cover} alt="" className="w-full h-full object-cover" />
+      <div className={`relative w-14 aspect-square shrink-0 rounded-2xl overflow-hidden border border-border/40 bg-surface group-hover:border-primary/20 transition-all ${visualUrl ? "" : "tile-blueprint"}`}>
+        {visualUrl ? (
+          <img src={visualUrl} alt="" className="w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
         ) : (
-          <div className="w-full h-full grid place-items-center bg-gradient-to-br from-primary/5 to-primary/10">
-            <Gamepad2 size={20} className="text-primary/30" />
-          </div>
+          <GameIconPlaceholder iconSize={20} />
         )}
       </div>
       <div className="min-w-0 flex-1">

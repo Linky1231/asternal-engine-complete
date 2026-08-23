@@ -12,6 +12,7 @@ import {
   formatPlayTime,
 } from "@/lib/social/history";
 import { UserName } from "./UserName";
+import { GameIconPlaceholder } from "./GameIcon";
 
 type HistoryTab = "games" | "likes";
 
@@ -227,11 +228,11 @@ export function HistorySection() {
                 >
                   <div className="flex items-center gap-3 p-3">
                     {/* Cover thumbnail */}
-                    <div className="w-14 h-14 rounded-xl bg-primary/10 shrink-0 overflow-hidden grid place-items-center">
+                    <div className={`w-14 aspect-square rounded-2xl bg-primary/10 shrink-0 overflow-hidden grid place-items-center ${data.coverUrl ? "" : "tile-blueprint"}`}>
                       {data.coverUrl ? (
-                        <img src={data.coverUrl} alt={data.title} className="w-full h-full object-cover" />
+                        <img src={data.coverUrl} alt={data.title} className="w-full h-full object-contain" />
                       ) : (
-                        <Gamepad2 size={18} className="text-primary/40" />
+                        <GameIconPlaceholder iconSize={18} />
                       )}
                     </div>
                     {/* Info */}

@@ -498,8 +498,8 @@ function FeaturedBanner({ post, plays24, onPlay }: { post: PostWithMeta; plays24
           (capa compuesta por la GPU). Antes se animaba box-shadow en el propio
           banner y cada frame se repintaba el banner entero → lag al hacer scroll. */}
       <div className="banner-glow-halo absolute -inset-3 rounded-[32px]" aria-hidden />
-      <div className="banner-glow relative rounded-3xl overflow-hidden border border-white/70">
-        <div className="relative aspect-[16/10] w-full md:aspect-[21/9]">
+      <div className="banner-glow relative mx-auto max-w-md rounded-3xl overflow-hidden border border-white/70">
+        <div className="relative aspect-square w-full">
         {hasVisual ? (
           <img src={visualUrl!} alt={title} className="absolute inset-0 w-full h-full object-contain" style={coverFrameStyle(coverFrame)} />
         ) : (

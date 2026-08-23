@@ -8,6 +8,7 @@ import { CommentSection } from "./CommentSection";
 import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
+import { GameIconPlaceholder } from "./GameIcon";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
   FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
@@ -237,10 +238,10 @@ export const PostCard = memo(function PostCard({
             onClick={() => onOpenGame?.(post.pinned_game!.id)}
             className="group/game flex items-center gap-3 rounded-2xl p-2 pr-3 bg-primary/[0.04] border border-primary/20 pointer-fine:hover:border-primary/40 transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md w-full text-left cursor-pointer">
             {post.pinned_game.cover_url ? (
-              <img src={post.pinned_game.cover_url} alt="" className="w-14 h-14 rounded-xl object-cover shrink-0 ring-1 ring-border/50" />
+              <img src={post.pinned_game.cover_url} alt="" className="w-14 aspect-square rounded-2xl object-contain bg-muted/20 shrink-0 ring-1 ring-border/50" />
             ) : (
-              <div className="w-14 h-14 rounded-xl bg-primary/10 border border-primary/20 grid place-items-center shrink-0">
-                <Gamepad2 size={22} className="text-primary" />
+              <div className="w-14 aspect-square rounded-2xl tile-blueprint border border-border/60 grid place-items-center shrink-0">
+                <GameIconPlaceholder iconSize={22} />
               </div>
             )}
             <div className="min-w-0 flex-1">

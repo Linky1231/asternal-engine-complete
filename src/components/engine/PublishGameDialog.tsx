@@ -228,7 +228,7 @@ export function PublishGameDialog({
                   </button>
                 </div>
                 <div
-                  className="relative aspect-[16/9] overflow-hidden rounded-lg border border-border/70 bg-muted/30 touch-none cursor-grab active:cursor-grabbing"
+                  className="relative aspect-square overflow-hidden rounded-2xl border border-border/70 bg-muted/30 touch-none cursor-grab active:cursor-grabbing"
                   onPointerDown={event => {
                     event.currentTarget.setPointerCapture(event.pointerId);
                     dragRef.current = { startX: event.clientX, startY: event.clientY, frame: coverFrame };
