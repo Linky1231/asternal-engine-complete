@@ -40,6 +40,7 @@ import { TrustPointsHistory } from "./TrustPointsHistory";
 import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { getUserCode } from "@/lib/social/avatar";
+import { galleryPreviewAuthor } from "@/lib/social/gallery-preview";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -649,6 +650,7 @@ export function ProfilePanel({
               {artworks.map(a => {
                 const imgUrl = a.signed_media?.[0] ?? a.signed_cover;
                 const title = (a.content.split("\n")[0] || "Obra sin título").replace(/^🎮🎨\s*/, "").replace(/^🎨\s*/, "");
+                const authorLabel = galleryPreviewAuthor(a.author?.username ?? profile.username);
                 return (
                   <article key={a.id} className="rounded-2xl border border-border/60 bg-surface overflow-hidden group hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow]">
                     <button type="button" onClick={() => setArtDetail(a)} className="block w-full aspect-square bg-muted/20 relative p-2 text-left" aria-label={`Abrir ${title}`}>
@@ -658,19 +660,11 @@ export function ProfilePanel({
                         <div className="w-full h-full rounded-xl border border-dashed border-border/60 grid place-items-center"><Palette size={28} className="text-muted-foreground/30" /></div>
                       )}
                     </button>
-                    <div className="p-2.5 space-y-1.5">
-                      <button type="button" onClick={() => setArtDetail(a)} className="block w-full text-left text-xs font-display truncate font-semibold tracking-tight hover:text-primary">{title}</button>
-                      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Heart size={10} className={a.likes > 0 ? "text-rose-400" : ""} /> {a.likes}
-                        </span>
-                        <button type="button" onClick={() => setArtDetail(a)} className="flex items-center gap-1 hover:text-foreground" aria-label={`Abrir comentarios de ${title}`}>
-                          <MessageCircle size={10} /> {a.comments_count}
-                        </button>
-                        <span className="text-[9px] font-mono text-muted-foreground/50 ml-auto">
-                          {new Date(a.created_at).toLocaleDateString("es", { month: "short", day: "numeric" })}
-                        </span>
-                      </div>
+                    <div className="border-t border-border/40 px-3 py-2.5">
+                      <button type="button" onClick={() => setArtDetail(a)} className="flex w-full min-w-0 items-center gap-2 text-left hover:opacity-80 transition" aria-label={`Abrir obra de ${authorLabel}`}>
+                        <Avatar p={a.author ?? profile} className="w-6 h-6" />
+                        <span className="min-w-0 truncate text-[11px] font-semibold">{authorLabel}</span>
+                      </button>
                     </div>
                   </article>
                 );

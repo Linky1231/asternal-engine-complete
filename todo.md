@@ -838,3 +838,14 @@ Validación: se neutralizó el borde y la sombra globales del `input` interno, q
 - [x] Validar los flujos en móvil y escritorio, con pruebas y compilación antes de publicar.
 
 Validación: los errores de acceso se convierten en texto comprensible; las acciones sociales diferencian selección e inactividad con grises neutrales; las obras disponen de tarjetas cuadradas sin recorte y detalle con comentarios; y los juegos fijados usan una miniatura neutra cuando no hay portada. Las rutas de almacenamiento se firman al mostrarse para recuperar imágenes que llegaban como claves internas. El perfil dispone de fallback de identificador y acción QR visible. `pnpm test` completó 14 pruebas y `pnpm build` finalizó correctamente. Se revisó el acceso en 390 × 844 y 1440 × 900; Feed, Galería y Perfil requieren iniciar sesión para comprobar manualmente datos reales.
+
+---
+
+# Tarjetas minimalistas de artes
+
+- [x] Revisar las tarjetas de obras en galería y perfil para retirar metadatos secundarios.
+- [x] Mostrar solo la obra y el autor en la tarjeta, sin título, reacciones, precio, fecha ni comentarios.
+- [x] Conservar todos los detalles y comentarios dentro de la vista aislada al pulsar la obra.
+- [x] Validar en móvil y escritorio, con pruebas y compilación antes de publicar.
+
+Validación: tanto la Galería general como la Galería de perfil dejan la tarjeta limitada a la obra cuadrada, sin recorte, y una franja compacta con avatar y autor. El detalle a pantalla completa conserva título, descripción y comentarios. `pnpm test` completó 15 pruebas y `pnpm build` finalizó correctamente. La pantalla pública revisada se mantiene estable en 390 × 844 y 1440 × 900; acceder a la galería real requiere una sesión autenticada.

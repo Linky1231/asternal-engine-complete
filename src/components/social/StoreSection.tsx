@@ -16,6 +16,7 @@ import {
 } from "@/lib/social/api";
 import { CommentSection } from "@/components/social/CommentSection";
 import { socialActionStateClass } from "@/lib/social/interaction-state";
+import { galleryPreviewAuthor } from "@/lib/social/gallery-preview";
 
 type StoreTab = "shop" | "gallery";
 
@@ -766,11 +767,6 @@ function GallerySubSection({
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-  const react = async (postId: string, type: "like" | "favorite") => {
-    await toggleReaction({ postId, type });
-    onRefresh();
-  };
-
   return (
     <div className="space-y-4">
       {/* Filter pills */}
@@ -802,12 +798,8 @@ function GallerySubSection({
           {items.map(p => {
             const lines = p.content.split("\n");
             const titleText = (lines[0] || "Sin título").replace(/^🎮🎨\s*/, "").slice(0, 60);
-            const descLines = lines.slice(1).filter(l => l.trim() && !l.startsWith("#"));
-            const description = descLines.join(" ").trim();
-            const hashtags = p.tags?.length
-              ? p.tags
-              : lines.filter(l => l.startsWith("#")).flatMap(l => l.match(/#[\w-]+/g) ?? []);
             const imageSrc = p.signed_cover || p.signed_media?.[0] || null;
+            const authorLabel = galleryPreviewAuthor(p.author?.username);
 
             return (
               <article key={p.id} className="rounded-2xl border border-border/50 bg-card overflow-hidden hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow] duration-200 group">
@@ -816,51 +808,11 @@ function GallerySubSection({
                   <span className="absolute bottom-3 right-3 w-7 h-7 rounded-lg border border-white/20 bg-black/50 backdrop-blur-sm grid place-items-center opacity-0 pointer-fine:group-hover:opacity-100 transition-opacity"><ZoomIn size={13} className="text-white" /></span>
                 </button>
 
-                <div className="p-3 space-y-2.5">
-                  {/* Author */}
-                  <Link to="/profile/$userId" params={{ userId: p.author_id }} className="flex items-center gap-2 hover:opacity-80 transition">
+                <div className="border-t border-border/40 px-3 py-2.5">
+                  <Link to="/profile/$userId" params={{ userId: p.author_id }} className="flex items-center gap-2 min-w-0 hover:opacity-80 transition" aria-label={`Ver perfil de ${authorLabel}`}>
                     <Avatar p={p.author} className="w-6 h-6" />
-                    <div>
-                      <div className="text-[11px] font-semibold leading-tight">@{p.author?.username ?? "…"}</div>
-                      <div className="text-[9px] text-muted-foreground/50">{timeAgo(p.created_at)}</div>
-                    </div>
+                    <span className="min-w-0 truncate text-[11px] font-semibold leading-tight">{authorLabel}</span>
                   </Link>
-
-                  {/* Title */}
-                  <button type="button" onClick={() => onOpenDetail(p)} className="block w-full text-left text-sm font-bold leading-snug hover:text-primary transition-colors truncate">{titleText}</button>
-
-                  {/* Description */}
-                  {description && (
-                    <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2">
-                      {description}
-                    </p>
-                  )}
-
-                  {/* Hashtags */}
-                  {hashtags.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {hashtags.slice(0, 5).map((tag, i) => (
-                        <span key={i} className="text-[9px] text-primary/70 font-medium">{tag.startsWith("#") ? tag : `#${tag}`}</span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Stats + Actions */}
-                  <div className="flex items-center gap-2 pt-1">
-                    <button onClick={() => react(p.id, "like")} aria-pressed={p.my_like} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(p.my_like)}`}>
-                      <Heart size={14} className={p.my_like ? "fill-current" : ""} /> {p.likes}
-                    </button>
-                    <button onClick={() => onOpenDetail(p)} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(false)}`} aria-label={`Abrir comentarios de ${titleText}`}>
-                      <MessageCircle size={14} /> {p.comments_count}
-                    </button>
-                    <button onClick={() => react(p.id, "favorite")} aria-pressed={p.my_favorite} className={`flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition ${socialActionStateClass(p.my_favorite)}`}>
-                      <Bookmark size={14} className={p.my_favorite ? "fill-current" : ""} /> {p.favorites}
-                    </button>
-                    {(p.price_orbes ?? 0) > 0 && (
-                      <span className="flex items-center gap-0.5 ml-auto"><Sparkles size={10} className="text-primary" /> {p.price_orbes}</span>
-                    )}
-                  </div>
-
                 </div>
               </article>
             );
