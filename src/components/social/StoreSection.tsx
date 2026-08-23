@@ -16,7 +16,7 @@ import {
 } from "@/lib/social/api";
 import { CommentSection } from "@/components/social/CommentSection";
 import { socialActionStateClass } from "@/lib/social/interaction-state";
-import { galleryPreviewAuthor } from "@/lib/social/gallery-preview";
+import { galleryPreviewAuthor, galleryPreviewPrice } from "@/lib/social/gallery-preview";
 
 type StoreTab = "shop" | "gallery";
 
@@ -800,6 +800,7 @@ function GallerySubSection({
             const titleText = (lines[0] || "Sin título").replace(/^🎮🎨\s*/, "").slice(0, 60);
             const imageSrc = p.signed_cover || p.signed_media?.[0] || null;
             const authorLabel = galleryPreviewAuthor(p.author?.username);
+            const priceLabel = galleryPreviewPrice(p.price_orbes);
 
             return (
               <article key={p.id} className="rounded-2xl border border-border/50 bg-card overflow-hidden hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow] duration-200 group">
@@ -808,11 +809,15 @@ function GallerySubSection({
                   <span className="absolute bottom-3 right-3 w-7 h-7 rounded-lg border border-white/20 bg-black/50 backdrop-blur-sm grid place-items-center opacity-0 pointer-fine:group-hover:opacity-100 transition-opacity"><ZoomIn size={13} className="text-white" /></span>
                 </button>
 
-                <div className="border-t border-border/40 px-3 py-2.5">
-                  <Link to="/profile/$userId" params={{ userId: p.author_id }} className="flex items-center gap-2 min-w-0 hover:opacity-80 transition" aria-label={`Ver perfil de ${authorLabel}`}>
+                <div className="flex items-center justify-between gap-3 border-t border-border/40 px-3 py-2.5">
+                  <Link to="/profile/$userId" params={{ userId: p.author_id }} className="flex min-w-0 items-center gap-2 hover:opacity-80 transition" aria-label={`Ver perfil de ${authorLabel}`}>
                     <Avatar p={p.author} className="w-6 h-6" />
                     <span className="min-w-0 truncate text-[11px] font-semibold leading-tight">{authorLabel}</span>
                   </Link>
+                  <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold tabular-nums text-foreground/75" aria-label={`Precio: ${priceLabel}`}>
+                    <Sparkles size={12} className="text-primary/75" />
+                    {priceLabel}
+                  </span>
                 </div>
               </article>
             );

@@ -40,7 +40,7 @@ import { TrustPointsHistory } from "./TrustPointsHistory";
 import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { getUserCode } from "@/lib/social/avatar";
-import { galleryPreviewAuthor } from "@/lib/social/gallery-preview";
+import { galleryPreviewAuthor, galleryPreviewPrice } from "@/lib/social/gallery-preview";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -651,6 +651,7 @@ export function ProfilePanel({
                 const imgUrl = a.signed_media?.[0] ?? a.signed_cover;
                 const title = (a.content.split("\n")[0] || "Obra sin título").replace(/^🎮🎨\s*/, "").replace(/^🎨\s*/, "");
                 const authorLabel = galleryPreviewAuthor(a.author?.username ?? profile.username);
+                const priceLabel = galleryPreviewPrice(a.price_orbes);
                 return (
                   <article key={a.id} className="rounded-2xl border border-border/60 bg-surface overflow-hidden group hover:border-border-strong hover:shadow-md transition-[border-color,box-shadow]">
                     <button type="button" onClick={() => setArtDetail(a)} className="block w-full aspect-square bg-muted/20 relative p-2 text-left" aria-label={`Abrir ${title}`}>
@@ -661,9 +662,15 @@ export function ProfilePanel({
                       )}
                     </button>
                     <div className="border-t border-border/40 px-3 py-2.5">
-                      <button type="button" onClick={() => setArtDetail(a)} className="flex w-full min-w-0 items-center gap-2 text-left hover:opacity-80 transition" aria-label={`Abrir obra de ${authorLabel}`}>
-                        <Avatar p={a.author ?? profile} className="w-6 h-6" />
-                        <span className="min-w-0 truncate text-[11px] font-semibold">{authorLabel}</span>
+                      <button type="button" onClick={() => setArtDetail(a)} className="flex w-full min-w-0 items-center justify-between gap-3 text-left hover:opacity-80 transition" aria-label={`Abrir obra de ${authorLabel}`}>
+                        <span className="flex min-w-0 items-center gap-2">
+                          <Avatar p={a.author ?? profile} className="w-6 h-6" />
+                          <span className="min-w-0 truncate text-[11px] font-semibold">{authorLabel}</span>
+                        </span>
+                        <span className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold tabular-nums text-foreground/75" aria-label={`Precio: ${priceLabel}`}>
+                          <SparklesIcon size={12} className="text-primary/75" />
+                          {priceLabel}
+                        </span>
                       </button>
                     </div>
                   </article>

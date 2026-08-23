@@ -849,3 +849,13 @@ Validación: los errores de acceso se convierten en texto comprensible; las acci
 - [x] Validar en móvil y escritorio, con pruebas y compilación antes de publicar.
 
 Validación: tanto la Galería general como la Galería de perfil dejan la tarjeta limitada a la obra cuadrada, sin recorte, y una franja compacta con avatar y autor. El detalle a pantalla completa conserva título, descripción y comentarios. `pnpm test` completó 15 pruebas y `pnpm build` finalizó correctamente. La pantalla pública revisada se mantiene estable en 390 × 844 y 1440 × 900; acceder a la galería real requiere una sesión autenticada.
+
+---
+
+# Precio compacto en tarjetas de artes
+
+- [x] Revisar el pie compacto de autor de las tarjetas de obras.
+- [x] Añadir el número de precio de forma ordenada, sin recuperar los demás metadatos.
+- [x] Validar las tarjetas de Galería y Perfil con pruebas y compilación antes de publicar.
+
+Validación: las tarjetas mantienen exclusivamente obra, autor y precio. El importe se representa como un número con cifras agrupadas, alineado al extremo derecho y acompañado de un indicador discreto de orbes; título, fecha, reacciones y comentarios siguen dentro del detalle. `pnpm test` completó 16 pruebas y `pnpm build` finalizó correctamente. La pantalla se mantiene estable en 390 × 844 y 1440 × 900; la verificación visual de Galería requiere una sesión autenticada.

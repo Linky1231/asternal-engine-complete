@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
 import { socialActionStateClass } from "../src/lib/social/interaction-state";
-import { galleryPreviewAuthor } from "../src/lib/social/gallery-preview";
+import { galleryPreviewAuthor, galleryPreviewPrice } from "../src/lib/social/gallery-preview";
 
 describe("mensajes de acceso", () => {
   it("traduce el fallo técnico de credenciales a una explicación clara", () => {
@@ -27,5 +27,10 @@ describe("vista previa de obras", () => {
   it("muestra un autor claro sin añadir metadatos secundarios a la tarjeta", () => {
     expect(galleryPreviewAuthor("criper")).toBe("@criper");
     expect(galleryPreviewAuthor(" ")).toBe("Artista");
+  });
+
+  it("muestra el precio como un número compacto y no negativo", () => {
+    expect(galleryPreviewPrice(8195)).toBe("8195");
+    expect(galleryPreviewPrice(-10)).toBe("0");
   });
 });
