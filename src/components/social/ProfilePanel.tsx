@@ -39,7 +39,7 @@ import { SegmentedControl } from "@/components/ui/segmented";
 import { TrustPointsHistory } from "./TrustPointsHistory";
 import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
-import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
+import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { getUserCode } from "@/lib/social/avatar";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
 import { profileControlStateClass } from "@/lib/social/interaction-state";
@@ -98,12 +98,12 @@ export function ProfilePanel({
   const [trustDeductAmt, setTrustDeductAmt] = useState(1);
   const [trustReason, setTrustReason] = useState("");
   const [copiedLink, setCopiedLink] = useState(false);
+  const [showSharePanel, setShowSharePanel] = useState(false);
+  const [showMorePanel, setShowMorePanel] = useState(false);
   const [followList, setFollowList] = useState<null | { kind: "followers" | "following"; items: Profile[]; loading: boolean }>(null);
   const [showTrustPanel, setShowTrustPanel] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [artDetail, setArtDetail] = useState<PostWithMeta | null>(null);
-  const shareMenuAnchor = useCardMenuAnchor<HTMLButtonElement>();
-  const moreMenuAnchor = useCardMenuAnchor<HTMLButtonElement>();
 
   const load = async () => {
     setLoading(true);
@@ -187,7 +187,7 @@ export function ProfilePanel({
   // ─── Compartir perfil: enlace directo + compartir en el chat grupal ───
   const shareLink = typeof window !== "undefined" ? window.location.origin + "/profile/" + userId : "";
   const shareToChat = () => {
-    shareMenuAnchor.close();
+    setShowSharePanel(false);
     try {
       sessionStorage.setItem("asternal_chat_share", shareLink);
       window.dispatchEvent(new CustomEvent("asternal_share_chat", { detail: { text: shareLink, view: "group" as const } }));
@@ -195,7 +195,7 @@ export function ProfilePanel({
     navigate({ to: "/" });
   };
   const shareDirect = () => {
-    shareMenuAnchor.close();
+    setShowSharePanel(false);
     try {
       sessionStorage.setItem("asternal_chat_share", shareLink);
       window.dispatchEvent(new CustomEvent("asternal_share_chat", { detail: { text: shareLink, view: "dms" as const } }));
@@ -203,38 +203,25 @@ export function ProfilePanel({
     navigate({ to: "/" });
   };
   const copyLink = async () => {
-    shareMenuAnchor.close();
+    setShowSharePanel(false);
     try { await navigator.clipboard.writeText(shareLink); } catch { /* noop */ }
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 1800);
   };
   const shareMenu = (
-    <>
-      <button ref={shareMenuAnchor.anchorRef} onClick={() => { moreMenuAnchor.close(); shareMenuAnchor.toggle(); }}
-        aria-label="Compartir perfil" aria-expanded={Boolean(shareMenuAnchor.rect)}
-        className="h-9 w-9 sm:w-auto sm:px-3 rounded-xl border border-border bg-surface text-xs font-medium flex items-center justify-center gap-1.5 text-foreground hover:bg-muted/60 active:scale-95 transition">
-        <Share2 size={14} /><span className="hidden sm:inline">Compartir</span>
-      </button>
-      <CardMenu rect={shareMenuAnchor.rect} onClose={shareMenuAnchor.close} width={248}>
-        <CardMenuItem onClick={shareToChat} icon={<MessageCircle size={14} />}>Compartir en chat grupal</CardMenuItem>
-        <CardMenuItem onClick={shareDirect} icon={<MessageCircle size={14} />}>Compartir en chat directo</CardMenuItem>
-        <CardMenuItem onClick={() => void copyLink()} icon={copiedLink ? <Check size={14} className="text-emerald-500" /> : <Link2 size={14} />}>{copiedLink ? "¡Enlace copiado!" : "Copiar enlace al perfil"}</CardMenuItem>
-      </CardMenu>
-    </>
+    <button onClick={() => { setShowMorePanel(false); setShowSharePanel(true); }}
+      aria-label="Compartir perfil" aria-expanded={showSharePanel}
+      className="h-9 w-9 sm:w-auto sm:px-3 rounded-xl border border-border bg-surface text-xs font-medium flex items-center justify-center gap-1.5 text-foreground hover:bg-muted/60 active:scale-95 transition">
+      <Share2 size={14} /><span className="hidden sm:inline">Compartir</span>
+    </button>
   );
 
   const moreMenu = (
-    <>
-      <button ref={moreMenuAnchor.anchorRef} onClick={() => { shareMenuAnchor.close(); moreMenuAnchor.toggle(); }}
-        aria-label="Más acciones de perfil" aria-expanded={Boolean(moreMenuAnchor.rect)}
-        className="h-9 w-9 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
-        <MoreVertical size={14} />
-      </button>
-      <CardMenu rect={moreMenuAnchor.rect} onClose={moreMenuAnchor.close} width={224}>
-        <CardMenuItem onClick={() => { moreMenuAnchor.close(); setShowTrustPanel(true); }} icon={<Shield size={14} />}>Puntos de confianza</CardMenuItem>
-        <CardMenuItem onClick={() => { moreMenuAnchor.close(); setShowPortfolio(true); }} icon={<Trophy size={14} />}>Portafolio</CardMenuItem>
-      </CardMenu>
-    </>
+    <button onClick={() => { setShowSharePanel(false); setShowMorePanel(true); }}
+      aria-label="Más acciones de perfil" aria-expanded={showMorePanel}
+      className="h-9 w-9 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+      <MoreVertical size={14} />
+    </button>
   );
 
   // Abre la lista de seguidores o de "siguiendo" cargando los perfiles.
@@ -692,6 +679,33 @@ export function ProfilePanel({
           </div>
         </div>
       )}
+
+      <Drawer open={showSharePanel} onOpenChange={setShowSharePanel}>
+        <DrawerContent className="z-[120] max-w-xl mx-auto">
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Compartir perfil</DrawerTitle>
+            <DrawerDescription>Elige cómo quieres enviar este perfil.</DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-6 space-y-2">
+            <button type="button" onClick={shareToChat} className="w-full min-h-12 rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3 text-left text-sm font-medium hover:bg-muted/60 active:scale-[0.99] transition"><MessageCircle size={17} className="text-primary shrink-0" />Compartir en chat grupal</button>
+            <button type="button" onClick={shareDirect} className="w-full min-h-12 rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3 text-left text-sm font-medium hover:bg-muted/60 active:scale-[0.99] transition"><MessageCircle size={17} className="text-primary shrink-0" />Compartir en chat directo</button>
+            <button type="button" onClick={() => void copyLink()} className="w-full min-h-12 rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3 text-left text-sm font-medium hover:bg-muted/60 active:scale-[0.99] transition">{copiedLink ? <Check size={17} className="text-emerald-500 shrink-0" /> : <Link2 size={17} className="text-primary shrink-0" />}{copiedLink ? "¡Enlace copiado!" : "Copiar enlace al perfil"}</button>
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer open={showMorePanel} onOpenChange={setShowMorePanel}>
+        <DrawerContent className="z-[120] max-w-xl mx-auto">
+          <DrawerHeader className="text-left">
+            <DrawerTitle>Opciones de perfil</DrawerTitle>
+            <DrawerDescription>Consulta herramientas y reconocimientos de este perfil.</DrawerDescription>
+          </DrawerHeader>
+          <div className="px-4 pb-6 space-y-2">
+            <button type="button" onClick={() => { setShowMorePanel(false); setShowTrustPanel(true); }} className="w-full min-h-12 rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3 text-left text-sm font-medium hover:bg-muted/60 active:scale-[0.99] transition"><Shield size={17} className="text-primary shrink-0" />Puntos de confianza</button>
+            <button type="button" onClick={() => { setShowMorePanel(false); setShowPortfolio(true); }} className="w-full min-h-12 rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3 text-left text-sm font-medium hover:bg-muted/60 active:scale-[0.99] transition"><Trophy size={17} className="text-primary shrink-0" />Portafolio</button>
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {/* Smart Status */}
       <div className="px-3 py-1">

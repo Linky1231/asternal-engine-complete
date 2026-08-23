@@ -975,3 +975,13 @@ Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctam
 - [x] Validar los espaciados y los estados de interacción con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctamente. La ruta protegida redirige con estabilidad a Acceso en 390 × 844 y 1440 × 900 sin sesión. En sesión, la descripción queda separada por un divisor de los metadatos de personalización; las cuatro acciones inferiores comparten un único foco azul suave, sin degradado ni selección simultánea.
+
+---
+
+# Paneles seguros de Perfil
+
+- [x] Sustituir el menú flotante Compartir por un panel inferior que no cubra el Perfil.
+- [x] Sustituir el menú flotante Más por un panel inferior exclusivo que no cubra el Perfil.
+- [x] Validar los paneles de Perfil en móvil y escritorio con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida se comprobó en 390 × 844 y 1440 × 900; sin sesión, redirige a Acceso de forma estable. Con sesión, Compartir y Más usan paneles inferiores exclusivos, fuera de la tarjeta de Perfil y sin superposición entre sí.
