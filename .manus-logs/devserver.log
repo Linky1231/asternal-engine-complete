@@ -1400,3 +1400,4 @@
 [2026-08-23T00:41:32.988Z] 12:41:32 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-23T00:50:37.213Z] 12:50:37 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-23T00:50:37.307Z] 12:50:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
+[2026-08-23T00:55:39.169Z] 12:55:39 AM [vite] (client) hmr update /src/styles.css, /src/components/ui/alert-dialog.tsx

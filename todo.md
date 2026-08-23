@@ -727,3 +727,14 @@ Validación: el acceso se revisó en 390 × 844 y 1440 × 900; la mascota, las n
 - [x] Validar la composición limpia en móvil y escritorio antes de publicar.
 
 Validación: la escena se revisó en 390 × 844 y 1440 × 900. Solo aparecen el robot y los dos círculos de fondo, que ahora quedan centrados detrás del personaje; no quedan notas, chips ni iconografía asociada a orbes.
+
+---
+
+# Diálogo de confirmación de donaciones
+
+- [x] Reproducir y aislar el bloqueo al solicitar una donación de orbes.
+- [x] Corregir la apertura del diálogo y restaurar las acciones de cancelar y confirmar.
+- [x] Verificar que solo la confirmación explícita ejecuta la donación.
+- [x] Validar pruebas, compilación y recorrido visual antes de publicar.
+
+Validación: el panel de juego usaba `z-[90]`, mientras el diálogo se renderizaba desde un portal en `z-50`, por lo que el overlay bloqueaba la interfaz y la confirmación quedaba oculta. El overlay se elevó a `z-[100]` y el contenido a `z-[110]`. Se comprobó la jerarquía con una prueba unitaria, el flujo existente mantiene `donateOrbs` exclusivamente en `confirmDonation`, y `pnpm test` completó 8 pruebas junto con una compilación correcta.
