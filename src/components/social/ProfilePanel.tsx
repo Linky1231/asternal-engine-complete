@@ -38,7 +38,6 @@ import { UserName } from "./UserName";
 import { Avatar } from "./Avatar";
 import { SegmentedControl } from "@/components/ui/segmented";
 import { TrustPointsHistory } from "./TrustPointsHistory";
-import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { getUserCode } from "@/lib/social/avatar";
@@ -75,8 +74,6 @@ export function ProfilePanel({
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   const [pronouns, setPronouns] = useState("");
   const [location, setLocation] = useState("");
-  const [statusEmoji, setStatusEmoji] = useState("");
-  const [statusText, setStatusText] = useState("");
   const [accentColor, setAccentColor] = useState("#6B83D1");
   const [favoriteGenre, setFavoriteGenre] = useState("");
   const [customTitle, setCustomTitle] = useState("");
@@ -120,8 +117,6 @@ export function ProfilePanel({
         setBannerPreview(p.banner_url ?? null);
         setPronouns(p.pronouns ?? "");
         setLocation(p.location ?? "");
-        setStatusEmoji(p.status_emoji ?? "");
-        setStatusText(p.status_text ?? "");
         setAccentColor(p.accent_color ?? "#6B83D1");
         setFavoriteGenre(p.favorite_genre ?? "");
         setCustomTitle(p.custom_title ?? "");
@@ -270,7 +265,7 @@ export function ProfilePanel({
       const interests = interestsRaw.split(",").map(s => s.trim()).filter(Boolean).slice(0, 10);
       const updated = await updateMyProfile({
         username, display_name: displayName, bio,
-        pronouns, location, status_emoji: statusEmoji, status_text: statusText,
+        pronouns, location,
         accent_color: accentColor, favorite_genre: favoriteGenre, custom_title: customTitle,
         birthday: birthday || null, show_orbes: showOrbes, interests,
         ...(avatar_url ? { avatar_url } : {}),
@@ -459,14 +454,6 @@ export function ProfilePanel({
             <SocialLinksRow links={profile.social_links} />
           )}
 
-          {/* Status pill */}
-          {!editing && (profile.status_text || profile.status_emoji) && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted/40 text-xs">
-              {profile.status_emoji && <span>{profile.status_emoji}</span>}
-              {profile.status_text && <span className="text-muted-foreground">{profile.status_text}</span>}
-            </div>
-          )}
-
           {editing ? (
             <textarea value={bio} onChange={e => setBio(e.target.value)} rows={3} maxLength={280}
               placeholder="Cuéntanos sobre ti…"
@@ -516,10 +503,6 @@ export function ProfilePanel({
                       <LabeledInput label="Ubicación" value={location} onChange={setLocation} placeholder="Ciudad" max={40}/>
                     </div>
                     <LabeledInput label="Título personalizado" value={customTitle} onChange={setCustomTitle} placeholder="Desarrolladora indie" max={40}/>
-                    <div className="grid grid-cols-[64px_1fr] gap-2">
-                      <LabeledInput label="Emoji" value={statusEmoji} onChange={setStatusEmoji} placeholder="🎮" max={4}/>
-                      <LabeledInput label="Estado" value={statusText} onChange={setStatusText} placeholder="Jugando ahora" max={60}/>
-                    </div>
                     <div>
                       <div className="text-[11px] font-medium text-muted-foreground mb-1 flex items-center gap-1"><Cake size={10}/>Cumpleaños</div>
                       <input type="date" value={birthday} onChange={e => setBirthday(e.target.value)}
@@ -724,11 +707,6 @@ export function ProfilePanel({
           </div>
         </DrawerContent>
       </Drawer>
-
-      {/* Smart Status */}
-      <div className="px-3 py-1">
-        <SmartStatusPanel userId={userId} />
-      </div>
 
       {/* Trust Points panel (full, from three-dot menu) */}
       {showTrustPanel && (

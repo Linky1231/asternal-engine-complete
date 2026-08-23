@@ -1027,3 +1027,12 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Eliminar cualquier estado visual intermedio al tocar Seguir/Siguiendo.
 - [x] Corregir el fondo residual y el desborde inferior del panel al desplazarse.
 - [x] Validar el panel en móvil y escritorio, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Selectores sutiles y perfil simplificado
+
+- [x] Localizar los estados seleccionados de publicaciones y Perfil que aparecen como botones.
+- [x] Sustituir esos estados por indicadores celestes sutiles, sin apariencia de botón.
+- [x] Eliminar el bloque y la edición de «Un mensaje personalizado» del perfil.
+- [x] Validar publicaciones y Perfil en móvil y escritorio, ejecutar pruebas, compilar y publicar.
