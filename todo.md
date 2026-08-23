@@ -803,3 +803,14 @@ Validación: revisada en 390 × 844 y 1440 × 900. La bombilla sube desde el cen
 - [x] Ejecutar pruebas y compilación antes de publicar.
 
 Validación: revisada en 390 × 844 y 1440 × 900. La frase completa se lee dentro de la etiqueta y la tarjeta de acceso ya no muestra ni reserva espacio para recuperación de contraseña. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Foco de campos de acceso
+
+- [x] Localizar los estilos de foco que generan un borde y recuadro visual duplicados.
+- [x] Reducir el halo de foco y preservar una distancia clara respecto a los iconos.
+- [x] Validar el foco durante escritura en usuario/correo y contraseña, en móvil y escritorio.
+- [x] Ejecutar pruebas y compilación antes de publicar.
+
+Validación: el foco pasa de un anillo de 3 px a una sola línea de 1 px de baja opacidad; el campo elimina el contorno nativo para evitar el doble recuadro y el icono usa un contenedor propio con nivel de apilamiento superior. La composición se revisó en 390 × 844 y 1440 × 900. `pnpm test` completó 10 pruebas y `pnpm build` finalizó correctamente.

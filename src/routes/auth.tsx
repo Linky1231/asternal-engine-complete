@@ -6,6 +6,11 @@ import {
   Check, AlertCircle, Sparkles, RefreshCw,
 } from "lucide-react";
 import { IDEA_HERO_COPY } from "@/lib/auth/idea-hero";
+import {
+  AUTH_FIELD_FOCUS_CLASS,
+  AUTH_FIELD_FOCUS_ICON_CLASS,
+  AUTH_FIELD_INPUT_FOCUS_CLASS,
+} from "@/lib/auth/field-focus";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
 function friendlyAuthError(msg: string): string {
@@ -207,12 +212,12 @@ function FloatInput({
       <div className="relative group/input">
         <div className={`glass-control relative flex items-center rounded-xl ${
           focused
-            ? 'border-primary/50 ring-[3px] ring-primary/[0.06] shadow-sm shadow-primary/5'
+            ? AUTH_FIELD_FOCUS_CLASS
             : error
               ? 'border-destructive/40 ring-[3px] ring-destructive/[0.04]'
               : ''
         }`}>
-          <span className={`pl-3.5 transition-colors duration-300 shrink-0 ${focused ? 'text-primary/60' : error ? 'text-destructive/50' : 'text-muted-foreground/30'}`}>
+          <span className={`relative z-10 flex w-10 shrink-0 justify-center pointer-events-none transition-colors duration-200 ${focused ? AUTH_FIELD_FOCUS_ICON_CLASS : error ? 'text-destructive/50' : 'text-muted-foreground/30'}`}>
             <Icon size={14} />
           </span>
           <div className="relative flex-1">
@@ -221,7 +226,7 @@ function FloatInput({
               onFocus={onFocus} onBlur={onBlur}
               placeholder={focused ? placeholder || "" : " "}
               autoComplete={autoComplete} maxLength={maxLength} minLength={minLength} required
-              className="w-full bg-transparent px-2.5 pt-4 pb-1.5 text-sm outline-none transition-all duration-300 placeholder:text-muted-foreground/20"
+              className={`w-full bg-transparent px-2.5 pt-4 pb-1.5 text-sm outline-none transition-all duration-200 placeholder:text-muted-foreground/20 ${AUTH_FIELD_INPUT_FOCUS_CLASS}`}
             />
             <label className={`absolute left-2.5 transition-all duration-200 pointer-events-none select-none origin-left ${
               showLabelLocal
