@@ -15,6 +15,20 @@ export function profileControlStateClass(active: boolean): string {
     : "border-border bg-surface text-foreground hover:bg-muted/60";
 }
 
+/** Actualiza el estado de seguimiento en pantalla antes de que termine la petición. */
+export function optimisticFollowStats<T extends { followers: number; i_follow: boolean }>(
+  current: T,
+  willFollow: boolean,
+): T {
+  if (current.i_follow === willFollow) return current;
+
+  return {
+    ...current,
+    followers: Math.max(0, current.followers + (willFollow ? 1 : -1)),
+    i_follow: willFollow,
+  };
+}
+
 export type FooterActionSelection = "like" | "favorite" | "comments" | "repost" | null;
 
 /** Las acciones rápidas comparten un único foco visual dentro de cada publicación. */

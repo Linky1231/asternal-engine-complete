@@ -42,7 +42,7 @@ import { PortfolioPanel } from "./PortfolioPanel";
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { getUserCode } from "@/lib/social/avatar";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
-import { profileControlStateClass } from "@/lib/social/interaction-state";
+import { optimisticFollowStats, profileControlStateClass } from "@/lib/social/interaction-state";
 import { qrPreviewGeometry } from "@/lib/social/qr-preview";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
@@ -93,6 +93,7 @@ export function ProfilePanel({
   const [contentLoading, setContentLoading] = useState(false);
   const [follow, setFollow] = useState<FollowStats>({ followers: 0, following: 0, i_follow: false });
   const [followBusy, setFollowBusy] = useState(false);
+  const followRequestVersion = useRef(0);
   const [trustPoints, setTrustPoints] = useState<number>(DEFAULT_TRUST_POINTS);
   const [trustBusy, setTrustBusy] = useState(false);
   const [trustDeductAmt, setTrustDeductAmt] = useState(1);
@@ -142,17 +143,29 @@ export function ProfilePanel({
     } finally { setContentLoading(false); }
   };
 
-  const loadFollow = async () => { try { setFollow(await getFollowStats(userId)); } catch { /* ignore */ } };
+  const loadFollow = async () => {
+    const requestVersion = followRequestVersion.current;
+    try {
+      const stats = await getFollowStats(userId);
+      if (requestVersion === followRequestVersion.current) setFollow(stats);
+    } catch { /* ignore */ }
+  };
 
   useEffect(() => { load(); loadContent(); loadFollow(); getTrustPoints(userId).then(setTrustPoints).catch(() => {}); /* eslint-disable-next-line */ }, [userId]);
 
   const toggleFollow = async () => {
     if (followBusy) return;
+    const previous = follow;
+    const willFollow = !previous.i_follow;
+    followRequestVersion.current += 1;
+    setFollow(optimisticFollowStats(previous, willFollow));
     setFollowBusy(true);
     try {
-      if (follow.i_follow) await unfollowUser(userId);
+      if (previous.i_follow) await unfollowUser(userId);
       else await followUser(userId);
-      await loadFollow();
+    } catch {
+      setFollow(previous);
+      setErr("No se pudo actualizar el seguimiento. Inténtalo de nuevo.");
     } finally { setFollowBusy(false); }
   };
 
@@ -406,7 +419,7 @@ export function ProfilePanel({
               <>
                 <button onClick={toggleFollow} disabled={followBusy}
                   className={`h-9 px-2 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border-border bg-muted/60 text-foreground" : "border-border bg-surface text-foreground hover:bg-muted/60"}`}>
-                  {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
+                  {follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
                 </button>
                 <button onClick={() => setShowQREditor(true)}
                   aria-haspopup="dialog"
@@ -1026,6 +1039,7 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [items, setItems] = useState<Profile[]>(list.items);
   const [iFollow, setIFollow] = useState<Set<string>>(new Set());
+  const followOverrides = useRef(new Map<string, boolean>());
 
   // Sync items when parent re-renders with new data
   useEffect(() => {
@@ -1037,13 +1051,16 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
     if (!myId || items.length === 0) return;
     let cancelled = false;
     (async () => {
-      const set = new Set<string>();
-      for (const p of items) {
-        if (cancelled) return;
-        try {
-          const s = await getFollowStats(p.id);
-          if (s.i_follow) set.add(p.id);
-        } catch { /* ignore */ }
+      const results = await Promise.all(items.map(async p => {
+        try { return [p.id, (await getFollowStats(p.id)).i_follow] as const; }
+        catch { return [p.id, false] as const; }
+      }));
+      if (cancelled) return;
+      const set = new Set(results.filter(([, following]) => following).map(([id]) => id));
+      for (const [id, following] of followOverrides.current) {
+        if (!items.some(p => p.id === id)) continue;
+        if (following) set.add(id);
+        else set.delete(id);
       }
       if (!cancelled) setIFollow(set);
     })();
@@ -1052,29 +1069,45 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
 
   const toggle = async (p: Profile) => {
     if (busyId || !myId) return;
+    const wasFollowing = iFollow.has(p.id);
+    const willFollow = !wasFollowing;
+    followOverrides.current.set(p.id, willFollow);
+    setIFollow(prev => {
+      const next = new Set(prev);
+      if (willFollow) next.add(p.id);
+      else next.delete(p.id);
+      return next;
+    });
     setBusyId(p.id);
     try {
-      if (iFollow.has(p.id)) await unfollowUser(p.id);
+      if (wasFollowing) await unfollowUser(p.id);
       else await followUser(p.id);
-      setIFollow(prev => { const n = new Set(prev); if (n.has(p.id)) n.delete(p.id); else n.add(p.id); return n; });
       onChanged();
-    } catch { /* ignore */ } finally { setBusyId(null); }
+    } catch {
+      followOverrides.current.set(p.id, wasFollowing);
+      setIFollow(prev => {
+        const next = new Set(prev);
+        if (wasFollowing) next.add(p.id);
+        else next.delete(p.id);
+        return next;
+      });
+    } finally { setBusyId(null); }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       <button aria-label="Cerrar" onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" />
-      <div className="relative w-full sm:max-w-sm rounded-t-2xl sm:rounded-lg border border-border bg-surface shadow-md animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[80vh] flex flex-col">
-        <div className="flex items-center gap-2 px-4 py-3 border-b border-border/60">
+        className="absolute inset-0 bg-foreground/30 backdrop-blur-[3px] animate-in fade-in duration-200" />
+      <div className="relative w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl glass-menu shadow-xl animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[80vh] flex flex-col">
+        <div className="flex items-center gap-2 px-4 py-3.5 border-b border-border/70 bg-white/25">
           <div className="flex-1 text-sm font-semibold">
             {list.kind === "followers" ? "Seguidores" : "Siguiendo"} · {items.length}
           </div>
-          <button onClick={onClose} className="w-8 h-8 rounded-md border border-border grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+          <button onClick={onClose} className="w-8 h-8 rounded-lg glass-control grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
             <X size={14} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+        <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5">
           {list.loading ? (
             <div className="p-8 text-center text-xs text-muted-foreground">
               <Loader2 className="animate-spin inline mr-2" size={14} /> Cargando…
@@ -1085,7 +1118,7 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
             </div>
           ) : (
             items.map(p => (
-              <div key={p.id} className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-muted/40 transition">
+              <div key={p.id} className="flex items-center gap-2.5 px-2.5 py-2 rounded-xl border border-transparent bg-white/20 hover:border-border/60 hover:bg-white/45 transition">
                 <Link to="/profile/$userId" params={{ userId: p.id }} onClick={onClose}
                   className="flex items-center gap-2.5 min-w-0 flex-1">
                   <Avatar p={p} size={36} rounded="xl" className="border border-border/50" />
@@ -1095,9 +1128,9 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
                   </div>
                 </Link>
                 {myId && myId !== p.id && (
-                  <button onClick={() => void toggle(p)} disabled={busyId === p.id}
-                    className={`shrink-0 h-8 px-2.5 rounded-md text-[11px] font-medium flex items-center gap-1 active:scale-95 transition disabled:opacity-60 ${iFollow.has(p.id) ? "border border-border text-muted-foreground" : "bg-primary text-white"}`}>
-                    {busyId === p.id ? <Loader2 size={11} className="animate-spin" /> : iFollow.has(p.id) ? <><UserCheck size={11} /> Siguiendo</> : <><UserPlus size={11} /> Seguir</>}
+                  <button onClick={() => void toggle(p)} disabled={busyId === p.id} aria-busy={busyId === p.id}
+                    className={`shrink-0 h-8 px-2.5 rounded-lg text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition disabled:opacity-80 ${iFollow.has(p.id) ? "border border-primary/30 bg-primary/12 text-primary shadow-[inset_0_1px_0_oklch(1_0_0_/_0.72)]" : "grad-brand text-primary-foreground shadow-[0_5px_12px_-8px_oklch(0.47_0.14_263_/_0.8)]"}`}>
+                    {iFollow.has(p.id) ? <><UserCheck size={11} /> Siguiendo</> : <><UserPlus size={11} /> Seguir</>}
                   </button>
                 )}
               </div>

@@ -1010,3 +1010,12 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Aplicar el mismo acabado glass a la cabecera fija del detalle de obras.
 - [x] Eliminar el espacio superior no intencional de la pantalla de Inicio.
 - [x] Validar las correcciones en móvil y escritorio, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Respuesta inmediata de seguimiento
+
+- [x] Localizar el control de Seguir/Siguiendo y el panel inferior de seguidores.
+- [x] Actualizar el estado de seguimiento de forma inmediata y reversible ante error.
+- [x] Reforzar el contraste del panel de seguidores sin alterar su jerarquía ni su tamaño.
+- [x] Validar la interacción y el panel en móvil y escritorio, ejecutar pruebas, compilar y publicar.

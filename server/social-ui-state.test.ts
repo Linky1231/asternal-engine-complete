@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
-import { nextExclusiveFooterAction, profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
+import { nextExclusiveFooterAction, optimisticFollowStats, profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
@@ -38,6 +38,12 @@ describe("estado visual de acciones sociales", () => {
     expect(nextExclusiveFooterAction(null, "like")).toBe("like");
     expect(nextExclusiveFooterAction("like", "favorite")).toBe("favorite");
     expect(nextExclusiveFooterAction("repost", "repost")).toBeNull();
+  });
+
+  it("actualiza el seguimiento y su contador de forma optimista sin valores negativos", () => {
+    const following = optimisticFollowStats({ followers: 4, i_follow: false }, true);
+    expect(following).toEqual({ followers: 5, i_follow: true });
+    expect(optimisticFollowStats({ followers: 0, i_follow: true }, false)).toEqual({ followers: 0, i_follow: false });
   });
 
   it("reserva un margen de seguridad con el marco QR redondeado predeterminado", () => {
