@@ -760,3 +760,35 @@ Validación: revisada en 390 × 844 y 1440 × 900. La bombilla dorada se entiend
 - [x] Ejecutar pruebas y compilación antes de publicar.
 
 Validación: revisada en 390 × 844 y 1440 × 900. La bombilla se amplió y usa azules coherentes con Azure Drift. La pestaña activa ahora ocupa una superficie azul completa, mantiene contraste blanco, incorpora la etiqueta “ACTIVO” y expone el estado a tecnologías de asistencia. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Selector de acceso en gris suave
+
+- [x] Retirar la etiqueta de actividad del selector.
+- [x] Identificar el gris suave del estado seleccionado en la navegación inferior.
+- [x] Aplicar esa referencia gris al selector Acceder / Registrarse y conservar contraste claro.
+- [x] Validar el selector en móvil y escritorio, pruebas y compilación antes de publicar.
+
+Validación: revisada en 390 × 844 y 1440 × 900. El selector usa ahora exactamente `bg-muted/60` como fondo y una pastilla `bg-white shadow-sm`, las mismas clases del menú inferior. La selección se entiende sin etiquetas adicionales. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Titular de idea destacado
+
+- [x] Sustituir el titular por “Todo juego comienza con una idea”.
+- [x] Aplicar el degradado azul únicamente al segmento “una idea”.
+- [x] Validar el contraste y los saltos de línea en móvil y escritorio.
+- [x] Ejecutar pruebas y compilación antes de publicar.
+
+Validación: revisada en 390 × 844 y 1440 × 900. “Una idea” conserva el mismo azul degradado de la interfaz sobre el titular en negro, sin comprometer lectura ni generar un salto de línea confuso. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Posición elevada de la bombilla
+
+- [x] Subir la bombilla de idea en la composición superior.
+- [x] Mantener el halo de fondo centrado detrás de la bombilla.
+- [x] Validar el equilibrio visual en móvil y escritorio antes de publicar.
+
+Validación: revisada en 390 × 844 y 1440 × 900. La bombilla sube desde el centro inferior al área media-superior del halo, mantiene el encuadre y deja una separación más clara con el titular. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.

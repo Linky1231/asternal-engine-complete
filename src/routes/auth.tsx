@@ -159,7 +159,7 @@ function HeroScene() {
             style={{ background: "oklch(0.72 0.14 235 / 0.08)" }} />
 
 
-          <div className="absolute left-1/2 top-[55%] -translate-x-1/2">
+          <div className="absolute left-1/2 top-[46%] -translate-x-1/2">
             <div className="relative z-10 flex justify-center" style={{ animation: "bob 4s ease-in-out infinite", willChange: "transform" }}>
               <IdeaBulb />
             </div>
@@ -459,7 +459,10 @@ function AuthPage() {
               animation: loaded ? 'fade-in-up 600ms 420ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
               <h1 className="text-[clamp(1.8rem,3.6vw,2.9rem)] font-display font-bold tracking-tight leading-[1.08] text-foreground mt-4 mb-3 max-w-lg mx-auto">
-                {IDEA_HERO_COPY.title}
+                {IDEA_HERO_COPY.titleLead}{" "}
+                <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  {IDEA_HERO_COPY.titleAccent}
+                </span>
               </h1>
             </div>
 
@@ -502,22 +505,26 @@ function AuthPage() {
                       </p>
                     </div>
 
-                    {/* Selector de acceso: la opción activa se muestra como una superficie azul completa. */}
-                    <div className="glass-control flex rounded-xl p-1 mb-5 gap-1" role="tablist" aria-label="Modo de acceso">
+                    {/* Selector de acceso: mismo gris suave y pastilla clara de la navegación inferior. */}
+                    <div className="flex bg-muted/60 rounded-xl p-0.5 mb-5 relative" role="tablist" aria-label="Modo de acceso">
+                      <div
+                        className="absolute top-0.5 bottom-0.5 w-[calc(50%-2px)] rounded-[10px] bg-white shadow-sm will-change-transform"
+                        style={{
+                          left: 0,
+                          transform: `translateX(${mode === "signin" ? 0 : 100}%)`,
+                          transition: "transform 280ms cubic-bezier(0.22, 1, 0.36, 1)",
+                          pointerEvents: "none" as const,
+                        }}
+                      />
                       {(["signin", "signup"] as const).map(m => (
                         <button key={m} type="button" onClick={() => switchMode(m)} role="tab"
                           aria-selected={mode === m}
-                          className={`relative flex-1 min-h-11 rounded-[9px] text-xs font-display font-semibold tracking-wider transition-all duration-300 ${
+                          className={`relative z-10 flex-1 min-h-11 rounded-[10px] text-xs font-display font-semibold tracking-wider transition-colors duration-200 ${
                             mode === m
-                              ? "bg-gradient-to-r from-primary to-accent text-white shadow-[0_6px_16px_rgba(66,126,211,0.32)] ring-1 ring-white/50"
-                              : "text-muted-foreground/65 hover:bg-white/55 hover:text-foreground"
+                              ? "text-foreground"
+                              : "text-muted-foreground/80 hover:text-foreground"
                           }`}>
-                          <span className="flex flex-col items-center justify-center leading-none gap-1">
-                            <span>{m === "signin" ? "ACCEDER" : "REGISTRARSE"}</span>
-                            <span className={`text-[8px] font-sans font-semibold tracking-[0.16em] ${mode === m ? "opacity-85" : "opacity-0"}`}>
-                              ACTIVO
-                            </span>
-                          </span>
+                          {m === "signin" ? "ACCEDER" : "REGISTRARSE"}
                         </button>
                       ))}
                     </div>
