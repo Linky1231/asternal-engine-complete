@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
-import { socialActionStateClass } from "../src/lib/social/interaction-state";
+import { profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 
@@ -21,6 +21,16 @@ describe("estado visual de acciones sociales", () => {
     const state = socialActionStateClass(false);
     expect(state).toContain("bg-transparent");
     expect(state).toContain("text-muted-foreground");
+  });
+
+  it("mantiene los controles de Perfil neutros hasta que su panel esté abierto", () => {
+    const neutral = profileControlStateClass(false);
+    expect(neutral).toContain("bg-surface");
+    expect(neutral).not.toContain("bg-primary");
+
+    const active = profileControlStateClass(true);
+    expect(active).toContain("bg-primary");
+    expect(active).toContain("text-primary-foreground");
   });
 });
 

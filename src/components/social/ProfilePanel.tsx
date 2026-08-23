@@ -41,6 +41,7 @@ import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { getUserCode } from "@/lib/social/avatar";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
+import { profileControlStateClass } from "@/lib/social/interaction-state";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -206,9 +207,9 @@ export function ProfilePanel({
     setTimeout(() => setCopiedLink(false), 1800);
   };
   const shareMenu = (
-    <div className="relative">
+    <div className="relative flex-1">
       <button onClick={() => setShareOpen(s => !s)}
-        className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium flex items-center gap-1.5 active:scale-95 transition">
+        className="w-full h-10 px-3 rounded-xl border border-border bg-surface text-xs font-medium flex items-center justify-center gap-1.5 text-foreground hover:bg-muted/60 active:scale-95 transition">
         <Share2 size={13} /> Compartir
       </button>
       {shareOpen && (
@@ -323,8 +324,8 @@ export function ProfilePanel({
   return (
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Header card with banner */}
-      <section className="rounded-lg border border-border/70 bg-surface overflow-hidden">
-        <div className="relative h-28 grad-brand-soft">
+      <section className="rounded-2xl border border-border/70 bg-surface/90 shadow-sm overflow-hidden">
+        <div className="relative h-28 bg-muted/35">
           {bannerPreview && <img src={bannerPreview} alt="banner" className="absolute inset-0 w-full h-full object-cover" />}
           {viewingOwn && editing && (
             <button onClick={() => bannerRef.current?.click()}
@@ -349,7 +350,7 @@ export function ProfilePanel({
             )}
           </div>
 
-          <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+          <div className="mt-3">
             <div className="min-w-0">
               {editing ? (
                 <div className="space-y-2">
@@ -361,7 +362,7 @@ export function ProfilePanel({
               ) : (
                 <>
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <UserName p={{ ...profile, display_name: profileDisplayName }} size="lg" showBadge={false} />
+                    <span className="font-display text-lg font-semibold truncate text-foreground">{profileDisplayName}</span>
                     {isPlusActive(profile) && profile.show_plus_badge !== false && (
                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-display font-bold text-white shrink-0"
                         style={{ background: "var(--gradient-plus)" }}>PLUS</span>
@@ -372,15 +373,15 @@ export function ProfilePanel({
                   </div>
                   {!editing && (
                     <button onClick={() => void copyCode()}
-                      className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/40 border border-border/50 text-[10px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
+                      className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/40 border border-border/50 text-[10px] font-mono text-muted-foreground hover:text-foreground hover:border-border active:scale-95 transition"
                       title="ID de usuario · toca para copiar">
-                      <Fingerprint size={10} className="text-primary-glow" />
+                      <Fingerprint size={10} />
                       {userCode}
                       {codeCopied ? <Check size={9} className="text-emerald-500" /> : <Copy size={9} className="opacity-60" />}
                     </button>
                   )}
                   {profile.custom_title && (
-                    <div className="text-[11px] mt-0.5" style={{ color: profile.accent_color ?? "var(--primary)" }}>
+                    <div className="text-[11px] mt-1 text-muted-foreground" style={profile.accent_color ? { color: profile.accent_color } : undefined}>
                       {profile.custom_title}
                     </div>
                   )}
@@ -388,23 +389,25 @@ export function ProfilePanel({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
+            <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:items-center">
             {viewingOwn ? (
               editing ? (
                 <button onClick={save} disabled={saving}
-                  className="h-10 px-3.5 rounded-xl bg-primary text-white text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60">
+                  className="col-span-2 h-10 px-3.5 rounded-xl bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60">
                   {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
                 </button>
               ) : (
                 <>
                   <button onClick={() => setEditing(true)}
-                    className="h-10 px-3 rounded-xl border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
+                    className="h-10 px-3 rounded-xl border border-border bg-surface text-xs font-medium text-foreground hover:bg-muted/60 active:scale-95">Editar</button>
                   <button onClick={() => setShowQR(v => !v)}
-                    className={`h-10 px-3.5 rounded-xl border text-xs font-semibold active:scale-95 flex items-center gap-2 ${showQR ? "border-primary/40 bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15"}`}>
+                    aria-expanded={showQR}
+                    className={`h-10 px-3.5 rounded-xl border text-xs font-semibold active:scale-95 flex items-center justify-center gap-2 transition-colors ${profileControlStateClass(showQR)}`}>
                     <QrCode size={16} /><span>Código QR</span>
                   </button>
-                  {shareMenu}
-                  <div className="relative">
+                  <div className="col-span-2 flex items-center gap-2 sm:contents">
+                    {shareMenu}
+                    <div className="relative">
                     <button onClick={() => setShowTrustMenu(v => !v)}
                       className="h-10 w-10 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
                       <MoreVertical size={14} />
@@ -422,20 +425,23 @@ export function ProfilePanel({
                       </div>
                     )}
                   </div>
+                  </div>
                 </>
               )
             ) : (
               <>
                 <button onClick={toggleFollow} disabled={followBusy}
-                  className={`h-10 px-3 rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
+                  className={`h-10 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border-border bg-muted/60 text-foreground" : "border-border bg-surface text-foreground hover:bg-muted/60"}`}>
                   {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
                 </button>
                 <button onClick={() => setShowQR(v => !v)}
-                  className={`h-10 px-3.5 rounded-xl border text-xs font-semibold active:scale-95 flex items-center gap-2 ${showQR ? "border-primary/40 bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15"}`}>
+                  aria-expanded={showQR}
+                  className={`h-10 px-3.5 rounded-xl border text-xs font-semibold active:scale-95 flex items-center justify-center gap-2 transition-colors ${profileControlStateClass(showQR)}`}>
                   <QrCode size={16} /><span>Código QR</span>
                 </button>
-                {shareMenu}
-                <div className="relative">
+                <div className="col-span-2 flex items-center gap-2 sm:contents">
+                  {shareMenu}
+                  <div className="relative">
                   <button onClick={() => setShowTrustMenu(v => !v)}
                     className="h-10 w-10 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
                     <MoreVertical size={14} />
@@ -453,6 +459,7 @@ export function ProfilePanel({
                     </div>
                     )}
                   </div>
+                </div>
               </>
             )}
             </div>
@@ -460,7 +467,7 @@ export function ProfilePanel({
 
           {/* Follow counts (tocables: muestran la lista de personas) */}
           {!editing && (
-            <div className="flex items-center gap-1 text-[11px]">
+          <div className="mt-3 flex items-center gap-1 border-t border-border/40 pt-3 text-[11px]">
               <button onClick={() => openFollowList("followers")}
                 className="flex items-center gap-1 px-2 py-1 -mx-1 rounded-lg hover:bg-muted/40 active:scale-95 transition text-left">
                 <b className="text-foreground tabular-nums">{follow.followers}</b>
@@ -499,7 +506,7 @@ export function ProfilePanel({
           ) : profile.bio ? (
             <p className="text-sm whitespace-pre-wrap break-words">{profile.bio}</p>
           ) : viewingOwn ? (
-            <p className="text-xs text-muted-foreground italic">Añade una descripción tocando Editar.</p>
+          <p className="mt-3 text-xs text-muted-foreground italic">Añade una descripción tocando Editar.</p>
           ) : null}
 
           {/* Meta chips */}
@@ -611,10 +618,10 @@ export function ProfilePanel({
       {viewingOwn && (
         <Link
           to="/plus"
-          className="profile-plus-benefits block relative overflow-hidden rounded-lg border p-4 active:scale-[0.99] transition"
+          className="profile-plus-benefits block relative overflow-hidden rounded-2xl border p-4 active:scale-[0.99] transition"
         >
           <div className="relative flex items-center gap-3">
-            <div className="profile-plus-benefits-icon w-11 h-11 rounded-xl grid place-items-center text-white shrink-0">
+            <div className="profile-plus-benefits-icon w-11 h-11 rounded-xl grid place-items-center text-foreground shrink-0">
               <Star size={20} fill="currentColor" />
             </div>
             <div className="flex-1 min-w-0">

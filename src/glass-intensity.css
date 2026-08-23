@@ -248,23 +248,23 @@ input:focus-visible, textarea:focus-visible, select:focus-visible {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.64);
 }
 
-/* El resumen de beneficios pertenece a Plus, aun cuando viva dentro del perfil. */
+/* El acceso a Plus es una ruta informativa: no debe parecer una selección activa. */
 .profile-plus-benefits {
-  border-color: rgb(48 171 173 / 0.42) !important;
-  background:
-    linear-gradient(135deg, rgb(38 143 179 / 0.15), rgb(48 171 173 / 0.11) 52%, rgb(122 203 217 / 0.14)) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72), 0 16px 30px -26px rgb(38 143 179 / 0.42);
+  border-color: rgb(145 153 166 / 0.34) !important;
+  background: rgb(255 255 255 / 0.46) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72), 0 14px 26px -28px rgb(33 44 59 / 0.34);
 }
 
 .profile-plus-benefits:hover {
-  border-color: rgb(48 171 173 / 0.58) !important;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.82), 0 20px 34px -26px rgb(38 143 179 / 0.5);
+  border-color: rgb(115 125 140 / 0.5) !important;
+  background: rgb(255 255 255 / 0.7) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.82), 0 18px 30px -28px rgb(33 44 59 / 0.4);
 }
 
 .profile-plus-benefits-icon {
-  background: var(--plus-aurora-gradient) !important;
-  border: 1px solid rgb(255 255 255 / 0.42);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.32), 0 10px 20px -15px rgb(38 143 179 / 0.64);
+  background: rgb(226 230 236 / 0.8) !important;
+  border: 1px solid rgb(145 153 166 / 0.3);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 10px 20px -17px rgb(33 44 59 / 0.45);
 }
 
-.profile-plus-benefits-chevron { color: var(--plus-aurora-solid) !important; }
+.profile-plus-benefits-chevron { color: rgb(99 110 126) !important; }

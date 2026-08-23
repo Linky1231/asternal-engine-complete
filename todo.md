@@ -901,3 +901,14 @@ Validación: el campo activo aplica un borde azul de alto contraste y un halo ex
 - [x] Validar Galería y Perfil en móvil y escritorio, con pruebas y compilación antes de publicar.
 
 La Galería ahora descarta en la consulta y en la interfaz toda publicación con `asset_preset`, que identifica los recursos heredados de la antigua Tienda. Las obras artísticas conservan `category: artwork` y `asset_preset: null`. La cabecera de Perfil separa avatar, identidad, usuario, código y acciones; el control «Código QR» ya es una acción etiquetada y amplia. `pnpm test` completó 18 pruebas y `pnpm build` finalizó correctamente. Las rutas de Galería y Perfil requieren sesión, por lo que la captura no autenticada fue redirigida a Acceso; la composición de Acceso se revisó en 390 × 844 y 1440 × 900.
+
+---
+
+# Refinamiento de tarjeta de Perfil y estados neutros
+
+- [x] Auditar la estructura móvil de la tarjeta de Perfil y sus acentos de color.
+- [x] Reorganizar la identidad, acciones y métricas para crear una jerarquía más clara.
+- [x] Retirar el azul de controles inactivos y conservarlo solo para estados seleccionados o activos.
+- [x] Validar el Perfil responsive, pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 19 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida redirige de forma estable a Acceso sin sesión en 390 × 844 y 1440 × 900. El botón QR es neutro en reposo y adquiere azul exclusivamente al abrir su panel; el banner predeterminado y el acceso Centro Plus también se neutralizaron para que no parezcan estados seleccionados.
