@@ -985,3 +985,11 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Validar los paneles de Perfil en móvil y escritorio con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida se comprobó en 390 × 844 y 1440 × 900; sin sesión, redirige a Acceso de forma estable. Con sesión, Compartir y Más usan paneles inferiores exclusivos, fuera de la tarjeta de Perfil y sin superposición entre sí.
+
+---
+
+# Formato único de Portafolio
+
+- [x] Retirar el selector de diseño Lista/Cuadrícula del editor de Portafolio.
+- [x] Fijar Lista como formato predeterminado y único de Portafolio.
+- [x] Validar el Portafolio simplificado con pruebas y compilación antes de publicar.

@@ -63,11 +63,12 @@ export interface Portfolio {
   skills: string[];
   links: PortfolioLink[];
   achievements: PortfolioAchievement[];
-  layout: "list" | "grid";
+  layout: "list";
   updatedAt: string;
 }
 
 const STORAGE_KEY = "asternal_portfolios";
+const PORTFOLIO_LAYOUT = "list" as const;
 const SKILL_SUGGESTIONS = [
   "Game Design", "Pixel Art", "3D Modeling", "Programming", "Music",
   "Level Design", "Storytelling", "Unity", "Godot", "Unreal",
@@ -88,7 +89,7 @@ function savePortfolio(p: Portfolio): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     const all = raw ? JSON.parse(raw) as Record<string, Portfolio> : {};
-    all[p.userId] = { ...p, updatedAt: new Date().toISOString() };
+    all[p.userId] = { ...p, layout: PORTFOLIO_LAYOUT, updatedAt: new Date().toISOString() };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
   } catch { /* quota */ }
 }
@@ -130,7 +131,6 @@ export function PortfolioPanel({
   const [skillInput, setSkillInput] = useState("");
   const [links, setLinks] = useState<PortfolioLink[]>([]);
   const [achievements, setAchievements] = useState<PortfolioAchievement[]>([]);
-  const [layout, setLayout] = useState<"list" | "grid">("list");
   const [saving, setSaving] = useState(false);
   const [showSkillPicker, setShowSkillPicker] = useState(false);
 
@@ -144,7 +144,6 @@ export function PortfolioPanel({
       setSkills(p.skills ?? []);
       setLinks(p.links ?? []);
       setAchievements(p.achievements ?? []);
-      setLayout(p.layout ?? "list");
     }
   }, [userId]);
 
@@ -156,13 +155,8 @@ export function PortfolioPanel({
       setSkills(portfolio.skills ?? []);
       setLinks(portfolio.links ?? []);
       setAchievements(portfolio.achievements ?? []);
-      setLayout(portfolio.layout ?? "list");
     }
     setEditing(true);
-  };
-
-  const selectLayout = (nextLayout: "list" | "grid") => {
-    setLayout(current => current === nextLayout ? current : nextLayout);
   };
 
   /* ── Achievement helpers ── */
@@ -205,7 +199,7 @@ export function PortfolioPanel({
         skills,
         links: links.filter(l => l.label.trim() && l.url.trim()),
         achievements: achievements.filter(a => a.title.trim()),
-        layout,
+        layout: PORTFOLIO_LAYOUT,
         updatedAt: new Date().toISOString(),
       };
       savePortfolio(p);
@@ -325,20 +319,6 @@ export function PortfolioPanel({
                 <input type="color" value={accentColor.startsWith("#") ? accentColor : "#3b82f6"}
                   onChange={e => setAccentColor(e.target.value)}
                   className="w-8 h-8 rounded-lg border border-border cursor-pointer bg-transparent" title="Color personalizado" />
-              </div>
-            </Section>
-
-            {/* ── Layout ── */}
-            <Section label="Diseño" hint="Cómo se muestran tus logros">
-              <div className="flex gap-2">
-                <button type="button" onClick={() => selectLayout("list")} aria-pressed={layout === "list"}
-                  className={`flex-1 h-9 rounded-lg text-[11px] font-medium border transition-none ${layout === "list" ? "border-primary/40 bg-primary/15 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
-                  Lista
-                </button>
-                <button type="button" onClick={() => selectLayout("grid")} aria-pressed={layout === "grid"}
-                  className={`flex-1 h-9 rounded-lg text-[11px] font-medium border transition-none ${layout === "grid" ? "border-primary/40 bg-primary/15 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
-                  Cuadrícula
-                </button>
               </div>
             </Section>
 
@@ -533,51 +513,28 @@ export function PortfolioPanel({
 
           {/* ── Achievements ── */}
           {portfolio && portfolio.achievements.length > 0 && (
-            portfolio.layout === "grid" ? (
-              <div className="grid grid-cols-2 gap-2">
-                {portfolio.achievements.map(ach => {
-                  const Icon = getIcon(ach.icon);
-                  return (
-                    <div key={ach.id} className="p-3 rounded-xl border border-border/40 bg-card hover:border-primary/20 transition text-center space-y-2">
-                      <div className="w-10 h-10 mx-auto rounded-xl grid place-items-center"
-                        style={{ background: (portfolio.accentColor ?? "#3b82f6") + "12" }}>
-                        <Icon size={18} style={{ color: portfolio.accentColor ?? "#3b82f6" }} />
-                      </div>
-                      <div className="text-[11px] font-semibold text-foreground leading-tight">{ach.title}</div>
+            <div className="space-y-2">
+              {portfolio.achievements.map(ach => {
+                const Icon = getIcon(ach.icon);
+                return (
+                  <div key={ach.id} className="flex items-start gap-3 p-3 rounded-xl border border-border/40 bg-card hover:border-primary/20 transition">
+                    <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0"
+                      style={{ background: (portfolio.accentColor ?? "#3b82f6") + "12" }}>
+                      <Icon size={16} style={{ color: portfolio.accentColor ?? "#3b82f6" }} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[12px] font-semibold text-foreground">{ach.title}</div>
                       {ach.description && (
-                        <div className="text-[10px] text-muted-foreground/60 leading-snug line-clamp-2">{ach.description}</div>
+                        <div className="text-[11px] text-muted-foreground/60 mt-0.5">{ach.description}</div>
                       )}
-                      <div className="text-[8px] font-mono text-muted-foreground/30">
-                        {new Date(ach.date).toLocaleDateString("es", { month: "short", year: "numeric" })}
+                      <div className="text-[9px] font-mono text-muted-foreground/30 mt-1">
+                        {new Date(ach.date).toLocaleDateString("es", { year: "numeric", month: "short", day: "numeric" })}
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {portfolio.achievements.map(ach => {
-                  const Icon = getIcon(ach.icon);
-                  return (
-                    <div key={ach.id} className="flex items-start gap-3 p-3 rounded-xl border border-border/40 bg-card hover:border-primary/20 transition">
-                      <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0"
-                        style={{ background: (portfolio.accentColor ?? "#3b82f6") + "12" }}>
-                        <Icon size={16} style={{ color: portfolio.accentColor ?? "#3b82f6" }} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[12px] font-semibold text-foreground">{ach.title}</div>
-                        {ach.description && (
-                          <div className="text-[11px] text-muted-foreground/60 mt-0.5">{ach.description}</div>
-                        )}
-                        <div className="text-[9px] font-mono text-muted-foreground/30 mt-1">
-                          {new Date(ach.date).toLocaleDateString("es", { year: "numeric", month: "short", day: "numeric" })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )
+                  </div>
+                );
+              })}
+            </div>
           )}
 
           {portfolio && portfolio.achievements.length === 0 && !portfolio.skills.length && !portfolio.links.length && (
