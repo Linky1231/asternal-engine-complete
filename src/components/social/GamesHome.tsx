@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Play, Flame, Rocket, Heart, Sparkles as SparklesIcon, Sparkles, Users, ChevronRight, Gamepad2, Trophy, Joystick, Crown, CloudOff, Loader2, CheckCircle2, Compass } from "lucide-react";
+import { Play, Flame, Rocket, Heart, Sparkles as SparklesIcon, Sparkles, Users, Gamepad2, Trophy, Joystick, Crown, CloudOff, Loader2, CheckCircle2, Compass } from "lucide-react";
 import { FaGamepad } from "react-icons/fa";
 import type { PostWithMeta } from "@/lib/social/api";
 import { fetchGamePlayCounts24h } from "@/lib/social/api";
@@ -8,6 +8,7 @@ import { SUPABASE_ACCESS_TOKEN, runGamePlaysSchemaSetup } from "@/lib/supabase/s
 import { GameIcon, GameIconPlaceholder } from "./GameIcon";
 import { GameCard } from "./GameCard";
 import { coverFrameFromPreset, coverFrameStyle } from "@/lib/social/cover-frame";
+import { mobileCarouselScrollClassName } from "@/lib/social/carousel-scroll";
 
 function extractTitle(content: string): string {
   const line = content.split("\n")[0] || "Juego";
@@ -284,12 +285,11 @@ export function GamesHome({
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <section className="space-y-2">
-      <div className="flex items-end justify-between px-1">
+      <div className="px-1">
         <div>
           <div className="font-display text-base leading-tight">{title}</div>
           {subtitle && <div className="text-[11px] text-muted-foreground">{subtitle}</div>}
         </div>
-        <ChevronRight size={16} className="text-muted-foreground opacity-40" />
       </div>
       {children}
     </section>
@@ -298,7 +298,7 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
 
 function IconRow({ games, onOpen }: { games: PostWithMeta[]; onOpen: (g: PostWithMeta) => void }) {
   return (
-    <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-3 px-3 pb-1 md:flex-wrap md:overflow-visible md:justify-start">
+    <div className={mobileCarouselScrollClassName}>
       {games.map(g => (
         <GameIcon key={g.id} post={g} onOpen={() => onOpen(g)} />
       ))}

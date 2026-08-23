@@ -697,3 +697,11 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 - [x] Aplicar el turquesa glass del primer marco de perfil a esos controles y al apartado Plugin/Plus.
 - [x] Confirmar que el Azure Drift permanece intacto fuera de Plugin/Plus.
 - [x] Validar Plus/Plugin en escritorio y móvil, pruebas y compilación antes de publicar.
+
+---
+
+# Carruseles con deslizamiento natural
+
+- [x] Localizar flechas y botones de avance redundantes en carruseles pequeños.
+- [x] Retirar esos controles y reforzar el desplazamiento horizontal táctil y por trackpad.
+- [x] Validar carruseles en móvil, pruebas y compilación antes de publicar.
