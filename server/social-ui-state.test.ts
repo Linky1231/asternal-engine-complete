@@ -35,9 +35,10 @@ describe("vista previa de obras", () => {
     expect(galleryPreviewPrice(-10)).toBe("0");
   });
 
-  it("limita la Galería a obras artísticas y no a assets generales del editor", () => {
-    expect(isArtistGalleryArtwork("artwork")).toBe(true);
-    expect(isArtistGalleryArtwork("game_asset")).toBe(false);
+  it("limita la Galería a obras artísticas y excluye assets heredados de la antigua Tienda", () => {
+    expect(isArtistGalleryArtwork({ category: "artwork", asset_preset: null })).toBe(true);
+    expect(isArtistGalleryArtwork({ category: "artwork", asset_preset: { kind: "sprite" } })).toBe(false);
+    expect(isArtistGalleryArtwork({ category: "game_asset", asset_preset: null })).toBe(false);
     expect(isArtistGalleryArtwork(undefined)).toBe(false);
   });
 });

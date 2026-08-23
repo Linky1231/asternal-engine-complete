@@ -186,10 +186,13 @@ export async function uploadMedia(file: File, userId: string): Promise<string> {
   return path;
 }
 
-export async function fetchFeed(opts: { search?: string; tag?: string; category?: string; includeGames?: boolean } = {}): Promise<PostWithMeta[]> {
+export async function fetchFeed(opts: { search?: string; tag?: string; category?: string; includeGames?: boolean; artistGallery?: boolean } = {}): Promise<PostWithMeta[]> {
   let q = supabase.from("posts").select("*").is("deleted_at", null).order("created_at", { ascending: false }).limit(100);
   if (opts.search) q = q.ilike("content", `%${opts.search}%`);
   if (opts.category) q = q.eq("category", opts.category);
+  // La Tienda histórica compartía category="artwork", pero sus recursos del
+  // editor conservan asset_preset. La Galería solo admite obras artísticas.
+  if (opts.artistGallery) q = q.is("asset_preset", null);
   // El feed normal solo muestra publicaciones: los juegos y las obras de la
   // galería (category = artwork) viven en sus propias secciones y no deben
   // colarse aquí.
@@ -1239,7 +1242,7 @@ export async function fetchProfileById(userId: string): Promise<Profile | null> 
 
 export async function fetchUserPosts(userId: string, opts: { games?: boolean; artwork?: boolean } = {}): Promise<PostWithMeta[]> {
   let q = supabase.from("posts").select("*").eq("author_id", userId).is("deleted_at", null).order("created_at", { ascending: false }).limit(100);
-  if (opts.artwork) q = q.eq("category", "artwork");
+  if (opts.artwork) q = q.eq("category", "artwork").is("asset_preset", null);
   else if (opts.games === true) q = q.eq("category", "game");
   else if (opts.games === false) q = q.or("category.is.null,category.neq.game,category.neq.artwork");
   const { data: posts, error } = await q;
@@ -1501,7 +1504,7 @@ export async function fetchMyGamesLite(): Promise<{ id: string; title: string }[
 
 // ============ ARTWORK GALLERY ============
 export async function fetchArtworks(opts: { search?: string } = {}): Promise<PostWithMeta[]> {
-  return fetchFeed({ ...opts, category: "artwork" });
+  return fetchFeed({ ...opts, category: "artwork", artistGallery: true });
 }
 
 export async function publishArtwork(input: {
@@ -1589,13 +1592,13 @@ export async function fetchMyArtworks(): Promise<PostWithMeta[]> {
   const legacyIds = (purchases ?? []).map(x => (x as { post_id: string }).post_id);
 
   const rows: PostRow[] = [];
-  const q1 = await supabase.from("posts").select("*").is("deleted_at", null).eq("category", "artwork")
+  const q1 = await supabase.from("posts").select("*").is("deleted_at", null).eq("category", "artwork").is("asset_preset", null)
     .or(`current_owner_id.eq.${me},author_id.eq.${me}`)
     .order("created_at", { ascending: false }).limit(100);
   if (!q1.error) rows.push(...((q1.data ?? []) as PostRow[]));
 
   if (legacyIds.length) {
-    const q2 = await supabase.from("posts").select("*").is("deleted_at", null).eq("category", "artwork")
+    const q2 = await supabase.from("posts").select("*").is("deleted_at", null).eq("category", "artwork").is("asset_preset", null)
       .in("id", legacyIds.slice(0, 200)).order("created_at", { ascending: false });
     if (!q2.error) rows.push(...((q2.data ?? []) as PostRow[]));
   }

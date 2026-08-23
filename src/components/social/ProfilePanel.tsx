@@ -40,7 +40,7 @@ import { TrustPointsHistory } from "./TrustPointsHistory";
 import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
 import { getUserCode } from "@/lib/social/avatar";
-import { galleryPreviewAuthor, galleryPreviewPrice } from "@/lib/social/gallery-preview";
+import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -285,6 +285,8 @@ export function ProfilePanel({
   const interestsList = (profile.interests ?? []).filter(Boolean);
   const userCode = profile.user_code || getUserCode(profile.id);
   const profileHandle = profile.username?.trim() || userCode;
+  const profileDisplayName = profile.display_name?.trim() || profileHandle || "Jugador";
+  const galleryArtworks = artworks.filter(isArtistGalleryArtwork);
   const copyCode = async () => {
     try { await navigator.clipboard.writeText(userCode); } catch { /* noop */ }
     setCodeCopied(true);
@@ -334,8 +336,8 @@ export function ProfilePanel({
             onChange={e => pickBanner(e.target.files?.[0] ?? null)} />
         </div>
 
-        <div className="p-4 space-y-3">
-          <div className="flex items-start gap-3 -mt-12">
+        <div className="px-4 pb-4">
+          <div className="-mt-10 flex items-end justify-between gap-3">
             {/* Avatar: marco de degradado ceñido a la foto (mismo lenguaje que PostCard),
                 en vez del anillo animado flotante que se veía como un borde roto. */}
             {frameRing ? (
@@ -345,9 +347,10 @@ export function ProfilePanel({
             ) : (
               avatarButton
             )}
+          </div>
 
-
-            <div className="flex-1 min-w-0 pt-12">
+          <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
+            <div className="min-w-0">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -358,18 +361,18 @@ export function ProfilePanel({
               ) : (
                 <>
                   <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <UserName p={profile} size="lg" showBadge={false} />
+                    <UserName p={{ ...profile, display_name: profileDisplayName }} size="lg" showBadge={false} />
                     {isPlusActive(profile) && profile.show_plus_badge !== false && (
                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-display font-bold text-white shrink-0"
                         style={{ background: "var(--gradient-plus)" }}>PLUS</span>
                     )}
                   </div>
-                  <div className="text-[11px] font-mono text-muted-foreground truncate">
+                  <div className="mt-0.5 text-xs font-medium text-muted-foreground break-all">
                     @{profileHandle}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
                   {!editing && (
                     <button onClick={() => void copyCode()}
-                      className="mt-1 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[9px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
+                      className="mt-2 inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-muted/40 border border-border/50 text-[10px] font-mono text-muted-foreground hover:text-primary-glow hover:border-primary/40 active:scale-95 transition"
                       title="ID de usuario · toca para copiar">
                       <Fingerprint size={10} className="text-primary-glow" />
                       {userCode}
@@ -385,24 +388,25 @@ export function ProfilePanel({
               )}
             </div>
 
+            <div className="flex flex-wrap items-center gap-2 lg:justify-end">
             {viewingOwn ? (
               editing ? (
                 <button onClick={save} disabled={saving}
-                  className="mt-12 h-9 px-3.5 rounded-lg bg-primary text-white text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60">
+                  className="h-10 px-3.5 rounded-xl bg-primary text-white text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60">
                   {saving ? <Loader2 size={12} className="animate-spin" /> : saved ? <CheckCircle2 size={12}/> : <Save size={12} />} Guardar
                 </button>
               ) : (
-                <div className="mt-12 flex items-center gap-2">
+                <>
                   <button onClick={() => setEditing(true)}
-                    className="h-9 px-3 rounded-lg border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
+                    className="h-10 px-3 rounded-xl border border-border bg-surface text-xs font-medium active:scale-95">Editar</button>
                   <button onClick={() => setShowQR(v => !v)}
-                    className={`h-9 px-3 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1.5 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
-                    <QrCode size={14} /><span>QR</span>
+                    className={`h-10 px-3.5 rounded-xl border text-xs font-semibold active:scale-95 flex items-center gap-2 ${showQR ? "border-primary/40 bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15"}`}>
+                    <QrCode size={16} /><span>Código QR</span>
                   </button>
                   {shareMenu}
                   <div className="relative">
                     <button onClick={() => setShowTrustMenu(v => !v)}
-                      className="h-9 w-9 rounded-lg border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+                      className="h-10 w-10 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
                       <MoreVertical size={14} />
                     </button>
                     {showTrustMenu && (
@@ -418,22 +422,22 @@ export function ProfilePanel({
                       </div>
                     )}
                   </div>
-                </div>
+                </>
               )
             ) : (
-              <div className="mt-12 flex items-center gap-2">
+              <>
                 <button onClick={toggleFollow} disabled={followBusy}
-                  className={`h-9 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
+                  className={`h-10 px-3 rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 disabled:opacity-60 ${follow.i_follow ? "border border-border bg-surface text-foreground" : "bg-primary text-white"}`}>
                   {followBusy ? <Loader2 size={12} className="animate-spin"/> : follow.i_follow ? <><UserCheck size={12}/> Siguiendo</> : <><UserPlus size={12}/> Seguir</>}
                 </button>
                 <button onClick={() => setShowQR(v => !v)}
-                  className={`h-9 px-3 rounded-lg border text-xs font-medium active:scale-95 flex items-center gap-1.5 ${showQR ? "border-primary/30 bg-primary/10 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
-                  <QrCode size={14} /><span>QR</span>
+                  className={`h-10 px-3.5 rounded-xl border text-xs font-semibold active:scale-95 flex items-center gap-2 ${showQR ? "border-primary/40 bg-primary text-primary-foreground" : "border-primary/30 bg-primary/10 text-primary hover:bg-primary/15"}`}>
+                  <QrCode size={16} /><span>Código QR</span>
                 </button>
                 {shareMenu}
                 <div className="relative">
                   <button onClick={() => setShowTrustMenu(v => !v)}
-                    className="h-9 w-9 rounded-lg border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+                    className="h-10 w-10 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
                     <MoreVertical size={14} />
                   </button>
                   {showTrustMenu && (
@@ -447,10 +451,11 @@ export function ProfilePanel({
                         <Trophy size={14} className="text-primary shrink-0" /> Portafolio
                       </button>
                     </div>
-                  )}
-                </div>
-              </div>
+                    )}
+                  </div>
+              </>
             )}
+            </div>
           </div>
 
           {/* Follow counts (tocables: muestran la lista de personas) */}
@@ -598,7 +603,7 @@ export function ProfilePanel({
             </div>
           )}
 
-          {err && <div className="text-xs text-destructive">{err}</div>}
+          {err && <div className="mt-3 text-xs text-destructive">{err}</div>}
         </div>
       </section>
 
@@ -627,7 +632,7 @@ export function ProfilePanel({
         items={[
           { id: "games", label: <>JUEGOS · {games.length}</>, icon: <Gamepad2 size={13} className="hidden sm:block shrink-0" /> },
           { id: "posts", label: <>POSTS · {posts.length}</>, icon: <Newspaper size={13} className="hidden sm:block shrink-0" /> },
-          { id: "gallery", label: <>GALERÍA · {artworks.length}</>, icon: <Palette size={13} className="hidden sm:block shrink-0" /> },
+          { id: "gallery", label: <>GALERÍA · {galleryArtworks.length}</>, icon: <Palette size={13} className="hidden sm:block shrink-0" /> },
         ]}
         value={tab}
         onChange={setTab}
@@ -641,13 +646,13 @@ export function ProfilePanel({
             <div className="px-4 py-8 text-center text-xs text-muted-foreground rounded-lg border border-dashed border-border bg-surface">Sin juegos publicados</div>
           ) : games.map(g => <GameCard key={g.id} post={g} myId={myId} isMod={isMod} onChange={loadContent} />)
         ) : tab === "gallery" ? (
-          artworks.length === 0 ? (
+          galleryArtworks.length === 0 ? (
             <div className="px-4 py-8 text-center text-xs text-muted-foreground rounded-lg border border-dashed border-border bg-surface">
               {viewingOwn ? "Aún no has publicado obras en la galería" : "Este artista aún no ha publicado obras"}
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {artworks.map(a => {
+              {galleryArtworks.map(a => {
                 const imgUrl = a.signed_media?.[0] ?? a.signed_cover;
                 const title = (a.content.split("\n")[0] || "Obra sin título").replace(/^🎮🎨\s*/, "").replace(/^🎨\s*/, "");
                 const authorLabel = galleryPreviewAuthor(a.author?.username ?? profile.username);

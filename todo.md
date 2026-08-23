@@ -890,3 +890,14 @@ Validación: la navegación inferior, la búsqueda, el perfil y el panel princip
 - [x] Validar foco, accesibilidad, móvil, escritorio, pruebas y compilación antes de publicar.
 
 Validación: el campo activo aplica un borde azul de alto contraste y un halo exterior uniforme, mientras icono e input interno no dibujan contornos propios. El contrato verifica estos tokens de foco y accesibilidad; `pnpm test` completó 18 pruebas y `pnpm build` finalizó correctamente. Tras reiniciar el servidor, la pantalla se revisó en 390 × 844 y 1440 × 900. Las capturas muestran el estado neutro por defecto; el estado activo está cubierto por la prueba del contrato de clases.
+
+---
+
+# Limpieza de Galería y cabecera de Perfil
+
+- [x] Identificar las publicaciones heredadas de la antigua Tienda que no son obras de Galería.
+- [x] Excluir de todas las superficies de Galería las publicaciones heredadas y sus referencias visuales, conservando solo obras artísticas.
+- [x] Restaurar el nombre de usuario y ampliar el acceso QR en la cabecera de Perfil.
+- [x] Validar Galería y Perfil en móvil y escritorio, con pruebas y compilación antes de publicar.
+
+La Galería ahora descarta en la consulta y en la interfaz toda publicación con `asset_preset`, que identifica los recursos heredados de la antigua Tienda. Las obras artísticas conservan `category: artwork` y `asset_preset: null`. La cabecera de Perfil separa avatar, identidad, usuario, código y acciones; el control «Código QR» ya es una acción etiquetada y amplia. `pnpm test` completó 18 pruebas y `pnpm build` finalizó correctamente. Las rutas de Galería y Perfil requieren sesión, por lo que la captura no autenticada fue redirigida a Acceso; la composición de Acceso se revisó en 390 × 844 y 1440 × 900.

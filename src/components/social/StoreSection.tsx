@@ -518,7 +518,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
 
   // Galería: obras originales de artistas, no assets de la biblioteca del editor.
   const galleryItems = artworks
-    .filter((artwork) => isArtistGalleryArtwork(artwork.category))
+    .filter(isArtistGalleryArtwork)
     .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
