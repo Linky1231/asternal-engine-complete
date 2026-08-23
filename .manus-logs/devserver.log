@@ -1572,3 +1572,11 @@
 [2026-08-23T17:02:57.525Z] 5:02:57 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PostCard.tsx
 [2026-08-23T17:08:00.075Z] 5:08:00 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PostCard.tsx
 [2026-08-23T17:08:04.806Z] 5:08:04 PM [vite] (client) hmr update /src/styles.css, /src/components/ui/segmented.tsx
+[2026-08-23T17:15:19.836Z] 5:15:19 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/AsternalEditor.tsx, /src/components/engine/PaintEditor.tsx, /src/routes/index.tsx, /src/components/social/StoreSection.tsx, /src/components/engine/ProjectManager.tsx, /src/components/social/GameCard.tsx, /src/components/social/GlobalSearchPanel.tsx, /src/components/engine/GameRuntime.tsx, /src/components/engine/SceneEditor.tsx, /src/components/engine/AnimationEditor.tsx, /src/components/engine/UIEditor.tsx, /src/components/engine/ScriptEditor.tsx
+[2026-08-23T17:16:07.711Z] 5:16:07 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx, /src/components/engine/GameRuntime.tsx
+[2026-08-23T17:16:50.153Z] 5:16:50 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx, /src/components/engine/GameRuntime.tsx
+[2026-08-23T17:17:03.358Z] 5:17:03 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx, /src/components/engine/GameRuntime.tsx
+[2026-08-23T17:18:01.533Z] 5:18:01 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-23T17:18:11.643Z] 5:18:11 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-23T17:18:25.857Z] 5:18:25 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx
+[2026-08-23T17:19:38.023Z] 5:19:38 PM [vite] (client) hmr update /src/styles.css, /src/components/engine/ScriptEditor.tsx, /src/components/engine/GameRuntime.tsx

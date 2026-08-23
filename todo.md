@@ -1044,3 +1044,13 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Confirmar la asignación invertida entre el selector del Perfil y las acciones de publicaciones.
 - [x] Aplicar la pestaña azul activa al selector del Perfil y el contorno celeste a las acciones de publicación.
 - [x] Validar Perfil y publicaciones en móvil y escritorio, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Editor generalizable y scripting visual
+
+- [x] Auditar la arquitectura actual de escenas, objetos, runtime, scripts y bloques visuales.
+- [x] Definir un modelo extensible de entidades, componentes, eventos, variables, mensajes y bloques.
+- [x] Implementar la base generalizable de ejecución para scripts visuales con compatibilidad de proyectos existentes.
+- [x] Ampliar el catálogo de bloques y las operaciones del editor sin convertir funciones en casos aislados.
+- [x] Validar creación, ejecución y guardado de proyectos, ejecutar pruebas, compilar y publicar.
