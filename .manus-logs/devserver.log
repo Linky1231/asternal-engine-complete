@@ -1401,3 +1401,10 @@
 [2026-08-23T00:50:37.213Z] 12:50:37 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
 [2026-08-23T00:50:37.307Z] 12:50:37 AM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
 [2026-08-23T00:55:39.169Z] 12:55:39 AM [vite] (client) hmr update /src/styles.css, /src/components/ui/alert-dialog.tsx
+[2026-08-23T00:59:52.571Z] 12:59:52 AM [vite] (client) hmr update /src/styles.css, /src/routes/auth.tsx
+[2026-08-23T00:59:52.658Z] 12:59:52 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-23T00:59:53.716Z] 12:59:53 AM [vite] (client) hmr invalidate /src/routes/auth.tsx Could not Fast Refresh ("Route" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-23T00:59:53.716Z] 12:59:53 AM [vite] (client) hmr update /src/main.tsx
+[2026-08-23T00:59:54.822Z] 12:59:54 AM [vite] (client) hmr invalidate /src/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+[2026-08-23T00:59:54.822Z] 12:59:54 AM [vite] (client) page reload src/main.tsx
+[2026-08-23T01:01:49.112Z] 1:01:49 AM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css

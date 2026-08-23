@@ -104,27 +104,44 @@ function CircuitLines() {
   );
 }
 
-/* ─── Mascota ─── */
-function IdeaRobot() {
+/* ─── Símbolo de idea ─── */
+function IdeaBulb() {
   return (
-    <div className="relative w-[126px] h-[152px]" aria-hidden>
-      <div className="absolute left-1/2 top-0 -translate-x-1/2 w-3 h-6 rounded-t-full bg-primary/35" />
-      <div className="absolute left-1/2 top-0 -translate-x-1/2 -translate-y-2 w-4 h-4 rounded-full bg-accent border-2 border-white shadow-sm" />
-      <div className="absolute left-1/2 top-5 -translate-x-1/2 w-[98px] h-[63px] rounded-[26px] border-2 border-primary/25 bg-gradient-to-b from-white to-primary/[0.08] shadow-xl shadow-primary/15">
-        <div className="absolute inset-x-5 top-6 h-[21px] rounded-full bg-primary/10 flex items-center justify-center gap-4">
-          <span className="w-3 h-3 rounded-full bg-primary shadow-[0_0_0_3px_rgba(255,255,255,0.8)]" />
-          <span className="w-3 h-3 rounded-full bg-primary shadow-[0_0_0_3px_rgba(255,255,255,0.8)]" />
-        </div>
-        <div className="absolute left-1/2 bottom-3 -translate-x-1/2 w-7 h-1.5 rounded-full bg-primary/25" />
-      </div>
-      <div className="absolute left-1/2 top-[75px] -translate-x-1/2 w-[78px] h-[59px] rounded-[23px] grad-brand shadow-xl shadow-primary/25">
-        <div className="absolute inset-x-4 top-3 bottom-3 rounded-[14px] bg-white/92" />
-      </div>
-      <div className="absolute left-[4px] top-[86px] w-9 h-4 rounded-full bg-primary/75 -rotate-[24deg] shadow-sm" />
-      <div className="absolute right-[4px] top-[86px] w-9 h-4 rounded-full bg-primary/75 rotate-[24deg] shadow-sm" />
-      <div className="absolute left-[42px] bottom-0 w-4 h-7 rounded-b-full bg-primary/80" />
-      <div className="absolute right-[42px] bottom-0 w-4 h-7 rounded-b-full bg-primary/80" />
-    </div>
+    <svg
+      viewBox="0 0 160 190"
+      className="w-[168px] h-[200px] drop-shadow-[0_20px_24px_rgba(68,137,214,0.30)]"
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id="idea-bulb-glass" x1="48" y1="34" x2="112" y2="142" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#eff9ff" />
+          <stop offset="0.48" stopColor="#a9d9ff" />
+          <stop offset="1" stopColor="#3d83d3" />
+        </linearGradient>
+        <linearGradient id="idea-bulb-base" x1="58" y1="143" x2="102" y2="168" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#dff1ff" />
+          <stop offset="1" stopColor="#4f91d4" />
+        </linearGradient>
+      </defs>
+      <circle cx="80" cy="87" r="62" fill="#77bdf2" opacity="0.16" />
+      <g stroke="#68abe7" strokeWidth="5" strokeLinecap="round" opacity="0.9">
+        <path d="M80 14v12" />
+        <path d="m38 31 9 9" />
+        <path d="M22 77h13" />
+        <path d="m122 40 9-9" />
+        <path d="M125 77h13" />
+      </g>
+      <path
+        d="M80 31c-29 0-51 23-51 52 0 20 11 37 29 47v12h44v-12c18-10 29-27 29-47 0-29-22-52-51-52Z"
+        fill="url(#idea-bulb-glass)"
+        stroke="#4786c8"
+        strokeWidth="3"
+      />
+      <path d="M63 91c5 4 9 11 10 24M97 91c-5 4-9 11-10 24M73 115h14" fill="none" stroke="#477bb3" strokeWidth="3.5" strokeLinecap="round" />
+      <path d="M57 58c7-12 18-18 31-18" fill="none" stroke="#fff" strokeWidth="8" strokeLinecap="round" opacity="0.78" />
+      <rect x="57" y="141" width="46" height="12" rx="6" fill="url(#idea-bulb-base)" stroke="#4f87c0" strokeWidth="2" />
+      <path d="M65 158h30M68 166h24" stroke="#4f87c0" strokeWidth="5" strokeLinecap="round" />
+    </svg>
   );
 }
 
@@ -144,7 +161,7 @@ function HeroScene() {
 
           <div className="absolute left-1/2 top-[55%] -translate-x-1/2">
             <div className="relative z-10 flex justify-center" style={{ animation: "bob 4s ease-in-out infinite", willChange: "transform" }}>
-              <IdeaRobot />
+              <IdeaBulb />
             </div>
           </div>
 
@@ -442,10 +459,7 @@ function AuthPage() {
               animation: loaded ? 'fade-in-up 600ms 420ms cubic-bezier(0.22,1,0.36,1) both' : 'none',
             }}>
               <h1 className="text-[clamp(1.8rem,3.6vw,2.9rem)] font-display font-bold tracking-tight leading-[1.08] text-foreground mt-4 mb-3 max-w-lg mx-auto">
-                {IDEA_HERO_COPY.titleLead}{' '}
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent bg-[length:200%_100%] animate-shimmer-text">
-                  {IDEA_HERO_COPY.titleAccent}
-                </span>
+                {IDEA_HERO_COPY.title}
               </h1>
             </div>
 
@@ -488,16 +502,22 @@ function AuthPage() {
                       </p>
                     </div>
 
-                    {/* Tabs */}
-                    <div className="glass-control flex rounded-xl p-0.5 mb-5 relative">
-                      <div className="absolute top-0.5 bottom-0.5 w-[calc(50%_-_2px)] rounded-[10px] bg-white/80 shadow-sm shadow-primary/10 transition-all duration-400"
-                        style={{ left: mode === "signin" ? "2px" : "calc(50% + 0px)" }} />
+                    {/* Selector de acceso: la opción activa se muestra como una superficie azul completa. */}
+                    <div className="glass-control flex rounded-xl p-1 mb-5 gap-1" role="tablist" aria-label="Modo de acceso">
                       {(["signin", "signup"] as const).map(m => (
-                        <button key={m} type="button" onClick={() => switchMode(m)}
-                          className={`relative flex-1 py-2 rounded-[10px] text-xs font-display font-semibold tracking-wider transition-all duration-300 z-10 ${
-                            mode === m ? "text-foreground" : "text-muted-foreground/50 hover:text-muted-foreground/80"
+                        <button key={m} type="button" onClick={() => switchMode(m)} role="tab"
+                          aria-selected={mode === m}
+                          className={`relative flex-1 min-h-11 rounded-[9px] text-xs font-display font-semibold tracking-wider transition-all duration-300 ${
+                            mode === m
+                              ? "bg-gradient-to-r from-primary to-accent text-white shadow-[0_6px_16px_rgba(66,126,211,0.32)] ring-1 ring-white/50"
+                              : "text-muted-foreground/65 hover:bg-white/55 hover:text-foreground"
                           }`}>
-                          {m === "signin" ? "ACCEDER" : "REGISTRARSE"}
+                          <span className="flex flex-col items-center justify-center leading-none gap-1">
+                            <span>{m === "signin" ? "ACCEDER" : "REGISTRARSE"}</span>
+                            <span className={`text-[8px] font-sans font-semibold tracking-[0.16em] ${mode === m ? "opacity-85" : "opacity-0"}`}>
+                              ACTIVO
+                            </span>
+                          </span>
                         </button>
                       ))}
                     </div>

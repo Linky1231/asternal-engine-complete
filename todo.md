@@ -738,3 +738,25 @@ Validación: la escena se revisó en 390 × 844 y 1440 × 900. Solo aparecen el 
 - [x] Validar pruebas, compilación y recorrido visual antes de publicar.
 
 Validación: el panel de juego usaba `z-[90]`, mientras el diálogo se renderizaba desde un portal en `z-50`, por lo que el overlay bloqueaba la interfaz y la confirmación quedaba oculta. El overlay se elevó a `z-[100]` y el contenido a `z-[110]`. Se comprobó la jerarquía con una prueba unitaria, el flujo existente mantiene `donateOrbs` exclusivamente en `confirmDonation`, y `pnpm test` completó 8 pruebas junto con una compilación correcta.
+
+---
+
+# Bombilla de idea en el acceso
+
+- [x] Sustituir por completo la ilustración del robot por una bombilla de idea legible.
+- [x] Aplicar el titular exacto “Tu próximo juego puede empezar con una pregunta”.
+- [x] Mantener el círculo de fondo y eliminar toda referencia visual al robot.
+- [x] Validar la cabecera en móvil y escritorio, pruebas y compilación antes de publicar.
+
+Validación: revisada en 390 × 844 y 1440 × 900. La bombilla dorada se entiende como una idea, el halo azul la enmarca sin competir y ya no existe ninguna parte del robot. El titular se presenta como una sola frase. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Bombilla azul y selector de acceso
+
+- [x] Ampliar la bombilla y adaptar su color al azul de Asternal.
+- [x] Revisar las pestañas Acceder / Registrarse y definir un indicador de opción activa inequívoco.
+- [x] Validar la jerarquía, el contraste y la interacción del selector en móvil y escritorio.
+- [x] Ejecutar pruebas y compilación antes de publicar.
+
+Validación: revisada en 390 × 844 y 1440 × 900. La bombilla se amplió y usa azules coherentes con Azure Drift. La pestaña activa ahora ocupa una superficie azul completa, mantiene contraste blanco, incorpora la etiqueta “ACTIVO” y expone el estado a tecnologías de asistencia. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
