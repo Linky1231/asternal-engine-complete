@@ -8,7 +8,7 @@ import { CommentSection } from "./CommentSection";
 import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
-import { socialActionStateClass } from "@/lib/social/interaction-state";
+import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
   FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
@@ -33,6 +33,7 @@ export const PostCard = memo(function PostCard({
   const [showHtml, setShowHtml] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [activeFooterAction, setActiveFooterAction] = useState<FooterActionSelection>(null);
   const menu = useCardMenuAnchor<HTMLButtonElement>();
 
   const mine = myId === post.author_id;
@@ -48,6 +49,13 @@ export const PostCard = memo(function PostCard({
 
   const react = async (type: "like" | "favorite") => { await toggleReaction({ postId: post.id, type }); onChange(); };
   const repost = async () => { await toggleRepost(post.id); onChange(); };
+  const chooseFooterAction = (next: Exclude<FooterActionSelection, null>) => {
+    setActiveFooterAction(current => {
+      const selected = nextExclusiveFooterAction(current, next);
+      setOpenComments(selected === "comments");
+      return selected;
+    });
+  };
   const remove = () => {
     toast("¿Eliminar publicación?", {
       description: "Esta acción no se puede deshacer.",
@@ -307,9 +315,9 @@ export const PostCard = memo(function PostCard({
       </div>
 
       <footer className="flex items-center border-t border-border/50 bg-muted/15 px-1 py-0.5 text-[11px] text-muted-foreground">
-        <button type="button" onClick={() => react("like")}
-          aria-pressed={post.my_like}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(post.my_like)}`}>
+        <button type="button" onClick={() => { chooseFooterAction("like"); void react("like"); }}
+          aria-pressed={activeFooterAction === "like"}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "like" ? "border-primary/35 bg-primary/10 text-primary shadow-sm" : socialActionStateClass(false)}`}>
           <motion.span
             key={post.my_like ? "liked" : "unliked"}
             initial={{ scale: 0.4, rotate: -18 }}
@@ -321,9 +329,9 @@ export const PostCard = memo(function PostCard({
           </motion.span>
           <span className="tabular-nums font-medium">{post.likes}</span>
         </button>
-        <button type="button" onClick={() => react("favorite")}
-          aria-pressed={post.my_favorite}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(post.my_favorite)}`}>
+        <button type="button" onClick={() => { chooseFooterAction("favorite"); void react("favorite"); }}
+          aria-pressed={activeFooterAction === "favorite"}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "favorite" ? "border-primary/35 bg-primary/10 text-primary shadow-sm" : socialActionStateClass(false)}`}>
           <motion.span
             key={post.my_favorite ? "favd" : "unfavd"}
             initial={{ scale: 0.4, rotate: 18 }}
@@ -335,15 +343,15 @@ export const PostCard = memo(function PostCard({
           </motion.span>
           <span className="tabular-nums font-medium">{post.favorites}</span>
         </button>
-        <button type="button" onClick={() => setOpenComments(o => !o)}
-          aria-expanded={openComments}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(openComments)}`}>
-          <MessageCircle size={15} className={openComments ? "fill-current/10" : ""} />
+        <button type="button" onClick={() => chooseFooterAction("comments")}
+          aria-expanded={activeFooterAction === "comments"}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "comments" ? "border-primary/35 bg-primary/10 text-primary shadow-sm" : socialActionStateClass(false)}`}>
+          <MessageCircle size={15} className={activeFooterAction === "comments" ? "fill-current/10" : ""} />
           <span className="tabular-nums font-medium">{post.comments_count}</span>
         </button>
-        <button type="button" onClick={repost}
-          aria-pressed={post.my_repost}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(post.my_repost)}`}>
+        <button type="button" onClick={() => { chooseFooterAction("repost"); void repost(); }}
+          aria-pressed={activeFooterAction === "repost"}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "repost" ? "border-primary/35 bg-primary/10 text-primary shadow-sm" : socialActionStateClass(false)}`}>
           <motion.span
             key={post.my_repost ? "reposted" : "unreposted"}
             initial={{ scale: 0.6, rotate: -25 }}

@@ -965,3 +965,13 @@ Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctam
 - [x] Validar interacciones, Perfil y Portafolio responsive con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta protegida de Perfil redirige de manera estable a Acceso en 390 × 844 y 1440 × 900 sin sesión. Los menús se sustituyeron por superficies portalizadas exclusivas; la revisión de sus datos reales, del banner y de Portafolio requiere una sesión autenticada.
+
+---
+
+# Separación de personalización y acciones exclusivas
+
+- [x] Crear una separación clara entre la descripción y los datos de personalización del Perfil.
+- [x] Convertir las acciones inferiores de publicaciones en una selección exclusiva de estado sobrio.
+- [x] Validar los espaciados y los estados de interacción con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctamente. La ruta protegida redirige con estabilidad a Acceso en 390 × 844 y 1440 × 900 sin sesión. En sesión, la descripción queda separada por un divisor de los metadatos de personalización; las cuatro acciones inferiores comparten un único foco azul suave, sin degradado ni selección simultánea.

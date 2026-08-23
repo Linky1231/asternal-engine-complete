@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
-import { profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
+import { nextExclusiveFooterAction, profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
@@ -32,6 +32,12 @@ describe("estado visual de acciones sociales", () => {
     const active = profileControlStateClass(true);
     expect(active).toContain("bg-primary");
     expect(active).toContain("text-primary-foreground");
+  });
+
+  it("mantiene un único foco visual entre las acciones inferiores de una publicación", () => {
+    expect(nextExclusiveFooterAction(null, "like")).toBe("like");
+    expect(nextExclusiveFooterAction("like", "favorite")).toBe("favorite");
+    expect(nextExclusiveFooterAction("repost", "repost")).toBeNull();
   });
 
   it("reserva un margen de seguridad con el marco QR redondeado predeterminado", () => {

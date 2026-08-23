@@ -14,3 +14,13 @@ export function profileControlStateClass(active: boolean): string {
     ? "border-primary/40 bg-primary text-primary-foreground shadow-sm"
     : "border-border bg-surface text-foreground hover:bg-muted/60";
 }
+
+export type FooterActionSelection = "like" | "favorite" | "comments" | "repost" | null;
+
+/** Las acciones rápidas comparten un único foco visual dentro de cada publicación. */
+export function nextExclusiveFooterAction(
+  current: FooterActionSelection,
+  next: Exclude<FooterActionSelection, null>,
+): FooterActionSelection {
+  return current === next ? null : next;
+}

@@ -471,14 +471,14 @@ export function ProfilePanel({
               placeholder="Cuéntanos sobre ti…"
               className="w-full bg-input/50 rounded-lg px-3 py-2 text-sm outline-none resize-none focus:ring-2 focus:ring-primary/40" />
           ) : profile.bio ? (
-            <p className="text-sm whitespace-pre-wrap break-words">{profile.bio}</p>
+            <p className="mt-3 text-sm whitespace-pre-wrap break-words">{profile.bio}</p>
           ) : viewingOwn ? (
-          <p className="mt-2 text-xs text-muted-foreground italic">Añade una descripción tocando Editar.</p>
+          <p className="mt-3 text-xs text-muted-foreground italic">Añade una descripción tocando Editar.</p>
           ) : null}
 
           {/* Meta chips */}
           {!editing && (
-            <div className="flex flex-wrap gap-1.5 text-[11px] text-muted-foreground">
+            <div className="mt-3 flex flex-wrap gap-1.5 border-t border-border/30 pt-3 text-[11px] text-muted-foreground">
               {profile.location && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/30"><MapPin size={10}/>{profile.location}</span>}
               {profile.birthday && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/30"><Cake size={10}/>{new Date(profile.birthday).toLocaleDateString()}</span>}
               {profile.favorite_genre && <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted/30"><Heart size={10}/>{profile.favorite_genre}</span>}
@@ -487,7 +487,7 @@ export function ProfilePanel({
 
           {/* Interests */}
           {!editing && interestsList.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="mt-3 flex flex-wrap gap-1.5">
               {interestsList.map((t, i) => (
                 <span key={i} className="px-2 py-0.5 rounded-full text-[10px] font-medium"
                   style={{ background: `color-mix(in oklab, ${profile.accent_color ?? "var(--primary)"} 15%, transparent)`, color: profile.accent_color ?? "var(--primary)" }}>
@@ -501,7 +501,7 @@ export function ProfilePanel({
               descripción: cada bloque dice para qué sirve (IDENTIDAD / ESTILO /
               CONTENIDO / PRIVACIDAD) en vez de aparecer todo junto. */}
           {editing && (
-            <div className="space-y-2 pt-2 border-t border-border/40">
+            <div className="mt-5 space-y-3 border-t border-border/40 pt-3">
               <button onClick={() => setShowMore(v => !v)}
                 className="w-full flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground">
                 <span>Personalización</span>
