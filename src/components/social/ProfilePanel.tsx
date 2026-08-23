@@ -760,16 +760,16 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
   isPlus: boolean; viewingOwn: boolean;
 }) {
   const profileUrl = typeof window !== "undefined" ? `${window.location.origin}/profile/${userId}` : `/profile/${userId}`;
-  const defaultStyle = { fg: "#000000", bg: "#ffffff", size: 180, cornerStyle: "square" as const };
+  const defaultStyle = { fg: "#000000", bg: "#ffffff", size: 180, cornerStyle: "rounded" as const };
   const [style, setStyle] = useState<Required<import("@/lib/social/api").QRStyle> & { cornerStyle: string }>(
-    qrStyle ? { ...defaultStyle, ...qrStyle } : defaultStyle
+    qrStyle ? { ...defaultStyle, ...qrStyle, cornerStyle: "rounded" } : defaultStyle
   );
   const [copied, setCopied] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Sync from DB when qrStyle prop changes (e.g. viewing another user's profile)
   useEffect(() => {
-    if (qrStyle) setStyle({ ...defaultStyle, ...qrStyle });
+    if (qrStyle) setStyle({ ...defaultStyle, ...qrStyle, cornerStyle: "rounded" });
   }, [qrStyle?.fg, qrStyle?.bg, qrStyle?.size, qrStyle?.cornerStyle]);
 
   const persist = async (next: typeof style) => {
@@ -791,12 +791,6 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
   ] as const;
 
   const SIZES = [120, 160, 200, 240] as const;
-  const CORNERS = [
-    { id: "square", label: "Cuadrados" },
-    { id: "rounded", label: "Redondeados" },
-    { id: "dots", label: "Puntos" },
-  ] as const;
-
   const qrSrc = (() => {
     const fg = style.fg.startsWith("#") ? style.fg.replace("#", "") : "000000";
     const bg = style.bg.startsWith("#") ? style.bg.replace("#", "") : "ffffff";
@@ -826,7 +820,7 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
     <div className="space-y-4 animate-in fade-in duration-200">
       {/* Preview */}
       <div className="flex flex-col items-center gap-3">
-        <div className="border border-border/40 bg-card shadow-sm" style={{ background: style.bg, borderRadius: style.cornerStyle === "rounded" ? 16 : style.cornerStyle === "dots" ? "50%" : 8, boxSizing: "border-box", width: `min(100%, ${frameSize}px)`, padding: qrPadding }}>
+        <div className="border border-border/40 bg-card shadow-sm" style={{ background: style.bg, borderRadius: 16, boxSizing: "border-box", width: `min(100%, ${frameSize}px)`, padding: qrPadding }}>
           <img src={qrSrc} alt={`QR de ${username}`} width={style.size || 180} height={style.size || 180} className="block h-auto w-full max-w-full" />
         </div>
         <div className="text-[9px] font-mono text-muted-foreground/60 text-center truncate max-w-full">{profileUrl}</div>
@@ -899,18 +893,6 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
             </div>
           </div>
 
-          {/* Estilo de esquinas */}
-          <div>
-            <div className="text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-wider mb-1.5">Estilo</div>
-            <div className="flex gap-1.5">
-              {CORNERS.map(c => (
-                <button key={c.id} onClick={() => persist({ ...style, cornerStyle: c.id })}
-                  className={`h-8 px-2.5 rounded-lg text-[10px] font-medium border transition active:scale-95 ${style.cornerStyle === c.id ? "border-primary/40 bg-primary/10 text-primary" : "border-border/40 bg-surface text-muted-foreground hover:text-foreground"}`}>
-                  {c.label}
-                </button>
-              ))}
-            </div>
-          </div>
         </>
       )}
 

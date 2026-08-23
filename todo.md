@@ -933,3 +933,13 @@ Validación: `pnpm test` completó 19 pruebas y `pnpm build` finalizó correctam
 - [x] Validar el editor QR y Perfil responsive, con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta protegida sigue redirigiendo correctamente a Acceso sin sesión en 390 × 844. El editor QR ya no expande la tarjeta de Perfil: se abre en una pantalla dedicada y usa un marco con zona silenciosa calculada para no recortar los tres marcadores.
+
+---
+
+# Simplificación del estilo QR
+
+- [x] Retirar el selector de estilo del editor QR.
+- [x] Establecer el marco redondeado como estilo QR predeterminado.
+- [x] Validar la simplificación con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida se comprobó en 390 × 844 y sigue redirigiendo con estabilidad a Acceso sin sesión. El editor QR queda simplificado: conserva colores y tamaño, pero utiliza únicamente el marco redondeado.

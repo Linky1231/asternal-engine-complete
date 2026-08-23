@@ -34,9 +34,8 @@ describe("estado visual de acciones sociales", () => {
     expect(active).toContain("text-primary-foreground");
   });
 
-  it("reserva un margen de seguridad que evita recortar los marcadores del QR", () => {
-    expect(qrPreviewGeometry(240, "square")).toEqual({ padding: 16, frameSize: 272 });
-    expect(qrPreviewGeometry(240, "dots")).toEqual({ padding: 28, frameSize: 296 });
+  it("reserva un margen de seguridad con el marco QR redondeado predeterminado", () => {
+    expect(qrPreviewGeometry(240, "rounded")).toEqual({ padding: 16, frameSize: 272 });
   });
 });
 
