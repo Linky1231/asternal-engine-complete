@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from "react";
+import { memo, useState } from "react";
 import { toast } from "sonner";
 import { Avatar } from "./Avatar";
 import { Link } from "@tanstack/react-router";
@@ -9,13 +9,6 @@ import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { GameIconPlaceholder } from "./GameIcon";
-import {
-  getPostActionAttributes,
-  resolvePostInteraction,
-  resolvePostInteractionCount,
-  type PostInteraction,
-  type PostInteractionOverrides,
-} from "@/lib/social/post-interactions";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
   FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
@@ -40,8 +33,6 @@ export const PostCard = memo(function PostCard({
   const [showHtml, setShowHtml] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [showShare, setShowShare] = useState(false);
-  const [interactionOverrides, setInteractionOverrides] = useState<PostInteractionOverrides>({});
-  const [pendingInteraction, setPendingInteraction] = useState<PostInteraction | null>(null);
   const menu = useCardMenuAnchor<HTMLButtonElement>();
 
   const mine = myId === post.author_id;
@@ -55,37 +46,8 @@ export const PostCard = memo(function PostCard({
   const showEntrance = !!post.entrance_effect && authorPlus && ageMs < 30_000;
   const entranceClass = showEntrance ? `post-fx-${post.entrance_effect}` : "";
 
-  useEffect(() => {
-    setInteractionOverrides({});
-  }, [post.my_like, post.my_favorite, post.my_repost]);
-
-  const likeActive = resolvePostInteraction(post.my_like, interactionOverrides.like);
-  const favoriteActive = resolvePostInteraction(post.my_favorite, interactionOverrides.favorite);
-  const repostActive = resolvePostInteraction(post.my_repost, interactionOverrides.repost);
-  const likeCount = resolvePostInteractionCount(post.likes, post.my_like, likeActive);
-  const favoriteCount = resolvePostInteractionCount(post.favorites, post.my_favorite, favoriteActive);
-  const repostCount = resolvePostInteractionCount(post.reposts_count, post.my_repost, repostActive);
-
-  const updateInteraction = async (type: PostInteraction) => {
-    if (pendingInteraction) return;
-    const serverValue = type === "like" ? post.my_like : type === "favorite" ? post.my_favorite : post.my_repost;
-    const effectiveValue = type === "like" ? likeActive : type === "favorite" ? favoriteActive : repostActive;
-    const nextValue = !effectiveValue;
-
-    setInteractionOverrides(current => ({ ...current, [type]: nextValue }));
-    setPendingInteraction(type);
-
-    try {
-      if (type === "repost") await toggleRepost(post.id);
-      else await toggleReaction({ postId: post.id, type });
-      onChange();
-    } catch (error) {
-      setInteractionOverrides(current => ({ ...current, [type]: serverValue }));
-      toast.error(error instanceof Error ? error.message : "No se pudo actualizar la interacción");
-    } finally {
-      setPendingInteraction(null);
-    }
-  };
+  const react = async (type: "like" | "favorite") => { await toggleReaction({ postId: post.id, type }); onChange(); };
+  const repost = async () => { await toggleRepost(post.id); onChange(); };
   const remove = () => {
     toast("¿Eliminar publicación?", {
       description: "Esta acción no se puede deshacer.",
@@ -345,53 +307,49 @@ export const PostCard = memo(function PostCard({
       </div>
 
       <footer className="flex items-center border-t border-border/50 bg-muted/15 px-1 py-0.5 text-[11px] text-muted-foreground">
-        <button type="button" onClick={() => updateInteraction("like")} disabled={pendingInteraction !== null}
-          className="post-action post-action--like flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg active:scale-[0.93] disabled:cursor-wait disabled:opacity-60"
-          {...getPostActionAttributes("like", likeActive)}>
+        <button type="button" onClick={() => react("like")}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_like ? "text-rose-500" : "pointer-fine:hover:bg-rose-500/10 pointer-fine:hover:text-rose-500"}`}>
           <motion.span
-            key={likeActive ? "liked" : "unliked"}
+            key={post.my_like ? "liked" : "unliked"}
             initial={{ scale: 0.4, rotate: -18 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 520, damping: 17 }}
             className="inline-flex"
           >
-            <Heart size={15} className={likeActive ? "fill-current" : ""} />
+            <Heart size={15} className={post.my_like ? "fill-rose-500" : ""} />
           </motion.span>
-          <span className="tabular-nums font-medium">{likeCount}</span>
+          <span className="tabular-nums font-medium">{post.likes}</span>
         </button>
-        <button type="button" onClick={() => updateInteraction("favorite")} disabled={pendingInteraction !== null}
-          className="post-action post-action--favorite flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg active:scale-[0.93] disabled:cursor-wait disabled:opacity-60"
-          {...getPostActionAttributes("favorite", favoriteActive)}>
+        <button type="button" onClick={() => react("favorite")}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_favorite ? "text-amber-500" : "pointer-fine:hover:bg-amber-500/10 pointer-fine:hover:text-amber-500"}`}>
           <motion.span
-            key={favoriteActive ? "favd" : "unfavd"}
+            key={post.my_favorite ? "favd" : "unfavd"}
             initial={{ scale: 0.4, rotate: 18 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 520, damping: 17 }}
             className="inline-flex"
           >
-            <Star size={15} className={favoriteActive ? "fill-current" : ""} />
+            <Star size={15} className={post.my_favorite ? "fill-amber-500" : ""} />
           </motion.span>
-          <span className="tabular-nums font-medium">{favoriteCount}</span>
+          <span className="tabular-nums font-medium">{post.favorites}</span>
         </button>
         <button type="button" onClick={() => setOpenComments(o => !o)}
-          className="post-action post-action--comments flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg active:scale-[0.93]"
-          {...getPostActionAttributes("comments", openComments)}>
-          <MessageCircle size={15} className={openComments ? "fill-current" : ""} />
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${openComments ? "text-primary-glow bg-primary/10" : "pointer-fine:hover:bg-primary/10 pointer-fine:hover:text-primary-glow"}`}>
+          <MessageCircle size={15} className={openComments ? "fill-primary/20" : ""} />
           <span className="tabular-nums font-medium">{post.comments_count}</span>
         </button>
-        <button type="button" onClick={() => updateInteraction("repost")} disabled={pendingInteraction !== null}
-          className="post-action post-action--repost flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg active:scale-[0.93] disabled:cursor-wait disabled:opacity-60"
-          {...getPostActionAttributes("repost", repostActive)}>
+        <button type="button" onClick={repost}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg transition-[transform,color,background-color] duration-150 ease-out active:scale-[0.93] ${post.my_repost ? "text-emerald-600" : "pointer-fine:hover:bg-emerald-500/10 pointer-fine:hover:text-emerald-600"}`}>
           <motion.span
-            key={repostActive ? "reposted" : "unreposted"}
+            key={post.my_repost ? "reposted" : "unreposted"}
             initial={{ scale: 0.6, rotate: -25 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 480, damping: 16 }}
             className="inline-flex"
           >
-            <Repeat2 size={15} />
+            <Repeat2 size={15} className={post.my_repost ? "stroke-emerald-600" : ""} />
           </motion.span>
-          <span className="tabular-nums font-medium">{repostCount}</span>
+          <span className="tabular-nums font-medium">{post.reposts_count}</span>
         </button>
       </footer>
 

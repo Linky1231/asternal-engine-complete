@@ -589,49 +589,6 @@
   contain: layout paint;
 }
 
-/* Acciones de una publicación: el estado inactivo es deliberadamente neutro.
-   No usan utilidades bg-primary para evitar que la firma de CTA global convierta
-   controles pequeños en botones azules persistentes. */
-.post-action {
-  color: var(--ink-3);
-  background: transparent;
-  border: 1px solid transparent;
-  box-shadow: none;
-  transition: color 150ms var(--ease-out-expo), background-color 150ms var(--ease-out-expo), border-color 150ms var(--ease-out-expo), transform 150ms var(--ease-out-expo);
-}
-.post-action:hover {
-  color: var(--ink-2);
-  background: oklch(0.94 0.008 252 / 0.72);
-  border-color: var(--line);
-}
-.post-action:focus-visible {
-  outline: 2px solid oklch(0.55 0.15 262 / 0.48);
-  outline-offset: 1px;
-}
-.post-action[data-state="active"] {
-  box-shadow: inset 0 1px 0 oklch(1 0 0 / 0.42);
-}
-.post-action--like[data-state="active"] {
-  color: oklch(0.61 0.2 18);
-  background: oklch(0.61 0.2 18 / 0.1);
-  border-color: oklch(0.61 0.2 18 / 0.2);
-}
-.post-action--favorite[data-state="active"] {
-  color: oklch(0.67 0.15 76);
-  background: oklch(0.67 0.15 76 / 0.12);
-  border-color: oklch(0.67 0.15 76 / 0.22);
-}
-.post-action--comments[data-state="active"] {
-  color: var(--primary);
-  background: oklch(0.55 0.15 262 / 0.1);
-  border-color: oklch(0.55 0.15 262 / 0.22);
-}
-.post-action--repost[data-state="active"] {
-  color: oklch(0.58 0.14 160);
-  background: oklch(0.58 0.14 160 / 0.1);
-  border-color: oklch(0.58 0.14 160 / 0.22);
-}
-
 /* ============ Plus: name effects ============ */
 @keyframes name-rainbow-anim {
   0%   { background-position: 0% 50%; }
