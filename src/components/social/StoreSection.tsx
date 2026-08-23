@@ -562,7 +562,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
               className="min-h-0 flex-1 flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-              <header className="shrink-0 border-b border-border/60 bg-surface/95 backdrop-blur-xl">
+              <header className="shrink-0 glass-header border-b">
                 <div className="max-w-5xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0 flex items-center gap-2">
                     <span className="w-8 h-8 rounded-xl bg-muted/70 grid place-items-center"><Palette size={15} className="text-muted-foreground" /></span>

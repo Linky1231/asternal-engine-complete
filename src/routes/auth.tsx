@@ -389,7 +389,7 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col bg-background overflow-y-auto relative">
+    <div className="min-h-dvh w-full flex flex-col bg-background overflow-y-auto relative">
 
       <ConfettiBurst active={!!successMsg} />
 
@@ -413,7 +413,7 @@ function AuthPage() {
       <div className="relative z-10 flex-1 flex flex-col">
 
         {/* Header: logo memorable */}
-        <header className="w-full px-5 pt-6 flex justify-center">
+        <header className="w-full px-5 pt-4 sm:pt-6 flex justify-center">
           <Logo loaded={loaded} />
         </header>
 

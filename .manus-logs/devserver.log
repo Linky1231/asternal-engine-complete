@@ -1561,3 +1561,6 @@
 [2026-08-23T16:29:45.211Z] 4:29:45 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PortfolioPanel.tsx
 [2026-08-23T16:36:40.029Z] 4:36:40 PM [vite] (client) hmr update /src/styles.css, /src/components/social/StoreSection.tsx
 [2026-08-23T16:36:40.031Z] 4:36:40 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-23T16:41:51.541Z] 4:41:51 PM [vite] (client) hmr update /src/routes/auth.tsx, /src/styles.css
+[2026-08-23T16:41:51.545Z] 4:41:51 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx
+[2026-08-23T16:41:51.548Z] 4:41:51 PM [vite] (client) hmr update /src/styles.css, /src/components/social/StoreSection.tsx

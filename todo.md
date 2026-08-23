@@ -1001,3 +1001,12 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Localizar la cabecera que se superpone al contenido en la pantalla aislada de una obra de Galería.
 - [x] Mantener la cabecera fija e integrada en la parte superior, fuera del área desplazable de la obra.
 - [x] Validar el detalle de obra en móvil y escritorio, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Refinamiento glass de obras e Inicio
+
+- [x] Revisar la superficie glass de la pantalla de Inicio y el espacio superior residual de esa vista.
+- [x] Aplicar el mismo acabado glass a la cabecera fija del detalle de obras.
+- [x] Eliminar el espacio superior no intencional de la pantalla de Inicio.
+- [x] Validar las correcciones en móvil y escritorio, ejecutar pruebas, compilar y publicar.
