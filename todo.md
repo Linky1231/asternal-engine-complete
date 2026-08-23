@@ -880,3 +880,13 @@ Validación: el saldo local se conserva para compras, pero ya no se renderiza ju
 - [x] Validar navegación, textos, móvil, escritorio, pruebas y compilación antes de publicar.
 
 Validación: la navegación inferior, la búsqueda, el perfil y el panel principal usan la identidad «Galería». La experiencia general de Tienda y los assets genéricos del editor se retiraron del listado público; quedan obras originales de artistas con su publicación, detalle y compra de orbes. `pnpm test` completó 18 pruebas y `pnpm build` finalizó correctamente. La pantalla de acceso se revisó en 390 × 844 y 1440 × 900; ver la Galería con obras requiere una sesión autenticada.
+
+---
+
+# Foco visible en inicio de sesión
+
+- [x] Revisar la composición y reglas actuales de foco de usuario/correo y contraseña.
+- [x] Mostrar un marco de foco visible, uniforme y sin fragmentos mientras se escribe.
+- [x] Validar foco, accesibilidad, móvil, escritorio, pruebas y compilación antes de publicar.
+
+Validación: el campo activo aplica un borde azul de alto contraste y un halo exterior uniforme, mientras icono e input interno no dibujan contornos propios. El contrato verifica estos tokens de foco y accesibilidad; `pnpm test` completó 18 pruebas y `pnpm build` finalizó correctamente. Tras reiniciar el servidor, la pantalla se revisó en 390 × 844 y 1440 × 900. Las capturas muestran el estado neutro por defecto; el estado activo está cubierto por la prueba del contrato de clases.

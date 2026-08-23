@@ -6,9 +6,11 @@ import {
 } from "../src/lib/auth/field-focus";
 
 describe("foco de los campos de acceso", () => {
-  it("usa un anillo sutil y evita el contorno nativo duplicado", () => {
+  it("usa un marco visible y evita el contorno nativo duplicado", () => {
     expect(AUTH_FIELD_FOCUS_CLASS).toContain("ring-1");
     expect(AUTH_FIELD_FOCUS_CLASS).not.toContain("ring-[3px]");
+    expect(AUTH_FIELD_FOCUS_CLASS).toContain("border-primary/65");
+    expect(AUTH_FIELD_FOCUS_CLASS).toContain("shadow-[0_0_0_3px_rgba(37,99,235,0.07)]");
     expect(AUTH_FIELD_INPUT_FOCUS_CLASS).toContain("focus-visible:outline-none");
     expect(AUTH_FIELD_INPUT_FOCUS_CLASS).toContain("focus-visible:ring-0");
   });

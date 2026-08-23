@@ -1,4 +1,4 @@
-export const AUTH_FIELD_FOCUS_CLASS = "border-primary/35 ring-1 ring-primary/10 shadow-none";
+export const AUTH_FIELD_FOCUS_CLASS = "border-primary/65 ring-1 ring-primary/30 shadow-[0_0_0_3px_rgba(37,99,235,0.07)]";
 export const AUTH_FIELD_FOCUS_ICON_CLASS = "text-primary/55";
 // El input vive dentro de un control compuesto con iconos. Se neutralizan las
 // reglas globales de borde/sombra para que no dibuje un segundo marco parcial

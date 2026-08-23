@@ -1518,3 +1518,16 @@
 [2026-08-23T02:20:42.167Z] VITE v7.3.6  ready in 393 ms
 [2026-08-23T02:20:42.167Z] ➜  Local:   http://localhost:5173/
 [2026-08-23T02:20:42.167Z] ➜  Network: http://169.254.0.21:5173/
+[2026-08-23T05:18:00.656Z] Starting dev server with command: pnpm run dev
+[2026-08-23T05:18:01.242Z] $ vite --host
+[2026-08-23T05:18:02.308Z] Port 5173 is in use, trying another one...
+[2026-08-23T05:18:02.309Z] VITE v7.3.6  ready in 972 ms
+[2026-08-23T05:18:02.309Z] ➜  Local:   http://localhost:5174/
+[2026-08-23T05:18:02.309Z] ➜  Network: http://169.254.0.21:5174/
+[2026-08-23T05:20:36.698Z] [ELIFECYCLE] Command failed.
+[2026-08-23T05:20:36.704Z] Dev server exited with code -1
+[2026-08-23T05:20:37.767Z] Starting dev server with command: pnpm run dev
+[2026-08-23T05:20:38.305Z] $ vite --host
+[2026-08-23T05:20:38.740Z] VITE v7.3.6  ready in 389 ms
+[2026-08-23T05:20:38.740Z] ➜  Local:   http://localhost:5173/
+[2026-08-23T05:20:38.741Z] ➜  Network: http://169.254.0.21:5173/
