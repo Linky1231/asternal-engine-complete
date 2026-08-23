@@ -674,6 +674,14 @@ Las primeras comprobaciones devolvieron `Not Found` mientras el nuevo artefacto 
 
 ---
 
+# Limpieza de control inactivo en ficha de juego
+
+- [x] Localizar y retirar el botón azul de opciones sin acción.
+- [x] Ajustar la alineación de las acciones restantes de la ficha.
+- [x] Validar ficha, pruebas y compilación antes de publicar.
+
+---
+
 # Turquesa glass exclusivo de Plugin/Plus
 
 - [x] Identificar los botones y superficies que pertenecen únicamente a Plugin/Plus.

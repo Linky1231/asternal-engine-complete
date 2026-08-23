@@ -1,15 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { Avatar } from "./Avatar";
-import { Play, Heart, MessageCircle, Share2, Trash2, MoreHorizontal, Pencil, GitFork, Loader2, Sparkles, Lock, X, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight, Gamepad2, Flag } from "lucide-react";
+import { Play, Heart, MessageCircle, Share2, GitFork, Loader2, Sparkles, Lock, X, CheckCircle2, AlertTriangle, ChevronLeft, ChevronRight, Gamepad2 } from "lucide-react";
 import { useNavigate, Link } from "@tanstack/react-router";
-import { type PostWithMeta, toggleReaction, deletePost, loadGameProject, reportContent, remixGame, purchaseGame, getMyOrbes, recordGamePlay } from "@/lib/social/api";
+import { type PostWithMeta, toggleReaction, loadGameProject, remixGame, purchaseGame, getMyOrbes, recordGamePlay } from "@/lib/social/api";
 import { coverFrameFromPreset, coverFrameStyle } from "@/lib/social/cover-frame";
 import { logPlaySession } from "@/lib/social/history";
 import type { Project, Scene } from "@/lib/engine/core";
 import { GameRuntime } from "@/components/engine/GameRuntime";
 import { CommentSection } from "./CommentSection";
-import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
-import { PublishGameDialog } from "@/components/engine/PublishGameDialog";
 import { createProject, saveProjectById, setProjectCloudId, setCurrentProjectId } from "@/lib/engine/storage";
 import { GameIconPlaceholder } from "./GameIcon";
 
@@ -40,8 +38,6 @@ export function GameCard({
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [openComments, setOpenComments] = useState(false);
-  const menu = useCardMenuAnchor<HTMLButtonElement>();
-  const [editOpen, setEditOpen] = useState(false);
   const [viewer, setViewer] = useState<number | null>(null);
   const [remixing, setRemixing] = useState(false);
   const { title, body } = extractTitle(post.content);
@@ -159,19 +155,10 @@ export function GameCard({
   };
 
   const like = async () => { await toggleReaction({ postId: post.id, type: "like" }); onChange(); };
-  const remove = async () => {
-    if (!confirm("¿Borrar juego publicado?")) return;
-    await deletePost(post.id); onChange();
-  };
   const share = async () => {
     const url = window.location.origin + "/?g=" + post.id;
     try { await navigator.share({ url, title, text: body.slice(0, 80) }); }
     catch { await navigator.clipboard.writeText(url); }
-  };
-  const report = async () => {
-    const reason = prompt("Motivo:"); if (!reason) return;
-    await reportContent({ postId: post.id, reason });
-    menu.close();
   };
   const doRemix = async () => {
     if (!canRemix) { setErr("El autor no permite remixes"); return; }
@@ -185,7 +172,6 @@ export function GameCard({
       saveProjectById(localId, project);
       setProjectCloudId(localId, cloudId);
       setCurrentProjectId(localId);
-      menu.close();
       navigate({ to: "/editor" });
     } catch (e) { setErr((e as Error).message); }
     finally { setRemixing(false); }
@@ -302,43 +288,12 @@ export function GameCard({
         <button onClick={share} className={`flex items-center gap-1 px-2 py-1.5 rounded-lg active:scale-95 transition ${canRemix && !mine ? "" : "ml-auto"}`}>
           <Share2 size={15} />
         </button>
-        <button ref={menu.anchorRef} onClick={menu.toggle}
-          className="w-8 h-8 grid place-items-center rounded-lg border border-border text-primary-glow transition-[transform,background-color,color] duration-150 ease-out pointer-fine:hover:bg-primary/10 pointer-fine:hover:text-primary active:scale-95"
-          aria-label="Menú del juego">
-          <MoreHorizontal size={16} />
-        </button>
-        <CardMenu rect={menu.rect} onClose={menu.close} width={150}>
-          {mine && <CardMenuItem onClick={() => { setEditOpen(true); menu.close(); }} icon={<Pencil size={13} />}>Editar</CardMenuItem>}
-          {(mine || isMod) && <CardMenuItem onClick={remove} danger icon={<Trash2 size={13} />}>Borrar</CardMenuItem>}
-          {!mine && <CardMenuItem onClick={report} icon={<Flag size={13} />}>Reportar</CardMenuItem>}
-        </CardMenu>
       </footer>
 
       {openComments && (
         <div className="px-3 pb-3">
           <CommentSection postId={post.id} myId={myId} isMod={isMod} onChange={onChange} />
         </div>
-      )}
-
-      {editOpen && (
-        <PublishGameDialog
-          open={editOpen}
-          onOpenChange={setEditOpen}
-          defaultTitle={title}
-          mode="edit"
-          editPostId={post.id}
-          initialTitle={title}
-          initialDescription={body}
-          initialTags={post.tags}
-          initialCoverUrl={post.signed_cover}
-          initialScreenshots={(post.screenshots ?? []).map((path, i) => ({ path, url: post.signed_screenshots[i] ?? "" }))}
-          initialAllowRemix={post.allow_remix !== false}
-          initialPriceOrbes={post.price_orbes ?? 0}
-          initialGenre={post.game_genre ?? null}
-          initialCoverFrame={coverFrame}
-          initialAssetPreset={post.asset_preset}
-          onSaved={onChange}
-        />
       )}
 
       {/* Visor de capturas a pantalla completa */}
