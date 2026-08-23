@@ -993,3 +993,11 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Retirar el selector de diseño Lista/Cuadrícula del editor de Portafolio.
 - [x] Fijar Lista como formato predeterminado y único de Portafolio.
 - [x] Validar el Portafolio simplificado con pruebas y compilación antes de publicar.
+
+---
+
+# Cabecera integrada del detalle de obras
+
+- [x] Localizar la cabecera que se superpone al contenido en la pantalla aislada de una obra de Galería.
+- [x] Mantener la cabecera fija e integrada en la parte superior, fuera del área desplazable de la obra.
+- [x] Validar el detalle de obra en móvil y escritorio, ejecutar pruebas, compilar y publicar.

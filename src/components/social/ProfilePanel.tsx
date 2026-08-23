@@ -645,17 +645,21 @@ export function ProfilePanel({
       </div>
 
       {artDetail && (
-        <div className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-md overflow-y-auto" onClick={() => setArtDetail(null)}>
-          <div className="min-h-full max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8" onClick={event => event.stopPropagation()}>
-            <div className="sticky top-3 z-10 rounded-2xl border border-border/60 bg-card/90 backdrop-blur-xl px-3 py-2 flex items-center justify-between gap-3">
+        <div className="fixed inset-0 z-[90] flex flex-col overflow-hidden bg-background/95 backdrop-blur-md" onClick={() => setArtDetail(null)}>
+          <header className="shrink-0 border-b border-border/60 bg-surface/95 backdrop-blur-xl" onClick={event => event.stopPropagation()}>
+            <div className="max-w-4xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
               <div className="min-w-0"><div className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">Galería</div><h3 className="text-sm font-display font-bold truncate">{(artDetail.content.split("\n")[0] || "Obra sin título").replace(/^🎮🎨\s*/, "").replace(/^🎨\s*/, "")}</h3></div>
-              <button type="button" onClick={() => setArtDetail(null)} className="w-9 h-9 rounded-xl border border-border/60 bg-muted/40 grid place-items-center hover:bg-muted" aria-label="Cerrar detalle de obra"><X size={15} /></button>
+              <button type="button" onClick={() => setArtDetail(null)} className="w-9 h-9 shrink-0 rounded-xl border border-border/60 bg-muted/40 grid place-items-center hover:bg-muted" aria-label="Cerrar detalle de obra"><X size={15} /></button>
             </div>
-            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
+          </header>
+          <div className="min-h-0 flex-1 overflow-y-auto" onClick={event => event.stopPropagation()}>
+            <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(300px,0.85fr)]">
               <div className="rounded-2xl border border-border/60 bg-card aspect-square p-3 sm:p-5 grid place-items-center">
                 {artDetail.signed_media?.[0] || artDetail.signed_cover ? <img src={artDetail.signed_media?.[0] ?? artDetail.signed_cover ?? ""} alt="" className="w-full h-full object-contain rounded-xl" /> : <Palette size={36} className="text-muted-foreground/30" />}
               </div>
               <div className="rounded-2xl border border-border/60 bg-card p-4"><div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">Comentarios</div><CommentSection postId={artDetail.id} myId={myId} isMod={isMod} onChange={loadContent} /></div>
+            </div>
             </div>
           </div>
         </div>

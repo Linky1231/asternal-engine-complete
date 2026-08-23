@@ -1559,3 +1559,5 @@
 [2026-08-23T16:21:00.270Z] 4:21:00 PM [vite] (client) ✨ optimized dependencies changed. reloading
 [2026-08-23T16:29:36.382Z] 4:29:36 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PortfolioPanel.tsx
 [2026-08-23T16:29:45.211Z] 4:29:45 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PortfolioPanel.tsx
+[2026-08-23T16:36:40.029Z] 4:36:40 PM [vite] (client) hmr update /src/styles.css, /src/components/social/StoreSection.tsx
+[2026-08-23T16:36:40.031Z] 4:36:40 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ProfilePanel.tsx

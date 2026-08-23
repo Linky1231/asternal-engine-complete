@@ -548,7 +548,7 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={detailMotion.overlay}
-            className="fixed inset-0 z-[90] bg-background/95 backdrop-blur-md overflow-y-auto"
+            className="fixed inset-0 z-[90] flex flex-col overflow-hidden bg-background/95 backdrop-blur-md"
             onClick={() => setDetailPost(null)}
             role="dialog"
             aria-modal="true"
@@ -559,21 +559,24 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.99 }}
               transition={detailMotion.panel}
-              className="min-h-full max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8"
+              className="min-h-0 flex-1 flex flex-col"
               onClick={e => e.stopPropagation()}
             >
-            <div className="sticky top-3 z-10 flex items-center justify-between gap-3 rounded-2xl border border-border/60 bg-card/90 backdrop-blur-xl px-3 py-2 shadow-sm">
-              <div className="min-w-0 flex items-center gap-2">
-                <span className="w-8 h-8 rounded-xl bg-muted/70 grid place-items-center"><Palette size={15} className="text-muted-foreground" /></span>
-                <div className="min-w-0">
-                  <div className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">Galería</div>
-                  <h3 className="font-display text-sm font-bold truncate">{detailTitle}</h3>
+              <header className="shrink-0 border-b border-border/60 bg-surface/95 backdrop-blur-xl">
+                <div className="max-w-5xl mx-auto px-3 sm:px-6 py-3 flex items-center justify-between gap-3">
+                  <div className="min-w-0 flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-xl bg-muted/70 grid place-items-center"><Palette size={15} className="text-muted-foreground" /></span>
+                    <div className="min-w-0">
+                      <div className="text-[9px] uppercase tracking-[0.16em] text-muted-foreground">Galería</div>
+                      <h3 className="font-display text-sm font-bold truncate">{detailTitle}</h3>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setDetailPost(null)} className="w-9 h-9 shrink-0 rounded-xl border border-border/60 bg-muted/40 hover:bg-muted grid place-items-center" aria-label="Cerrar detalle de obra"><X size={15} /></button>
                 </div>
-              </div>
-              <button type="button" onClick={() => setDetailPost(null)} className="w-9 h-9 shrink-0 rounded-xl border border-border/60 bg-muted/40 hover:bg-muted grid place-items-center" aria-label="Cerrar detalle de obra"><X size={15} /></button>
-            </div>
-
-            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(300px,0.75fr)]">
+              </header>
+              <div className="min-h-0 flex-1 overflow-y-auto">
+              <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+              <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(300px,0.75fr)]">
               <section className="rounded-2xl border border-border/60 bg-card overflow-hidden">
                 <div className="aspect-square bg-muted/30 p-3 sm:p-5 grid place-items-center">
                   {detailImage ? (
@@ -599,6 +602,8 @@ export function StoreSection({ myId, isMod: _isMod, onRefresh }: {
                 <div className="border-t border-border/50 pt-4"><div className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground mb-3">Comentarios</div><CommentSection postId={detailPost.id} myId={myId} isMod={false} onChange={load} /></div>
               </aside>
             </div>
+              </div>
+              </div>
             </motion.div>
           </motion.div>
         )}
