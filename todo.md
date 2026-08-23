@@ -825,3 +825,14 @@ Validación: el foco pasa de un anillo de 3 px a una sola línea de 1 px de baja
 - [x] Ejecutar pruebas y compilación antes de publicar.
 
 Validación: el estado activo ya no usa un anillo separado; depende de un único borde de 1 px y el contenedor recorta cualquier capa interna fuera de su radio. Los extremos junto a los iconos quedan continuos. Se comprobó la composición en 390 × 844 y 1440 × 900; `pnpm test` completó 10 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Borde activo completo del acceso
+
+- [x] Revisar la separación actual entre el icono y el campo al recibir foco.
+- [x] Hacer que el borde activo rodee el campo completo, incluido el área del icono.
+- [x] Mantener un radio uniforme en las cuatro esquinas sin fragmentos ni superposiciones.
+- [x] Validar escritura en móvil y escritorio, pruebas y compilación antes de publicar.
+
+Validación: el borde activo es una capa absoluta única que cubre todo el control, desde el área del icono hasta el extremo opuesto. Hereda el radio del contenedor, no recibe eventos y el contenido queda interactivo sobre ella, por lo que no aparecen fragmentos ni recuadros duplicados. Se revisó la composición en 390 × 844 y 1440 × 900; `pnpm test` completó 11 pruebas y `pnpm build` finalizó correctamente.

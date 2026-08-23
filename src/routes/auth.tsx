@@ -10,6 +10,7 @@ import {
   AUTH_FIELD_FOCUS_CLASS,
   AUTH_FIELD_FOCUS_ICON_CLASS,
   AUTH_FIELD_INPUT_FOCUS_CLASS,
+  AUTH_FIELD_FOCUS_OUTLINE_CLASS,
 } from "@/lib/auth/field-focus";
 
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
@@ -217,6 +218,7 @@ function FloatInput({
               ? 'border-destructive/40 ring-[3px] ring-destructive/[0.04]'
               : ''
         }`}>
+          {focused && <span aria-hidden="true" className={AUTH_FIELD_FOCUS_OUTLINE_CLASS} />}
           <span className={`relative z-10 flex w-10 shrink-0 justify-center pointer-events-none transition-colors duration-200 ${focused ? AUTH_FIELD_FOCUS_ICON_CLASS : error ? 'text-destructive/50' : 'text-muted-foreground/30'}`}>
             <Icon size={14} />
           </span>
