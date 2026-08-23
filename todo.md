@@ -792,3 +792,14 @@ Validación: revisada en 390 × 844 y 1440 × 900. “Una idea” conserva el mi
 - [x] Validar el equilibrio visual en móvil y escritorio antes de publicar.
 
 Validación: revisada en 390 × 844 y 1440 × 900. La bombilla sube desde el centro inferior al área media-superior del halo, mantiene el encuadre y deja una separación más clara con el titular. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Acceso simplificado
+
+- [x] Cambiar la frase a “Las buenas ideas no siempre llegan terminadas”.
+- [x] Retirar el enlace y el espacio de recuperación de contraseña.
+- [x] Validar la composición del formulario en móvil y escritorio.
+- [x] Ejecutar pruebas y compilación antes de publicar.
+
+Validación: revisada en 390 × 844 y 1440 × 900. La frase completa se lee dentro de la etiqueta y la tarjeta de acceso ya no muestra ni reserva espacio para recuperación de contraseña. `pnpm test` completó 8 pruebas y `pnpm build` finalizó correctamente.

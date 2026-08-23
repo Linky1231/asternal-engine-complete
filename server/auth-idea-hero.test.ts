@@ -7,6 +7,7 @@ describe("cabecera de acceso centrada en ideas", () => {
 
     expect(IDEA_HERO_COPY.title).toBe("Todo juego comienza con una idea");
     expect(`${IDEA_HERO_COPY.titleLead} ${IDEA_HERO_COPY.titleAccent}`).toBe(IDEA_HERO_COPY.title);
+    expect(IDEA_HERO_COPY.eyebrow).toBe("Las buenas ideas no siempre llegan terminadas");
     expect(copy).not.toMatch(/editor visual|lógica con bloques|publica al instante/i);
     expect(IDEA_HERO_COPY.description).toContain("Una escena");
   });

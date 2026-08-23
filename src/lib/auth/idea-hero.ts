@@ -1,5 +1,5 @@
 export const IDEA_HERO_COPY = {
-  eyebrow: "Las buenas ideas no llegan terminadas",
+  eyebrow: "Las buenas ideas no siempre llegan terminadas",
   title: "Todo juego comienza con una idea",
   titleLead: "Todo juego comienza con",
   titleAccent: "una idea",

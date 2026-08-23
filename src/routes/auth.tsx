@@ -10,10 +10,10 @@ import { IDEA_HERO_COPY } from "@/lib/auth/idea-hero";
 /* ─── Traduce errores de Supabase a mensajes claros en español ─── */
 function friendlyAuthError(msg: string): string {
   const m = msg.toLowerCase();
-  // Límite de envíos de correo (registros / OTP / recuperación): se bloquea
+  // Límite de envíos de correo de registro: se bloquea
   // temporalmente por seguridad tras varios intentos seguidos.
   if (/rate limit|rate_limit|over.?request.?rate|too many (requests|attempts)|email.*send/i.test(m)) {
-    return "Límite de envíos de correo alcanzado (el servicio integrado de Supabase permite ~2 por hora). Registrarte y acceder NO requieren correo, así que puedes intentarlo de nuevo de inmediato. Si el error aparece en «¿Olvidaste tu contraseña?», espera ~1 hora o conecta un SMTP personalizado (ej. Resend) para subir el límite.";
+    return "Límite de envíos de correo alcanzado (el servicio integrado de Supabase permite ~2 por hora). Registrarte y acceder no requieren correo, así que puedes intentarlo de nuevo de inmediato.";
   }
   if (/invalid login credentials|invalid credentials|incorrect (email|password)|password.*does not match/i.test(m)) {
     return "Usuario o contraseña incorrectos. Revísalos e inténtalo de nuevo.";
@@ -614,22 +614,6 @@ function AuthPage() {
                         </button>
                       </div>
 
-                      {mode === "signin" && (
-                        <div className="text-center pt-1">
-                          <button type="button" onClick={async () => {
-                            if (!email.value.trim()) { setFieldErrors({ email: "Escribe tu usuario o correo primero" }); return; }
-                            setBusy(true); clearErrors(); setSuccessMsg(null);
-                            try {
-                              const { error } = await supabase.auth.resetPasswordForEmail(resolveLoginEmail(email.value));
-                              if (error) throw error;
-                              setSuccessMsg("Revisa tu bandeja de entrada (o si usaste solo usuario, tu correo @asternal.app)");
-                            } catch (e) { setErr(friendlyAuthError((e as Error).message)); }
-                            finally { setBusy(false); }
-                          }} className="text-[12px] text-muted-foreground/50 hover:text-primary transition-colors">
-                            ¿Olvidaste tu contraseña?
-                          </button>
-                        </div>
-                      )}
                     </form>
 
                     <div className="mt-5 pt-4 border-t border-border/40">
