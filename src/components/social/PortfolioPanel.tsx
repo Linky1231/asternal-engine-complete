@@ -161,6 +161,10 @@ export function PortfolioPanel({
     setEditing(true);
   };
 
+  const selectLayout = (nextLayout: "list" | "grid") => {
+    setLayout(current => current === nextLayout ? current : nextLayout);
+  };
+
   /* ── Achievement helpers ── */
   const addAchievement = () =>
     setAchievements(prev => [
@@ -327,12 +331,12 @@ export function PortfolioPanel({
             {/* ── Layout ── */}
             <Section label="Diseño" hint="Cómo se muestran tus logros">
               <div className="flex gap-2">
-                <button onClick={() => setLayout("list")}
-                  className={`flex-1 h-9 rounded-lg text-[11px] font-medium border transition ${layout === "list" ? "border-foreground bg-card" : "border-border bg-surface text-muted-foreground"}`}>
+                <button type="button" onClick={() => selectLayout("list")} aria-pressed={layout === "list"}
+                  className={`flex-1 h-9 rounded-lg text-[11px] font-medium border transition-none ${layout === "list" ? "border-primary/40 bg-primary/15 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
                   Lista
                 </button>
-                <button onClick={() => setLayout("grid")}
-                  className={`flex-1 h-9 rounded-lg text-[11px] font-medium border transition ${layout === "grid" ? "border-foreground bg-card" : "border-border bg-surface text-muted-foreground"}`}>
+                <button type="button" onClick={() => selectLayout("grid")} aria-pressed={layout === "grid"}
+                  className={`flex-1 h-9 rounded-lg text-[11px] font-medium border transition-none ${layout === "grid" ? "border-primary/40 bg-primary/15 text-primary" : "border-border bg-surface text-muted-foreground hover:text-foreground"}`}>
                   Cuadrícula
                 </button>
               </div>

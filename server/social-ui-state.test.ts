@@ -12,10 +12,10 @@ describe("mensajes de acceso", () => {
 });
 
 describe("estado visual de acciones sociales", () => {
-  it("usa un gris neutro para una acción seleccionada", () => {
+  it("usa el azul de marca para una acción seleccionada", () => {
     const state = socialActionStateClass(true);
-    expect(state).toContain("bg-muted/75");
-    expect(state).not.toContain("bg-primary");
+    expect(state).toContain("bg-primary/15");
+    expect(state).toContain("text-primary");
   });
 
   it("mantiene una acción inactiva sin fondo seleccionado", () => {

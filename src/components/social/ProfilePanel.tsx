@@ -39,6 +39,7 @@ import { SegmentedControl } from "@/components/ui/segmented";
 import { TrustPointsHistory } from "./TrustPointsHistory";
 import { SmartStatusPanel } from "./SmartStatusPanel";
 import { PortfolioPanel } from "./PortfolioPanel";
+import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { getUserCode } from "@/lib/social/avatar";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
 import { profileControlStateClass } from "@/lib/social/interaction-state";
@@ -96,13 +97,13 @@ export function ProfilePanel({
   const [trustBusy, setTrustBusy] = useState(false);
   const [trustDeductAmt, setTrustDeductAmt] = useState(1);
   const [trustReason, setTrustReason] = useState("");
-  const [shareOpen, setShareOpen] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [followList, setFollowList] = useState<null | { kind: "followers" | "following"; items: Profile[]; loading: boolean }>(null);
-  const [showTrustMenu, setShowTrustMenu] = useState(false);
   const [showTrustPanel, setShowTrustPanel] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
   const [artDetail, setArtDetail] = useState<PostWithMeta | null>(null);
+  const shareMenuAnchor = useCardMenuAnchor<HTMLButtonElement>();
+  const moreMenuAnchor = useCardMenuAnchor<HTMLButtonElement>();
 
   const load = async () => {
     setLoading(true);
@@ -186,7 +187,7 @@ export function ProfilePanel({
   // ─── Compartir perfil: enlace directo + compartir en el chat grupal ───
   const shareLink = typeof window !== "undefined" ? window.location.origin + "/profile/" + userId : "";
   const shareToChat = () => {
-    setShareOpen(false);
+    shareMenuAnchor.close();
     try {
       sessionStorage.setItem("asternal_chat_share", shareLink);
       window.dispatchEvent(new CustomEvent("asternal_share_chat", { detail: { text: shareLink, view: "group" as const } }));
@@ -194,7 +195,7 @@ export function ProfilePanel({
     navigate({ to: "/" });
   };
   const shareDirect = () => {
-    setShareOpen(false);
+    shareMenuAnchor.close();
     try {
       sessionStorage.setItem("asternal_chat_share", shareLink);
       window.dispatchEvent(new CustomEvent("asternal_share_chat", { detail: { text: shareLink, view: "dms" as const } }));
@@ -202,36 +203,38 @@ export function ProfilePanel({
     navigate({ to: "/" });
   };
   const copyLink = async () => {
-    setShareOpen(false);
+    shareMenuAnchor.close();
     try { await navigator.clipboard.writeText(shareLink); } catch { /* noop */ }
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 1800);
   };
   const shareMenu = (
-    <div className="relative">
-      <button onClick={() => setShareOpen(s => !s)}
-        aria-label="Compartir perfil"
+    <>
+      <button ref={shareMenuAnchor.anchorRef} onClick={() => { moreMenuAnchor.close(); shareMenuAnchor.toggle(); }}
+        aria-label="Compartir perfil" aria-expanded={Boolean(shareMenuAnchor.rect)}
         className="h-9 w-9 sm:w-auto sm:px-3 rounded-xl border border-border bg-surface text-xs font-medium flex items-center justify-center gap-1.5 text-foreground hover:bg-muted/60 active:scale-95 transition">
         <Share2 size={14} /><span className="hidden sm:inline">Compartir</span>
       </button>
-      {shareOpen && (
-        <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[220px] shadow-md">
-          <button onClick={shareToChat}
-            className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-            <MessageCircle size={14} className="text-primary shrink-0" /> Compartir en chat grupal
-          </button>
-          <button onClick={shareDirect}
-            className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-            <MessageCircle size={14} className="text-primary shrink-0" /> Compartir en chat directo
-          </button>
-          <button onClick={() => void copyLink()}
-            className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-            {copiedLink ? <Check size={14} className="text-emerald-500 shrink-0" /> : <Link2 size={14} className="text-primary shrink-0" />}
-            {copiedLink ? "¡Enlace copiado!" : "Copiar enlace al perfil"}
-          </button>
-        </div>
-      )}
-    </div>
+      <CardMenu rect={shareMenuAnchor.rect} onClose={shareMenuAnchor.close} width={248}>
+        <CardMenuItem onClick={shareToChat} icon={<MessageCircle size={14} />}>Compartir en chat grupal</CardMenuItem>
+        <CardMenuItem onClick={shareDirect} icon={<MessageCircle size={14} />}>Compartir en chat directo</CardMenuItem>
+        <CardMenuItem onClick={() => void copyLink()} icon={copiedLink ? <Check size={14} className="text-emerald-500" /> : <Link2 size={14} />}>{copiedLink ? "¡Enlace copiado!" : "Copiar enlace al perfil"}</CardMenuItem>
+      </CardMenu>
+    </>
+  );
+
+  const moreMenu = (
+    <>
+      <button ref={moreMenuAnchor.anchorRef} onClick={() => { shareMenuAnchor.close(); moreMenuAnchor.toggle(); }}
+        aria-label="Más acciones de perfil" aria-expanded={Boolean(moreMenuAnchor.rect)}
+        className="h-9 w-9 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
+        <MoreVertical size={14} />
+      </button>
+      <CardMenu rect={moreMenuAnchor.rect} onClose={moreMenuAnchor.close} width={224}>
+        <CardMenuItem onClick={() => { moreMenuAnchor.close(); setShowTrustPanel(true); }} icon={<Shield size={14} />}>Puntos de confianza</CardMenuItem>
+        <CardMenuItem onClick={() => { moreMenuAnchor.close(); setShowPortfolio(true); }} icon={<Trophy size={14} />}>Portafolio</CardMenuItem>
+      </CardMenu>
+    </>
   );
 
   // Abre la lista de seguidores o de "siguiendo" cargando los perfiles.
@@ -302,7 +305,7 @@ export function ProfilePanel({
     <button
       type="button"
       onClick={() => viewingOwn && editing && fileRef.current?.click()}
-      className={`relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl overflow-hidden border-[3px] border-white block ${viewingOwn && editing ? "cursor-pointer active:scale-95" : ""}`}
+      className={`relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden border-[3px] border-white block ${viewingOwn && editing ? "cursor-pointer active:scale-95" : ""}`}
       aria-label="Avatar"
     >
       {/* w-full h-full sin size fijo: la foto rellena exactamente la caja
@@ -327,7 +330,7 @@ export function ProfilePanel({
     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
       {/* Header card with banner */}
       <section className="rounded-2xl border border-border/70 bg-surface/90 shadow-sm overflow-hidden">
-        <div className="relative h-20 sm:h-28 bg-muted/35">
+        <div className="relative h-28 sm:h-36 bg-muted/35">
           {bannerPreview && <img src={bannerPreview} alt="banner" className="absolute inset-0 w-full h-full object-cover" />}
           {viewingOwn && editing && (
             <button onClick={() => bannerRef.current?.click()}
@@ -340,7 +343,7 @@ export function ProfilePanel({
         </div>
 
         <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-          <div className="-mt-8 sm:-mt-10 flex items-end gap-3">
+          <div className="-mt-10 sm:-mt-12 flex items-end gap-3">
             {/* Avatar: marco de degradado ceñido a la foto (mismo lenguaje que PostCard),
                 en vez del anillo animado flotante que se veía como un borde roto. */}
             {frameRing ? (
@@ -350,7 +353,7 @@ export function ProfilePanel({
             ) : (
               avatarButton
             )}
-            <div className="min-w-0 flex-1 pb-0.5">
+            <div className="min-w-0 flex-1 pt-10 sm:pt-12">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -360,34 +363,37 @@ export function ProfilePanel({
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 flex-wrap min-w-0">
-                    <span className="font-display text-base sm:text-lg font-semibold truncate text-foreground">{profileDisplayName}</span>
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="font-display text-base sm:text-lg font-semibold truncate text-foreground" title={profileDisplayName}>{profileDisplayName}</span>
                     {isPlusActive(profile) && profile.show_plus_badge !== false && (
                       <span className="px-1.5 py-0.5 rounded-md text-[9px] font-display font-bold text-white shrink-0"
                         style={{ background: "var(--gradient-plus)" }}>PLUS</span>
                     )}
                   </div>
-                  <div className="mt-0.5 text-xs font-medium text-muted-foreground break-all">
+                  <div className="mt-0.5 max-w-full truncate text-xs font-medium text-muted-foreground" title={`@${profileHandle}`}>
                     @{profileHandle}{profile.pronouns ? ` · ${profile.pronouns}` : ""}
                   </div>
-                  {!editing && (
-                    <button onClick={() => void copyCode()}
-                      className="mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[10px] font-mono text-muted-foreground hover:text-foreground hover:border-border active:scale-95 transition"
-                      title="ID de usuario · toca para copiar">
-                      <Fingerprint size={10} />
-                      {userCode}
-                      {codeCopied ? <Check size={9} className="text-emerald-500" /> : <Copy size={9} className="opacity-60" />}
-                    </button>
-                  )}
-                  {profile.custom_title && (
-                    <div className="text-[11px] mt-1 text-muted-foreground" style={profile.accent_color ? { color: profile.accent_color } : undefined}>
-                      {profile.custom_title}
-                    </div>
-                  )}
                 </>
               )}
             </div>
           </div>
+
+          {!editing && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <button onClick={() => void copyCode()}
+                className="inline-flex max-w-full items-center gap-1.5 px-2 py-0.5 rounded-md bg-muted/40 border border-border/50 text-[10px] font-mono text-muted-foreground hover:text-foreground hover:border-border active:scale-95 transition"
+                title="ID de usuario · toca para copiar">
+                <Fingerprint size={10} />
+                <span className="truncate">{userCode}</span>
+                {codeCopied ? <Check size={9} className="text-emerald-500 shrink-0" /> : <Copy size={9} className="opacity-60 shrink-0" />}
+              </button>
+              {profile.custom_title && (
+                <div className="max-w-full truncate text-[11px] text-muted-foreground" style={profile.accent_color ? { color: profile.accent_color } : undefined}>
+                  {profile.custom_title}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_2.75rem_2.75rem] items-center gap-2 border-t border-border/40 pt-3 sm:flex sm:gap-3">
             {viewingOwn ? (
@@ -406,24 +412,7 @@ export function ProfilePanel({
                     <QrCode size={15} /><span>Código QR</span>
                   </button>
                   {shareMenu}
-                  <div className="relative">
-                    <button onClick={() => setShowTrustMenu(v => !v)}
-                      className="h-9 w-9 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
-                      <MoreVertical size={14} />
-                    </button>
-                    {showTrustMenu && (
-                      <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[200px] shadow-md animate-in fade-in slide-in-from-top-1 duration-150">
-                        <button onClick={() => { setShowTrustMenu(false); setShowTrustPanel(true); }}
-                          className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-                          <Shield size={14} className="text-primary shrink-0" /> Puntos de confianza
-                        </button>
-                        <button onClick={() => { setShowTrustMenu(false); setShowPortfolio(true); }}
-                          className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-                          <Trophy size={14} className="text-primary shrink-0" /> Portafolio
-                        </button>
-                      </div>
-                    )}
-                  </div>
+                  {moreMenu}
                 </>
               )
             ) : (
@@ -438,24 +427,7 @@ export function ProfilePanel({
                   <QrCode size={15} /><span>Código QR</span>
                 </button>
                 {shareMenu}
-                <div className="relative">
-                  <button onClick={() => setShowTrustMenu(v => !v)}
-                    className="h-9 w-9 rounded-xl border border-border bg-surface grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
-                    <MoreVertical size={14} />
-                  </button>
-                  {showTrustMenu && (
-                    <div className="absolute right-0 top-full mt-1.5 z-30 rounded-lg border border-border bg-surface p-1 min-w-[200px] shadow-md animate-in fade-in slide-in-from-top-1 duration-150">
-                      <button onClick={() => { setShowTrustMenu(false); setShowTrustPanel(true); }}
-                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-                        <Shield size={14} className="text-primary shrink-0" /> Puntos de confianza
-                      </button>
-                      <button onClick={() => { setShowTrustMenu(false); setShowPortfolio(true); }}
-                        className="flex w-full items-center gap-2 px-3 py-2 rounded-md text-xs hover:bg-muted/60 transition-colors text-left">
-                        <Trophy size={14} className="text-primary shrink-0" /> Portafolio
-                      </button>
-                    </div>
-                    )}
-                  </div>
+                {moreMenu}
               </>
             )}
           </div>

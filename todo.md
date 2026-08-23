@@ -953,3 +953,15 @@ Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctam
 - [x] Validar Perfil y Portafolio responsive, con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida redirige de forma estable a Acceso en 390 × 844 y 1440 × 900 sin sesión. Con sesión, la nueva composición ordena identidad, acciones y métricas en bloques separados; Portafolio ocupa una pantalla aislada completa, con cabecera propia y contenido desplazable.
+
+---
+
+# Correcciones de respuesta y superposición de Perfil
+
+- [x] Hacer instantáneo el cambio entre listas de Portafolio sin estados visuales bloqueados.
+- [x] Corregir el desborde de nombre y usuario, restaurar la visibilidad del banner y ampliar el avatar Plus.
+- [x] Reposicionar los menús Compartir y Más para que no se recorten, no tapen la tarjeta ni se abran simultáneamente.
+- [x] Restaurar el azul de marca en estados activos de publicaciones, como Me gusta y selecciones.
+- [x] Validar interacciones, Perfil y Portafolio responsive con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta protegida de Perfil redirige de manera estable a Acceso en 390 × 844 y 1440 × 900 sin sesión. Los menús se sustituyeron por superficies portalizadas exclusivas; la revisión de sus datos reales, del banner y de Portafolio requiere una sesión autenticada.
