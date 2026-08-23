@@ -340,7 +340,7 @@ export function ProfilePanel({
         </div>
 
         <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-          <div className="-mt-8 sm:-mt-10 flex items-end justify-between gap-3">
+          <div className="-mt-8 sm:-mt-10 flex items-end gap-3">
             {/* Avatar: marco de degradado ceñido a la foto (mismo lenguaje que PostCard),
                 en vez del anillo animado flotante que se veía como un borde roto. */}
             {frameRing ? (
@@ -350,10 +350,7 @@ export function ProfilePanel({
             ) : (
               avatarButton
             )}
-          </div>
-
-          <div className="mt-2 sm:mt-3">
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1 pb-0.5">
               {editing ? (
                 <div className="space-y-2">
                   <input value={displayName} onChange={e => setDisplayName(e.target.value)} maxLength={40} placeholder="Nombre"
@@ -390,8 +387,9 @@ export function ProfilePanel({
                 </>
               )}
             </div>
+          </div>
 
-            <div className="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_2.75rem_2.75rem] gap-3 sm:flex sm:items-center sm:gap-3">
+          <div className="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)_2.75rem_2.75rem] items-center gap-2 border-t border-border/40 pt-3 sm:flex sm:gap-3">
             {viewingOwn ? (
               editing ? (
                 <button onClick={save} disabled={saving}
@@ -460,12 +458,11 @@ export function ProfilePanel({
                   </div>
               </>
             )}
-            </div>
           </div>
 
           {/* Follow counts (tocables: muestran la lista de personas) */}
           {!editing && (
-          <div className="mt-2.5 flex items-center gap-1 border-t border-border/40 pt-2 text-[11px]">
+          <div className="mt-2 flex items-center gap-1 text-[11px]">
               <button onClick={() => openFollowList("followers")}
                 className="flex items-center gap-1 px-2 py-1 -mx-1 rounded-lg hover:bg-muted/40 active:scale-95 transition text-left">
                 <b className="text-foreground tabular-nums">{follow.followers}</b>

@@ -220,10 +220,9 @@ export function PortfolioPanel({
   /* ── No portfolio ── */
   if (!portfolio && !editing) {
     return (
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <button aria-label="Cerrar" onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" />
-        <div className="relative w-full sm:max-w-md rounded-t-2xl sm:rounded-lg border border-border bg-surface shadow-md animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[85vh] flex flex-col">
+      <div className="fixed inset-0 z-[100] overflow-y-auto bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Portafolio">
+        <div className="min-h-full max-w-6xl mx-auto px-3 py-3 sm:px-6 sm:py-6">
+        <div className="relative min-h-[calc(100vh-1.5rem)] sm:min-h-[calc(100vh-3rem)] rounded-2xl border border-border bg-surface shadow-xl animate-in slide-in-from-bottom-2 duration-300 flex flex-col">
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 shrink-0">
             <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0 bg-primary/10">
               <Trophy size={16} className="text-primary" />
@@ -237,7 +236,7 @@ export function PortfolioPanel({
               <X size={14} />
             </button>
           </div>
-          <div className="p-8 text-center space-y-3">
+          <div className="flex-1 grid place-items-center p-8 text-center space-y-3">
             <div className="w-14 h-14 mx-auto rounded-2xl bg-muted/30 border border-border/30 grid place-items-center">
               <Trophy size={22} className="text-muted-foreground/25" />
             </div>
@@ -259,6 +258,7 @@ export function PortfolioPanel({
             )}
           </div>
         </div>
+        </div>
       </div>
     );
   }
@@ -266,10 +266,9 @@ export function PortfolioPanel({
   /* ═══════ EDITOR ═══════ */
   if (editing) {
     return (
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <button aria-label="Cerrar" onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" />
-        <div className="relative w-full sm:max-w-lg rounded-t-2xl sm:rounded-lg border border-border bg-surface shadow-md animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[90vh] flex flex-col">
+      <div className="fixed inset-0 z-[100] overflow-y-auto bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Editor de portafolio">
+        <div className="min-h-full max-w-6xl mx-auto px-3 py-3 sm:px-6 sm:py-6">
+        <div className="relative min-h-[calc(100vh-1.5rem)] sm:min-h-[calc(100vh-3rem)] rounded-2xl border border-border bg-surface shadow-xl animate-in slide-in-from-bottom-2 duration-300 flex flex-col">
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 shrink-0">
             <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0" style={{ background: accentColor + "18" }}>
@@ -442,7 +441,7 @@ export function PortfolioPanel({
           </div>
 
           {/* Footer */}
-          <div className="px-4 pb-4 pt-3 flex items-center gap-2 shrink-0 border-t border-border/30">
+          <div className="sticky bottom-0 px-4 pb-4 pt-3 flex items-center gap-2 shrink-0 border-t border-border/30 bg-surface/95 backdrop-blur">
             <button onClick={handleDelete}
               className="h-9 px-3 rounded-lg border border-border bg-surface text-[11px] font-medium text-red-500 hover:bg-red-50 active:scale-95 transition">
               Eliminar
@@ -459,16 +458,16 @@ export function PortfolioPanel({
             </button>
           </div>
         </div>
+        </div>
       </div>
     );
   }
 
   /* ═══════ VIEW MODE ═══════ */
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <button aria-label="Cerrar" onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" />
-      <div className="relative w-full sm:max-w-md rounded-t-2xl sm:rounded-lg border border-border bg-surface shadow-md animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[85vh] flex flex-col">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Portafolio">
+      <div className="min-h-full max-w-6xl mx-auto px-3 py-3 sm:px-6 sm:py-6">
+      <div className="relative min-h-[calc(100vh-1.5rem)] sm:min-h-[calc(100vh-3rem)] rounded-2xl border border-border bg-surface shadow-xl animate-in slide-in-from-bottom-2 duration-300 flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 shrink-0">
           <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0"
@@ -583,6 +582,7 @@ export function PortfolioPanel({
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

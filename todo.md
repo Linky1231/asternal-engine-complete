@@ -943,3 +943,13 @@ Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctam
 - [x] Validar la simplificación con pruebas y compilación antes de publicar.
 
 Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida se comprobó en 390 × 844 y sigue redirigiendo con estabilidad a Acceso sin sesión. El editor QR queda simplificado: conserva colores y tamaño, pero utiliza únicamente el marco redondeado.
+
+---
+
+# Jerarquía profesional de Perfil y Portafolio
+
+- [x] Reorganizar identidad, acciones y métricas de la cabecera de Perfil con una jerarquía visual clara.
+- [x] Convertir Portafolio en una pantalla aislada de altura completa.
+- [x] Validar Perfil y Portafolio responsive, con pruebas y compilación antes de publicar.
+
+Validación: `pnpm test` completó 20 pruebas y `pnpm build` finalizó correctamente. La ruta de Perfil protegida redirige de forma estable a Acceso en 390 × 844 y 1440 × 900 sin sesión. Con sesión, la nueva composición ordena identidad, acciones y métricas en bloques separados; Portafolio ocupa una pantalla aislada completa, con cabecera propia y contenido desplazable.
