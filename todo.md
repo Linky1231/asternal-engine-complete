@@ -1071,7 +1071,3 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 ---
 # Publicación web y sincronización pospuesta
 - [x] Confirmar la publicación de la versión `4a92f0a9` en la web y registrar que GitHub queda pospuesto por decisión del usuario.
----
-# Corrección de alineación de navegación inferior
-- [x] Igualar las cinco celdas de la navegación inferior para centrar iconos, etiquetas y selector activo sin huecos laterales.
-- [x] Validar la barra inferior mediante prueba de geometría, suite de 28 pruebas, compilación y revisión responsive disponible; publicar el ajuste.
