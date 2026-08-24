@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {
   X, Loader2, Trophy, Plus, Trash2, Save, Edit3, Star, Award,
   Zap, Target, Gem, Flame, Rocket, Heart, Palette, Link2, Tag,
-  ChevronDown, ChevronUp, GripVertical, Crown, Download,
+  ChevronDown, ChevronUp, GripVertical, Crown, Download, CheckCircle2,
 } from "lucide-react";
 import { type Profile } from "@/lib/social/api";
 import { Avatar } from "./Avatar";
@@ -134,6 +134,7 @@ export function PortfolioPanel({
   const [achievements, setAchievements] = useState<PortfolioAchievement[]>([]);
   const [saving, setSaving] = useState(false);
   const [showSkillPicker, setShowSkillPicker] = useState(false);
+  const [downloadNotice, setDownloadNotice] = useState<"idle" | "success" | "error">("idle");
 
   useEffect(() => {
     const p = loadPortfolio(userId);
@@ -218,23 +219,33 @@ export function PortfolioPanel({
 
   const handleDownload = () => {
     if (!portfolio) return;
-    const html = createPortfolioExportHtml({
-      displayName: profile.display_name || profile.username || "Creador",
-      username: profile.username || "creador",
-      avatarUrl: profile.avatar_url,
-      headline: portfolio.headline,
-      bio: portfolio.bio,
-      accentColor: portfolio.accentColor,
-      skills: portfolio.skills,
-      links: portfolio.links,
-      achievements: portfolio.achievements,
-    });
-    const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `portafolio-${safeExportFilename(profile.username || profile.display_name || "creador", "creador")}.html`;
-    anchor.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    try {
+      const html = createPortfolioExportHtml({
+        displayName: profile.display_name || profile.username || "Creador",
+        username: profile.username || "creador",
+        avatarUrl: profile.avatar_url,
+        headline: portfolio.headline,
+        bio: portfolio.bio,
+        accentColor: portfolio.accentColor,
+        skills: portfolio.skills,
+        links: portfolio.links,
+        achievements: portfolio.achievements,
+      });
+      const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `portafolio-${safeExportFilename(profile.username || profile.display_name || "creador", "creador")}.html`;
+      anchor.style.display = "none";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+      setDownloadNotice("success");
+      window.setTimeout(() => setDownloadNotice("idle"), 2_400);
+    } catch {
+      setDownloadNotice("error");
+      window.setTimeout(() => setDownloadNotice("idle"), 2_400);
+    }
   };
 
   /* ── No portfolio ── */
@@ -494,8 +505,10 @@ export function PortfolioPanel({
             </button>
           )}
           <button onClick={handleDownload}
-            className="h-8 px-2.5 rounded-md border border-border bg-surface text-[10px] font-medium text-primary hover:bg-primary/5 active:scale-95 transition flex items-center gap-1 shrink-0">
-            <Download size={11} /> <span>Descargar portafolio</span>
+            aria-live="polite"
+            className={`h-8 px-2.5 rounded-md border text-[10px] font-semibold active:scale-95 transition flex items-center gap-1 shrink-0 ${downloadNotice === "error" ? "border-destructive/35 bg-destructive/10 text-destructive" : "border-primary/35 bg-primary/10 text-primary hover:bg-primary/15"}`}>
+            {downloadNotice === "success" ? <CheckCircle2 size={11} /> : <Download size={11} />}
+            <span>{downloadNotice === "success" ? "Descarga iniciada" : downloadNotice === "error" ? "Reintentar descarga" : "Descargar portafolio"}</span>
           </button>
           <button onClick={onClose}
             className="w-8 h-8 rounded-md border border-border grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition shrink-0">

@@ -1084,3 +1084,9 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Sustituir los tonos negros y verdes por la paleta azul de Asternal dentro del panel de confianza.
 - [x] Hacer visible el escudo y aplicar el degradado azul de marca al botón de historial.
 - [x] Validar el contrato de paleta, 31 pruebas, compilación y revisión móvil de la ruta protegida; la comprobación visual con sesión queda disponible para el usuario.
+---
+# Orbes públicos, selección y Portafolio
+- [x] Mostrar correctamente la cantidad de orbes en el Perfil cuando la preferencia pública esté activada.
+- [x] Cambiar el tratamiento visual del control seleccionado para que use un indicador azul sutil y no parezca un botón degradado.
+- [x] Garantizar que «Descargar portafolio» sea visible, accesible y produzca el archivo correspondiente.
+- [x] Validar el contrato de visibilidad, 33 pruebas, compilación y revisión móvil de la ruta protegida; la comprobación visual con sesión queda disponible para el usuario.

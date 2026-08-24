@@ -47,6 +47,7 @@ import { optimisticFollowStats, profileControlStateClass } from "@/lib/social/in
 import { qrPreviewGeometry } from "@/lib/social/qr-preview";
 import { createQrExportSvg, qrHex, safeExportFilename } from "@/lib/social/profile-export";
 import { trustLevelPresentation } from "@/lib/social/trust-points-panel";
+import { formatPublicOrbes, shouldShowPublicOrbes } from "@/lib/social/profile-visibility";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -291,6 +292,8 @@ export function ProfilePanel({
   const userCode = profile.user_code || getUserCode(profile.id);
   const profileHandle = profile.username?.trim() || userCode;
   const profileDisplayName = profile.display_name?.trim() || profileHandle || "Jugador";
+  const publicOrbes = typeof profile.orbes === "number" ? profile.orbes : null;
+  const publicOrbesVisible = shouldShowPublicOrbes(profile.show_orbes, publicOrbes);
   const galleryArtworks = artworks.filter(isArtistGalleryArtwork);
   const copyCode = async () => {
     try { await navigator.clipboard.writeText(userCode); } catch { /* noop */ }
@@ -386,6 +389,13 @@ export function ProfilePanel({
                 <span className="truncate">{userCode}</span>
                 {codeCopied ? <Check size={9} className="text-emerald-500 shrink-0" /> : <Copy size={9} className="opacity-60 shrink-0" />}
               </button>
+              {publicOrbesVisible && publicOrbes !== null && (
+                <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md border border-primary/25 bg-primary/[0.08] text-[10px] font-semibold text-primary" aria-label={`${formatPublicOrbes(publicOrbes)} orbes públicos`}>
+                  <SparklesIcon size={10} aria-hidden="true" />
+                  <span className="tabular-nums">{formatPublicOrbes(publicOrbes)}</span>
+                  <span className="text-primary/75">orbes</span>
+                </div>
+              )}
               {profile.custom_title && (
                 <div className="max-w-full truncate text-[11px] text-muted-foreground" style={profile.accent_color ? { color: profile.accent_color } : undefined}>
                   {profile.custom_title}
@@ -541,16 +551,16 @@ export function ProfilePanel({
                   </EditSection>
 
                   <EditSection label="Privacidad" hint="Qué información muestras en el header">
-                    <label className="flex items-center gap-2 px-2 py-2 rounded-lg border border-border cursor-pointer">
-                      <button type="button" onClick={() => setShowOrbes(v => !v)}
-                        className={`w-9 h-5 rounded-full transition relative ${showOrbes ? "bg-primary" : "bg-muted"}`}>
-                        <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition ${showOrbes ? "left-4" : "left-0.5"}`}/>
+                    <div className="flex items-center gap-2 px-2 py-2 rounded-lg border border-border">
+                      <button type="button" onClick={() => setShowOrbes(v => !v)} aria-pressed={showOrbes} aria-label={showOrbes ? "Ocultar orbes en el header" : "Mostrar orbes en el header"}
+                        className={`w-10 h-6 rounded-full border transition-colors relative ${showOrbes ? "border-primary/45 bg-primary/15" : "border-border bg-muted/60"}`}>
+                        <span className={`absolute top-1 left-1 w-4 h-4 rounded-full transition-transform ${showOrbes ? "translate-x-4 bg-primary" : "translate-x-0 bg-muted-foreground/60"}`}/>
                       </button>
                       <span className="text-xs flex-1 flex items-center gap-1">
-                        {showOrbes ? <Eye size={12}/> : <EyeOff size={12}/>}
+                        {showOrbes ? <Eye size={12} className="text-primary"/> : <EyeOff size={12}/>} 
                         Mostrar orbes en el header
                       </span>
-                    </label>
+                    </div>
                   </EditSection>
                 </div>
               )}
