@@ -1171,3 +1171,12 @@ Las publicaciones ahora viajan en el contenido existente de mensajes como snapsh
 - [x] Validar en móvil, compilar y publicar la corrección.
 
 El menú lateral ahora separa cada destino con una superficie glass discreta y un espacio consistente, en lugar de apilar filas visualmente pegadas. Los grupos Social, Comunidad y Creación disponen de encabezados con más aire y cada fila aumenta su área táctil sin convertirse en un CTA azul. El perfil se distingue como acceso de cabecera y «Cerrar sesión» como acción independiente al pie. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto; la captura móvil disponible confirmó la estabilidad del shell. La comprobación autenticada del menú queda disponible para el usuario.
+
+---
+
+# Legibilidad de tarjetas compartidas
+- [x] Auditar las superficies internas y el color de texto de publicaciones y Portafolios compartidos.
+- [x] Aplicar una superficie clara de alto contraste a las tarjetas internas y reservar el azul para marco y CTA.
+- [x] Validar en móvil, compilar y publicar la corrección.
+
+Las tarjetas compartidas de publicaciones y Portafolios ahora usan base blanca opaca (`bg-card`), borde blanco y tipografía de alto contraste. El azul solo conserva la jerarquía de marco, iconos y CTA, sin competir con el contenido. La vista aislada de Portafolio aplica las mismas superficies claras para tarjetas de perfil, enlaces y logros. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto. La captura móvil disponible confirmó la estabilidad del acceso sin sesión; la comprobación de estas tarjetas con sesión real queda disponible para el usuario.

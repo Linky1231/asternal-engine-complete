@@ -70,7 +70,7 @@ export function SharedPostPanel({ share, onClose }: { share: PostSharePayload; o
           </header>
 
           <main className="mx-auto w-full max-w-lg px-4 py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:px-5">
-            <article className="overflow-hidden rounded-3xl border border-primary/25 bg-primary/[0.055] shadow-[0_16px_44px_rgba(43,112,190,0.14)]">
+            <article className="overflow-hidden rounded-3xl border border-white/90 bg-card text-card-foreground shadow-[0_16px_44px_rgba(43,112,190,0.2)]">
               <div className="h-1.5 grad-brand-fade" />
               <div className="p-4">
                 <div className="flex items-center gap-3">
