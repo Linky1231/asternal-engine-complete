@@ -1063,4 +1063,11 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Corregir la descarga del QR para que genere un documento centrado y fiel a su diseño.
 - [x] Añadir una acción funcional de «Descargar portafolio» con un documento legible y estilizado.
 - [x] Mantener Seguidores y Siguiendo en un panel de altura contenida con desplazamiento interno.
-- [ ] Validar en móvil y escritorio, ejecutar pruebas, compilar, publicar y sincronizar con GitHub.
+- [x] Validar en móvil y escritorio, ejecutar pruebas, compilar y publicar; la sincronización con GitHub queda pospuesta por decisión del usuario.
+---
+# Respaldo en un nuevo repositorio de GitHub
+- [x] Posponer la creación de un repositorio privado nuevo para la versión publicada de Asternal Engine por solicitud del usuario.
+- [x] Posponer la subida del historial al nuevo repositorio hasta que el usuario solicite retomar la sincronización.
+---
+# Publicación web y sincronización pospuesta
+- [x] Confirmar la publicación de la versión `4a92f0a9` en la web y registrar que GitHub queda pospuesto por decisión del usuario.
