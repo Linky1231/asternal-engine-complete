@@ -19,6 +19,7 @@ import { ForumSection } from "@/components/social/ForumSection";
 import { StoreSection } from "@/components/social/StoreSection";
 import { EventsSection } from "@/components/social/EventsSection";
 import { GamePageSection } from "@/components/social/GamePageSection";
+import { bottomNavigationCellClass, bottomNavigationGridClass, bottomNavigationIndicatorClass } from "@/lib/social/bottom-navigation";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -576,43 +577,31 @@ function HomePage() {
       <nav className="fixed bottom-0 inset-x-0 z-30 bg-background/95 backdrop-blur-md border-t border-border/70" style={{ paddingBottom: "env(safe-area-inset-bottom)" }} aria-label="Navegación principal">
         <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 py-2">
           {/* Tabs with gray selector — Juegos | Feed | +CREAR | Tienda | Perfil */}
-          <div className="grid grid-cols-5 bg-muted/60 rounded-xl p-0.5 relative">
-            {/* Single sliding pill — GPU-composited transform, no layout reflow */}
-            <div
-              className="absolute top-0.5 bottom-0.5 w-[calc((100%-4px)/5)] rounded-[10px] bg-white shadow-sm will-change-transform transition-[transform,width] duration-300 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-              style={{
-                left: 0,
-                transform: `translateX(${
-                  tab === "games" ? 0
-                  : tab === "feed" ? 100
-                  : tab === "gallery" ? 300
-                  : 400
-                }%)`,
-                pointerEvents: "none" as const,
-              }}
-            />
+          <div className={bottomNavigationGridClass}>
 
             {/* Juegos */}
-            <button
+            <motion.button
               onClick={() => setTab("games")}
-              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "games" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
+              className={`${bottomNavigationCellClass} ${tab === "games" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
-              <Gamepad2 size={18} />
-              <span className="text-[9px] font-semibold tracking-wide">Juegos</span>
-            </button>
+              {tab === "games" && <motion.span layoutId="bottom-navigation-indicator" className={bottomNavigationIndicatorClass} transition={{ type: "spring", stiffness: 430, damping: 34, mass: 0.72 }} />}
+              <Gamepad2 size={18} className="relative z-10 shrink-0" />
+              <span className="relative z-10 text-[9px] font-semibold tracking-wide">Juegos</span>
+            </motion.button>
             {/* Feed */}
-            <button
+            <motion.button
               onClick={() => setTab("feed")}
-              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "feed" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
+              className={`${bottomNavigationCellClass} ${tab === "feed" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
-              <Newspaper size={18} />
-              <span className="text-[9px] font-semibold tracking-wide">Feed</span>
-            </button>
+              {tab === "feed" && <motion.span layoutId="bottom-navigation-indicator" className={bottomNavigationIndicatorClass} transition={{ type: "spring", stiffness: 430, damping: 34, mass: 0.72 }} />}
+              <Newspaper size={18} className="relative z-10 shrink-0" />
+              <span className="relative z-10 text-[9px] font-semibold tracking-wide">Feed</span>
+            </motion.button>
 
             {/* Center CREAR button */}
             <Link
               to="/editor"
-              className="relative z-10 flex flex-col items-center justify-center gap-1 min-h-14 rounded-[10px] text-primary hover:text-primary/80 active:scale-[0.97] transition-transform motion-reduce:transition-none"
+              className={`${bottomNavigationCellClass} gap-1 text-primary hover:text-primary/80 active:scale-[0.97] transition-transform`}
             >
               <div className="w-9 h-9 rounded-xl grad-brand shadow-[0_7px_16px_-10px_oklch(0.47_0.14_263_/_0.9)] flex items-center justify-center">
                 <Plus size={19} strokeWidth={2.5} className="text-white" />
@@ -621,21 +610,23 @@ function HomePage() {
             </Link>
 
             {/* Galería de artistas */}
-            <button
+            <motion.button
               onClick={() => setTab("gallery")}
-              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "gallery" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
+              className={`${bottomNavigationCellClass} ${tab === "gallery" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
-              <Palette size={18} />
-              <span className="text-[9px] font-semibold tracking-wide">Galería</span>
-            </button>
+              {tab === "gallery" && <motion.span layoutId="bottom-navigation-indicator" className={bottomNavigationIndicatorClass} transition={{ type: "spring", stiffness: 430, damping: 34, mass: 0.72 }} />}
+              <Palette size={18} className="relative z-10 shrink-0" />
+              <span className="relative z-10 text-[9px] font-semibold tracking-wide">Galería</span>
+            </motion.button>
             {/* Perfil */}
-            <button
+            <motion.button
               onClick={() => setTab("profile")}
-              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "profile" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
+              className={`${bottomNavigationCellClass} ${tab === "profile" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
-              <User size={18} />
-              <span className="text-[9px] font-semibold tracking-wide">Perfil</span>
-            </button>
+              {tab === "profile" && <motion.span layoutId="bottom-navigation-indicator" className={bottomNavigationIndicatorClass} transition={{ type: "spring", stiffness: 430, damping: 34, mass: 0.72 }} />}
+              <User size={18} className="relative z-10 shrink-0" />
+              <span className="relative z-10 text-[9px] font-semibold tracking-wide">Perfil</span>
+            </motion.button>
           </div>
         </div>
       </nav>
