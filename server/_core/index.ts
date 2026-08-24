@@ -2,7 +2,7 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { completeOrionChat } from "../orion";
-import { authenticateCommunityRequest, rankCommunityFeed, reviewCommunityPost } from "../community-ai";
+import { authenticateCommunityRequest, rankCommunityFeed, reviewCommunityPost, reviewCommunitySubmission } from "../community-ai";
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -24,6 +24,16 @@ app.post("/api/orion/review-post", async (req, res) => {
     res.json(await reviewCommunityPost(req.body));
   } catch (error) {
     const message = error instanceof Error ? error.message : "Orión no pudo revisar la publicación.";
+    res.status(400).json({ error: message });
+  }
+});
+
+app.post("/api/orion/review-submission", async (req, res) => {
+  try {
+    await authenticateCommunityRequest(req.header("authorization"));
+    res.json(await reviewCommunitySubmission(req.body));
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Orión no pudo revisar este contenido.";
     res.status(400).json({ error: message });
   }
 });

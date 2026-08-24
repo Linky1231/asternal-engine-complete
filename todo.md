@@ -1276,3 +1276,10 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Auditar otros adjuntos y metadatos del feed para retirar superficies de botón impropias y recuperar contraste de texto.
 - [x] Suavizar y contener el separador entre publicaciones para conservar ritmo visual sin líneas invasivas.
 - [x] Añadir cobertura de regresión, validar en móvil, compilar y publicar.
+
+---
+# Moderación previa de juegos y artes
+- [x] Auditar los flujos de publicación de juegos y artes de galería junto con la moderación de publicaciones existente.
+- [x] Evaluar juegos y artes con Orión antes de publicar, usando las reglas comunitarias administrables.
+- [x] Mostrar un motivo legible y mantener el borrador si Orión bloquea el contenido.
+- [x] Añadir pruebas, validar los flujos, compilar y publicar.

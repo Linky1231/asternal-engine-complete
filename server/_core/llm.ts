@@ -1,9 +1,12 @@
+export type LLMTextContent = { type: "text"; text: string };
+export type LLMImageContent = { type: "image_url"; image_url: { url: string; detail?: "auto" | "low" | "high" } };
+
 export type LLMMessage = {
   role: "system" | "user" | "assistant" | "tool";
-  content: string;
+  content: string | Array<LLMTextContent | LLMImageContent>;
 };
 
-type LLMRequest = {
+export type LLMRequest = {
   model?: string;
   messages: LLMMessage[];
   temperature?: number;

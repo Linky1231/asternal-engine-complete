@@ -12,6 +12,28 @@ export type PostReviewInput = {
   pollQuestion?: string;
 };
 
+export type GameReviewInput = {
+  kind: "game";
+  title: string;
+  description: string;
+  tags: string[];
+  genre: string;
+  allowRemix: boolean;
+  priceOrbes: number;
+  hasCover: boolean;
+  screenshotCount: number;
+  project: { sceneCount: number; entityCount: number; scriptCount: number; uiElementCount: number; textSamples: string[] };
+  previewImage?: string;
+};
+
+export type ArtworkReviewInput = {
+  kind: "artwork";
+  title: string;
+  priceOrbes: number;
+  artwork: { width: number; height: number; frameCount: number };
+  previewImage?: string;
+};
+
 type ReviewResponse = {
   allowed: boolean;
   reason: string;
@@ -96,6 +118,101 @@ async function callCommunityOrion<T>(path: string, body: unknown, options: Commu
 /** Revisión obligatoria antes de subir texto y metadatos de una publicación. */
 export async function reviewPostWithOrion(input: PostReviewInput): Promise<ReviewResponse> {
   return callCommunityOrion<ReviewResponse>("/api/orion/review-post", input);
+}
+
+/** Revisión obligatoria antes de publicar o actualizar un juego. */
+export async function reviewGameWithOrion(input: GameReviewInput): Promise<ReviewResponse> {
+  return callCommunityOrion<ReviewResponse>("/api/orion/review-submission", input, {
+    timeoutMs: 12_000,
+    timeoutMessage: "Orión tardó demasiado en revisar el juego. Inténtalo de nuevo.",
+  });
+}
+
+/** Revisión obligatoria antes de publicar una obra desde la galería. */
+export async function reviewArtworkWithOrion(input: ArtworkReviewInput): Promise<ReviewResponse> {
+  return callCommunityOrion<ReviewResponse>("/api/orion/review-submission", input, {
+    timeoutMs: 12_000,
+    timeoutMessage: "Orión tardó demasiado en revisar la obra. Inténtalo de nuevo.",
+  });
+}
+
+function takeTextSamples(value: unknown, samples: string[], depth = 0): void {
+  if (samples.length >= 20 || depth > 6 || !value) return;
+  if (typeof value === "string") {
+    const text = value.trim();
+    if (text && !text.startsWith("data:") && !/^https?:\/\//i.test(text)) samples.push(text.slice(0, 220));
+    return;
+  }
+  if (Array.isArray(value)) {
+    value.slice(0, 40).forEach(item => takeTextSamples(item, samples, depth + 1));
+    return;
+  }
+  if (typeof value === "object") {
+    for (const [key, item] of Object.entries(value as Record<string, unknown>).slice(0, 60)) {
+      if (/^(id|dataurl|texture|image|cover|url|color)$/i.test(key)) continue;
+      takeTextSamples(item, samples, depth + 1);
+      if (samples.length >= 20) break;
+    }
+  }
+}
+
+/** Resume el proyecto para moderar señales visibles sin serializar su contenido completo. */
+export function summarizeGameForOrion(project: unknown): GameReviewInput["project"] {
+  const root = project && typeof project === "object" ? project as Record<string, unknown> : {};
+  const scenes = Array.isArray(root.scenes) ? root.scenes : [];
+  let entityCount = 0;
+  let scriptCount = 0;
+  let uiElementCount = 0;
+  for (const scene of scenes.slice(0, 100)) {
+    if (!scene || typeof scene !== "object") continue;
+    const record = scene as Record<string, unknown>;
+    const entities = Array.isArray(record.entities) ? record.entities : [];
+    entityCount += entities.length;
+    for (const entity of entities.slice(0, 2_000)) {
+      if (entity && typeof entity === "object") {
+        const scripts = (entity as Record<string, unknown>).scripts;
+        scriptCount += Array.isArray(scripts) ? scripts.length : 0;
+      }
+    }
+    uiElementCount += Array.isArray(record.ui) ? record.ui.length : 0;
+  }
+  const textSamples: string[] = [];
+  takeTextSamples(root, textSamples);
+  return {
+    sceneCount: scenes.length,
+    entityCount: Math.min(entityCount, 2_000),
+    scriptCount: Math.min(scriptCount, 1_000),
+    uiElementCount: Math.min(uiElementCount, 1_000),
+    textSamples,
+  };
+}
+
+/** Reduce una imagen local para que la revisión visual sea rápida y no exceda el límite de la petición. */
+export async function makeOrionImagePreview(source: File | string | null | undefined): Promise<string | undefined> {
+  if (!source || typeof window === "undefined") return undefined;
+  const input = typeof source === "string" ? source : await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.onerror = () => reject(new Error("No se pudo leer la imagen para moderación."));
+    reader.readAsDataURL(source);
+  });
+  if (!input.startsWith("data:image/")) return undefined;
+  const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const element = new Image();
+    element.onload = () => resolve(element);
+    element.onerror = () => reject(new Error("No se pudo preparar la imagen para moderación."));
+    element.src = input;
+  });
+  const canvas = document.createElement("canvas");
+  const longest = Math.max(image.naturalWidth || image.width, image.naturalHeight || image.height, 1);
+  const scale = Math.min(1, 320 / longest);
+  canvas.width = Math.max(1, Math.round((image.naturalWidth || image.width) * scale));
+  canvas.height = Math.max(1, Math.round((image.naturalHeight || image.height) * scale));
+  const context = canvas.getContext("2d");
+  if (!context) return undefined;
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
+  const preview = canvas.toDataURL("image/jpeg", 0.68);
+  return preview.length <= 52_000 ? preview : undefined;
 }
 
 export function rankingCacheKey(posts: Array<Pick<PostWithMeta, "id"> & Partial<Pick<PostWithMeta, "updated_at" | "content" | "media_type" | "document_names" | "post_type">>>, followingAuthorIds: string[]) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mergeRecommendedIds, normalizeOriginalityCandidate, parseModerationDecision } from "./community-ai";
+import { mergeRecommendedIds, normalizeCommunitySubmission, normalizeOriginalityCandidate, parseModerationDecision } from "./community-ai";
 
 describe("decisiones comunitarias de Orión", () => {
   it("acepta una respuesta JSON de moderación y limita sus textos", () => {
@@ -33,5 +33,27 @@ describe("decisiones comunitarias de Orión", () => {
     });
     expect(candidate).not.toHaveProperty("likes");
     expect(candidate).not.toHaveProperty("documentUrls");
+  });
+
+  it("normaliza juegos para moderación sin serializar el proyecto ni aceptar vistas previas externas", () => {
+    const game = normalizeCommunitySubmission({
+      kind: "game", title: "Ruta orbital", description: "Explora una estación.", tags: ["aventura"],
+      project: { sceneCount: 2, entityCount: 20, scriptCount: 3, uiElementCount: 4, textSamples: ["Bienvenido", "data:image/png;base64,fuera"] },
+      previewImage: "https://untrusted.example/cover.png", likes: 900,
+    });
+    expect(game).toMatchObject({ kind: "game", title: "Ruta orbital", project: { sceneCount: 2, textSamples: ["Bienvenido", "data:image/png;base64,fuera"] } });
+    expect(game).not.toHaveProperty("likes");
+    expect(game).not.toHaveProperty("previewImage");
+  });
+
+  it("conserva una vista previa local válida y limita los metadatos de una obra", () => {
+    const art = normalizeCommunitySubmission({
+      kind: "artwork", title: "Luz azul", priceOrbes: 12, artwork: { width: 5120, height: 256, frameCount: 999 },
+      previewImage: "data:image/png;base64,aGVsbG8=",
+    });
+    expect(art).toEqual({
+      kind: "artwork", title: "Luz azul", priceOrbes: 12,
+      artwork: { width: 2048, height: 256, frameCount: 120 }, previewImage: "data:image/png;base64,aGVsbG8=",
+    });
   });
 });

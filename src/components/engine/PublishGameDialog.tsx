@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { publishGame, updateGame, GAME_GENRES } from "@/lib/social/api";
+import { makeOrionImagePreview, reviewGameWithOrion, summarizeGameForOrion } from "@/lib/ai/community-orion";
 import { Upload, Loader2, CheckCircle2, ImagePlus, Images, X, GitFork, Sparkles, Move, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "@tanstack/react-router";
@@ -58,6 +59,7 @@ export function PublishGameDialog({
   const fileRef = useRef<HTMLInputElement>(null);
   const shotsRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [reviewing, setReviewing] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
@@ -123,6 +125,22 @@ export function PublishGameDialog({
       if (!session) { navigate({ to: "/auth" }); return; }
       const tags = tagInput.split(/[,\s#]+/).map(t => t.trim()).filter(Boolean);
       const newShots = newShotFiles();
+      setReviewing(true);
+      const review = await reviewGameWithOrion({
+        kind: "game",
+        title: title.trim(),
+        description: description.trim(),
+        tags,
+        genre: genre.trim(),
+        allowRemix,
+        priceOrbes,
+        hasCover: Boolean(coverFile || (coverPreview && !removeCover)),
+        screenshotCount: screens.length,
+        project: summarizeGameForOrion(project ?? { title: initialTitle, description: initialDescription }),
+        previewImage: await makeOrionImagePreview(coverFile ?? newShots[0] ?? null),
+      });
+      setReviewing(false);
+      if (!review.allowed) throw new Error(review.reason || "Orión no aprobó este juego para publicarlo.");
       if (mode === "edit" && editPostId) {
         await updateGame(editPostId, {
           title: title.trim(),
@@ -149,7 +167,7 @@ export function PublishGameDialog({
         if (mode === "publish") navigate({ to: "/" });
       }, 700);
     } catch (e) { setErr((e as Error).message); }
-    finally { setBusy(false); }
+    finally { setReviewing(false); setBusy(false); }
   };
 
   const isEdit = mode === "edit";
@@ -375,7 +393,7 @@ export function PublishGameDialog({
               className="px-4 py-2 rounded-xl border border-border text-xs font-display tracking-widest">CANCELAR</button>
             <button onClick={submit} disabled={busy || done}
               className="px-4 py-2 rounded-xl grad-brand text-primary-foreground text-xs font-display tracking-widest flex items-center gap-2 active:scale-95 transition disabled:opacity-60">
-              {done ? <><CheckCircle2 size={14}/> {isEdit ? "GUARDADO" : "PUBLICADO"}</> : busy ? <><Loader2 size={14} className="animate-spin"/> …</> : <><Upload size={14}/> {isEdit ? "GUARDAR" : "PUBLICAR"}</>}
+              {done ? <><CheckCircle2 size={14}/> {isEdit ? "GUARDADO" : "PUBLICADO"}</> : reviewing ? <><Loader2 size={14} className="animate-spin"/> REVISANDO…</> : busy ? <><Loader2 size={14} className="animate-spin"/> …</> : <><Upload size={14}/> {isEdit ? "GUARDAR" : "PUBLICAR"}</>}
             </button>
           </div>
         </div>
