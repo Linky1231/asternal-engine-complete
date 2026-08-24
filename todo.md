@@ -1054,3 +1054,13 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Implementar la base generalizable de ejecución para scripts visuales con compatibilidad de proyectos existentes.
 - [x] Ampliar el catálogo de bloques y las operaciones del editor sin convertir funciones en casos aislados.
 - [x] Validar creación, ejecución y guardado de proyectos, ejecutar pruebas, compilar y publicar.
+
+---
+
+# Refinamientos de Perfil, descargas y navegación
+- [x] Centrar y asentar correctamente el estado seleccionado de la navegación inferior.
+- [x] Suavizar la transición entre Juegos, Publicaciones y Galería del Perfil, incluyendo el indicador activo.
+- [x] Corregir la descarga del QR para que genere un documento centrado y fiel a su diseño.
+- [x] Añadir una acción funcional de «Descargar portafolio» con un documento legible y estilizado.
+- [x] Mantener Seguidores y Siguiendo en un panel de altura contenida con desplazamiento interno.
+- [ ] Validar en móvil y escritorio, ejecutar pruebas, compilar, publicar y sincronizar con GitHub.

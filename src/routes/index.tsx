@@ -279,7 +279,7 @@ function HomePage() {
       </header>
 
       {/* Content */}
-      <main className="flex-1 max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto w-full px-3 py-3 space-y-3 pb-20">
+      <main className="flex-1 max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto w-full px-3 py-3 space-y-3 pb-24">
         {/* mode="wait" en vez de popLayout: el popLayout mantiene las dos pestañas
             montadas y posicionadas de forma absoluta durante la transición (más DOM,
             más medición de layout). Con wait solo existe una a la vez y el fade es
@@ -573,13 +573,13 @@ function HomePage() {
       )}
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 inset-x-0 z-30 bg-background/95 backdrop-blur-md border-t border-border/70 safe-area-bottom">
-        <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 pt-2 pb-3">
+      <nav className="fixed bottom-0 inset-x-0 z-30 bg-background/95 backdrop-blur-md border-t border-border/70" style={{ paddingBottom: "env(safe-area-inset-bottom)" }} aria-label="Navegación principal">
+        <div className="max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto px-3 py-2">
           {/* Tabs with gray selector — Juegos | Feed | +CREAR | Tienda | Perfil */}
-          <div className="flex bg-muted/60 rounded-xl p-0.5 relative">
+          <div className="grid grid-cols-5 bg-muted/60 rounded-xl p-0.5 relative">
             {/* Single sliding pill — GPU-composited transform, no layout reflow */}
             <div
-              className="absolute top-0.5 bottom-0.5 w-[calc(20%-2px)] rounded-[10px] bg-white shadow-sm will-change-transform"
+              className="absolute top-0.5 bottom-0.5 w-[calc((100%-4px)/5)] rounded-[10px] bg-white shadow-sm will-change-transform transition-[transform,width] duration-300 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
               style={{
                 left: 0,
                 transform: `translateX(${
@@ -588,7 +588,6 @@ function HomePage() {
                   : tab === "gallery" ? 300
                   : 400
                 }%)`,
-                transition: "transform 280ms cubic-bezier(0.22, 1, 0.36, 1)",
                 pointerEvents: "none" as const,
               }}
             />
@@ -596,7 +595,7 @@ function HomePage() {
             {/* Juegos */}
             <button
               onClick={() => setTab("games")}
-              className={`relative z-10 flex-1 flex flex-col items-center gap-0.5 py-2 rounded-[10px] ${tab === "games" ? "text-foreground" : "text-muted-foreground/80"}`}
+              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "games" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
               <Gamepad2 size={18} />
               <span className="text-[9px] font-semibold tracking-wide">Juegos</span>
@@ -604,7 +603,7 @@ function HomePage() {
             {/* Feed */}
             <button
               onClick={() => setTab("feed")}
-              className={`relative z-10 flex-1 flex flex-col items-center gap-0.5 py-2 rounded-[10px] ${tab === "feed" ? "text-foreground" : "text-muted-foreground/80"}`}
+              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "feed" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
               <Newspaper size={18} />
               <span className="text-[9px] font-semibold tracking-wide">Feed</span>
@@ -613,18 +612,18 @@ function HomePage() {
             {/* Center CREAR button */}
             <Link
               to="/editor"
-              className="relative z-10 flex-1 flex flex-col items-center justify-center -mt-3"
+              className="relative z-10 flex flex-col items-center justify-center gap-1 min-h-14 rounded-[10px] text-primary hover:text-primary/80 active:scale-[0.97] transition-transform motion-reduce:transition-none"
             >
-              <div className="w-12 h-12 rounded-2xl grad-brand shadow-lg flex items-center justify-center active:scale-95 transition-transform">
-                <Plus size={22} strokeWidth={2.5} className="text-white" />
+              <div className="w-9 h-9 rounded-xl grad-brand shadow-[0_7px_16px_-10px_oklch(0.47_0.14_263_/_0.9)] flex items-center justify-center">
+                <Plus size={19} strokeWidth={2.5} className="text-white" />
               </div>
-              <span className="text-[9px] font-bold tracking-wide text-primary mt-0.5">Crear</span>
+              <span className="text-[9px] font-bold tracking-wide">Crear</span>
             </Link>
 
             {/* Galería de artistas */}
             <button
               onClick={() => setTab("gallery")}
-              className={`relative z-10 flex-1 flex flex-col items-center gap-0.5 py-2 rounded-[10px] ${tab === "gallery" ? "text-foreground" : "text-muted-foreground/80"}`}
+              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "gallery" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
               <Palette size={18} />
               <span className="text-[9px] font-semibold tracking-wide">Galería</span>
@@ -632,7 +631,7 @@ function HomePage() {
             {/* Perfil */}
             <button
               onClick={() => setTab("profile")}
-              className={`relative z-10 flex-1 flex flex-col items-center gap-0.5 py-2 rounded-[10px] ${tab === "profile" ? "text-foreground" : "text-muted-foreground/80"}`}
+              className={`relative z-10 flex flex-col items-center justify-center gap-0.5 min-h-14 rounded-[10px] transition-colors duration-200 motion-reduce:transition-none ${tab === "profile" ? "text-foreground" : "text-muted-foreground/80 hover:text-foreground"}`}
             >
               <User size={18} />
               <span className="text-[9px] font-semibold tracking-wide">Perfil</span>

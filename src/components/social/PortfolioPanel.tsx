@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import {
   X, Loader2, Trophy, Plus, Trash2, Save, Edit3, Star, Award,
   Zap, Target, Gem, Flame, Rocket, Heart, Palette, Link2, Tag,
-  ChevronDown, ChevronUp, GripVertical, Crown,
+  ChevronDown, ChevronUp, GripVertical, Crown, Download,
 } from "lucide-react";
 import { type Profile } from "@/lib/social/api";
 import { Avatar } from "./Avatar";
 import { UserName } from "./UserName";
+import { createPortfolioExportHtml, safeExportFilename } from "@/lib/social/profile-export";
 
 /* ── Icon registry: lucide icons only ── */
 const ICON_OPTIONS = [
@@ -215,6 +216,27 @@ export function PortfolioPanel({
     setEditing(false);
   };
 
+  const handleDownload = () => {
+    if (!portfolio) return;
+    const html = createPortfolioExportHtml({
+      displayName: profile.display_name || profile.username || "Creador",
+      username: profile.username || "creador",
+      avatarUrl: profile.avatar_url,
+      headline: portfolio.headline,
+      bio: portfolio.bio,
+      accentColor: portfolio.accentColor,
+      skills: portfolio.skills,
+      links: portfolio.links,
+      achievements: portfolio.achievements,
+    });
+    const url = URL.createObjectURL(new Blob([html], { type: "text/html;charset=utf-8" }));
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `portafolio-${safeExportFilename(profile.username || profile.display_name || "creador", "creador")}.html`;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
   /* ── No portfolio ── */
   if (!portfolio && !editing) {
     return (
@@ -254,6 +276,7 @@ export function PortfolioPanel({
                 Crear portafolio
               </button>
             )}
+            <div className="text-[10px] text-muted-foreground/55">Crea un portafolio para habilitar su descarga.</div>
           </div>
         </div>
         </div>
@@ -470,6 +493,10 @@ export function PortfolioPanel({
               <Edit3 size={11} /> Editar
             </button>
           )}
+          <button onClick={handleDownload}
+            className="h-8 px-2.5 rounded-md border border-border bg-surface text-[10px] font-medium text-primary hover:bg-primary/5 active:scale-95 transition flex items-center gap-1 shrink-0">
+            <Download size={11} /> <span>Descargar portafolio</span>
+          </button>
           <button onClick={onClose}
             className="w-8 h-8 rounded-md border border-border grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition shrink-0">
             <X size={14} />

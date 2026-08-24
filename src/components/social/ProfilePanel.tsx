@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   Loader2, Camera, Save, Gamepad2, Newspaper, CheckCircle2, Star, ChevronRight,
@@ -44,6 +45,7 @@ import { getUserCode } from "@/lib/social/avatar";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "@/lib/social/gallery-preview";
 import { optimisticFollowStats, profileControlStateClass } from "@/lib/social/interaction-state";
 import { qrPreviewGeometry } from "@/lib/social/qr-preview";
+import { createQrExportSvg, qrHex, safeExportFilename } from "@/lib/social/profile-export";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -590,6 +592,15 @@ export function ProfilePanel({
       />
 
       <div className="space-y-3">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={contentLoading ? "loading" : tab}
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            className="space-y-3"
+          >
         {contentLoading ? (
           <div className="p-8 text-center text-xs text-muted-foreground"><Loader2 className="animate-spin inline mr-2" size={14} /></div>
         ) : tab === "games" ? (
@@ -639,6 +650,8 @@ export function ProfilePanel({
             <div className="px-4 py-8 text-center text-xs text-muted-foreground rounded-lg border border-dashed border-border bg-surface">Sin publicaciones</div>
           ) : posts.map(p => <PostCard key={p.id} post={p} myId={myId} isMod={isMod} onChange={loadContent} />)
         )}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {artDetail && (
@@ -771,8 +784,8 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
 
   const SIZES = [120, 160, 200, 240] as const;
   const qrSrc = (() => {
-    const fg = style.fg.startsWith("#") ? style.fg.replace("#", "") : "000000";
-    const bg = style.bg.startsWith("#") ? style.bg.replace("#", "") : "ffffff";
+    const fg = qrHex(style.fg, "000000");
+    const bg = qrHex(style.bg, "ffffff");
     const sz = style.size || 180;
     return `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(profileUrl)}&size=${sz}x${sz}&margin=6&format=svg&color=${fg}&bgcolor=${bg}`;
   })();
@@ -780,11 +793,18 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
   const handleDownload = async () => {
     try {
       const res = await fetch(qrSrc);
-      const blob = await res.blob();
+      if (!res.ok) throw new Error("No se pudo generar el QR");
+      const rawQrSvg = await res.text();
+      const bytes = new TextEncoder().encode(rawQrSvg);
+      let binary = "";
+      bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+      const qrDataUri = `data:image/svg+xml;base64,${btoa(binary)}`;
+      const { padding, frameSize } = qrPreviewGeometry(style.size || 180, style.cornerStyle);
+      const blob = new Blob([createQrExportSvg({ qrDataUri, size: style.size || 180, padding, frameSize, background: style.bg.startsWith("#") ? style.bg : "#ffffff" })], { type: "image/svg+xml;charset=utf-8" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
-      a.href = url; a.download = `qr_${username}.svg`; a.click();
-      URL.revokeObjectURL(url);
+      a.href = url; a.download = `qr-${safeExportFilename(username, "perfil")}.svg`; a.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
     } catch { /* noop */ }
   };
 
@@ -1086,7 +1106,7 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
     <div className="fixed inset-0 z-[100] h-[100dvh] overflow-hidden flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true" aria-label={list.kind === "followers" ? "Seguidores" : "Siguiendo"}>
       <button aria-label="Cerrar" onClick={onClose}
         className="absolute inset-0 bg-foreground/35 backdrop-blur-[3px] animate-in fade-in duration-200" />
-      <div className="relative w-full sm:max-w-sm max-h-[80dvh] overflow-hidden rounded-t-2xl sm:rounded-2xl glass-menu shadow-xl animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 flex flex-col">
+      <div className="relative w-full h-[min(80dvh,42rem)] max-h-[calc(100dvh-1rem)] sm:max-w-sm overflow-hidden rounded-t-2xl sm:rounded-2xl glass-menu shadow-xl animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 flex flex-col">
         <div className="flex items-center gap-2 px-4 py-3.5 border-b border-border/70 bg-white/25">
           <div className="flex-1 text-sm font-semibold">
             {list.kind === "followers" ? "Seguidores" : "Siguiendo"} · {items.length}
@@ -1095,7 +1115,7 @@ function FollowListModal({ list, myId, onClose, onChanged }: {
             <X size={14} />
           </button>
         </div>
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-surface/75 p-2.5 space-y-1.5">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable] bg-surface/75 p-2.5 space-y-1.5">
           {list.loading ? (
             <div className="p-8 text-center text-xs text-muted-foreground">
               <Loader2 className="animate-spin inline mr-2" size={14} /> Cargando…
