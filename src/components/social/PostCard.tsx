@@ -8,7 +8,7 @@ import { CommentSection } from "./CommentSection";
 import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
-import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
+import { nextExclusiveFooterAction, postFooterActionIsActive, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
 import { mergePostInteractionSnapshot, toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
 import { documentDisplayMeta } from "@/lib/social/document-display";
 import { postSurfaceClass } from "@/lib/social/post-surface";
@@ -461,8 +461,8 @@ export const PostCard = memo(function PostCard({
 
       <footer className="flex items-center border-t border-border/50 bg-muted/15 px-1 py-0.5 text-[11px] text-muted-foreground">
         <button type="button" onClick={() => { chooseFooterAction("like"); void react("like"); }}
-          aria-pressed={activeFooterAction === "like"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "like" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
+          aria-pressed={interactions.liked}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(postFooterActionIsActive("like", { ...interactions, commentsOpen: openComments }))}`}>
           <motion.span
             key={interactions.liked ? "liked" : "unliked"}
             initial={{ scale: 0.4, rotate: -18 }}
@@ -475,8 +475,8 @@ export const PostCard = memo(function PostCard({
           <span className="tabular-nums font-medium">{interactions.likes}</span>
         </button>
         <button type="button" onClick={() => { chooseFooterAction("favorite"); void react("favorite"); }}
-          aria-pressed={activeFooterAction === "favorite"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "favorite" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
+          aria-pressed={interactions.favorited}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(postFooterActionIsActive("favorite", { ...interactions, commentsOpen: openComments }))}`}>
           <motion.span
             key={interactions.favorited ? "favd" : "unfavd"}
             initial={{ scale: 0.4, rotate: 18 }}
@@ -489,14 +489,14 @@ export const PostCard = memo(function PostCard({
           <span className="tabular-nums font-medium">{interactions.favorites}</span>
         </button>
         <button type="button" onClick={() => chooseFooterAction("comments")}
-          aria-expanded={activeFooterAction === "comments"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "comments" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
-          <MessageCircle size={15} className={activeFooterAction === "comments" ? "fill-current/10" : ""} />
+          aria-expanded={openComments}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(postFooterActionIsActive("comments", { ...interactions, commentsOpen: openComments }))}`}>
+          <MessageCircle size={15} className={openComments ? "fill-current/10" : ""} />
           <span className="tabular-nums font-medium">{commentsCount}</span>
         </button>
         <button type="button" onClick={() => { chooseFooterAction("repost"); void repost(); }}
-          aria-pressed={activeFooterAction === "repost"}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "repost" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
+          aria-pressed={interactions.reposted}
+          className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${socialActionStateClass(postFooterActionIsActive("repost", { ...interactions, commentsOpen: openComments }))}`}>
           <motion.span
             key={interactions.reposted ? "reposted" : "unreposted"}
             initial={{ scale: 0.6, rotate: -25 }}

@@ -1245,3 +1245,15 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Auditar superficies, texto e iconos de publicaciones que no respetan la paleta azul coherente.
 - [x] Sustituir el bloque negro del juego fijado y los acentos incongruentes por capas Azure Drift legibles.
 - [x] Cubrir el contrato de paleta, validar en móvil y publicar la corrección.
+
+---
+# Estado azul de acciones de publicación
+- [x] Auditar la asignación entre el estado personal y las variantes visuales de Me gusta, favorito, comentarios y compartir.
+- [x] Hacer que solo las acciones ya realizadas por la cuenta actual estén azules y rellenas.
+- [x] Añadir una prueba de regresión, validar y publicar la corrección.
+
+---
+# Estado azul de reacciones
+- [x] Auditar la asignación entre reacciones personales y sus variantes visuales activas/inactivas.
+- [x] Hacer que solo los controles ya interactuados por la cuenta actual estén azules y rellenos.
+- [x] Añadir una prueba de regresión, validar y publicar la corrección.

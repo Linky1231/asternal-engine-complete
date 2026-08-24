@@ -31,6 +31,26 @@ export function optimisticFollowStats<T extends { followers: number; i_follow: b
 
 export type FooterActionSelection = "like" | "favorite" | "comments" | "repost" | null;
 
+export type PostFooterInteractionState = {
+  liked: boolean;
+  favorited: boolean;
+  reposted: boolean;
+  commentsOpen: boolean;
+};
+
+/** El acento azul del pie representa una acción realizada por la cuenta actual. */
+export function postFooterActionIsActive(
+  action: Exclude<FooterActionSelection, null>,
+  state: PostFooterInteractionState,
+): boolean {
+  switch (action) {
+    case "like": return state.liked;
+    case "favorite": return state.favorited;
+    case "repost": return state.reposted;
+    case "comments": return state.commentsOpen;
+  }
+}
+
 /** Las acciones rápidas comparten un único foco visual dentro de cada publicación. */
 export function nextExclusiveFooterAction(
   current: FooterActionSelection,

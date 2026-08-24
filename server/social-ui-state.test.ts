@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { friendlyAuthError } from "../src/lib/auth/friendly-error";
-import { nextExclusiveFooterAction, optimisticFollowStats, profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
+import { nextExclusiveFooterAction, optimisticFollowStats, postFooterActionIsActive, profileControlStateClass, socialActionStateClass } from "../src/lib/social/interaction-state";
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
@@ -39,6 +39,15 @@ describe("estado visual de acciones sociales", () => {
     expect(nextExclusiveFooterAction(null, "like")).toBe("like");
     expect(nextExclusiveFooterAction("like", "favorite")).toBe("favorite");
     expect(nextExclusiveFooterAction("repost", "repost")).toBeNull();
+  });
+
+  it("reserva el azul del pie para las acciones propias y no para un foco temporal", () => {
+    const ownActions = { liked: true, favorited: false, reposted: true, commentsOpen: false };
+    expect(postFooterActionIsActive("like", ownActions)).toBe(true);
+    expect(postFooterActionIsActive("favorite", ownActions)).toBe(false);
+    expect(postFooterActionIsActive("repost", ownActions)).toBe(true);
+    expect(postFooterActionIsActive("comments", ownActions)).toBe(false);
+    expect(postFooterActionIsActive("comments", { ...ownActions, commentsOpen: true })).toBe(true);
   });
 
   it("actualiza el seguimiento y su contador de forma optimista sin valores negativos", () => {
