@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import {
   X, Loader2, Trophy, Plus, Trash2, Save, Edit3, Star, Award,
   Zap, Target, Gem, Flame, Rocket, Heart, Palette, Link2, Tag,
-  ChevronDown, ChevronUp, GripVertical, Crown,
+  ChevronDown, ChevronUp, GripVertical, Crown, Send,
 } from "lucide-react";
 import { type Profile } from "@/lib/social/api";
 import { Avatar } from "./Avatar";
 import { UserName } from "./UserName";
+import { SharePortfolioModal } from "./SharePortfolioModal";
 
 /* ── Icon registry: lucide icons only ── */
 const ICON_OPTIONS = [
@@ -67,7 +68,7 @@ export interface Portfolio {
   updatedAt: string;
 }
 
-const STORAGE_KEY = "asternal_portfolios";
+export const PORTFOLIO_STORAGE_KEY = "asternal_portfolios";
 const PORTFOLIO_LAYOUT = "list" as const;
 const SKILL_SUGGESTIONS = [
   "Game Design", "Pixel Art", "3D Modeling", "Programming", "Music",
@@ -76,31 +77,31 @@ const SKILL_SUGGESTIONS = [
   "Sound Design", "Animation", "UI/UX", "Marketing", "Community",
 ];
 
-function loadPortfolio(userId: string): Portfolio | null {
+export function getPortfolio(userId: string): Portfolio | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
     if (!raw) return null;
     const all = JSON.parse(raw) as Record<string, Portfolio>;
     return all[userId] ?? null;
   } catch { return null; }
 }
 
-function savePortfolio(p: Portfolio): void {
+export function savePortfolio(p: Portfolio): void {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
     const all = raw ? JSON.parse(raw) as Record<string, Portfolio> : {};
     all[p.userId] = { ...p, layout: PORTFOLIO_LAYOUT, updatedAt: new Date().toISOString() };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(all));
   } catch { /* quota */ }
 }
 
-function deletePortfolio(userId: string): void {
+export function deletePortfolio(userId: string): void {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(PORTFOLIO_STORAGE_KEY);
     if (!raw) return;
     const all = JSON.parse(raw) as Record<string, Portfolio>;
     delete all[userId];
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    localStorage.setItem(PORTFOLIO_STORAGE_KEY, JSON.stringify(all));
   } catch { /* noop */ }
 }
 
@@ -114,14 +115,18 @@ export function PortfolioPanel({
   profile,
   viewingOwn,
   onClose,
+  portfolioSnapshot,
 }: {
   userId: string;
   profile: Profile;
   viewingOwn: boolean;
   onClose: () => void;
+  portfolioSnapshot?: Portfolio | null;
 }) {
   const [portfolio, setPortfolio] = useState<Portfolio | null>(null);
   const [editing, setEditing] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+  const readOnlySnapshot = !!portfolioSnapshot;
 
   // editor state
   const [headline, setHeadline] = useState("");
@@ -135,7 +140,7 @@ export function PortfolioPanel({
   const [showSkillPicker, setShowSkillPicker] = useState(false);
 
   useEffect(() => {
-    const p = loadPortfolio(userId);
+    const p = portfolioSnapshot ?? getPortfolio(userId);
     setPortfolio(p);
     if (p) {
       setHeadline(p.headline);
@@ -145,7 +150,7 @@ export function PortfolioPanel({
       setLinks(p.links ?? []);
       setAchievements(p.achievements ?? []);
     }
-  }, [userId]);
+  }, [userId, portfolioSnapshot]);
 
   const startEditing = () => {
     if (portfolio) {
@@ -242,7 +247,7 @@ export function PortfolioPanel({
               <div className="text-sm text-muted-foreground/60 font-medium">
                 {viewingOwn ? "Aún no tienes portafolio" : `${profile.display_name || profile.username} no tiene portafolio`}
               </div>
-              {viewingOwn && (
+              {viewingOwn && !readOnlySnapshot && (
                 <div className="text-[11px] text-muted-foreground/40 mt-1">
                   Crea uno para mostrar tus logros y habilidades
                 </div>
@@ -254,7 +259,7 @@ export function PortfolioPanel({
                 Crear portafolio
               </button>
             )}
-            <div className="text-[10px] text-muted-foreground/55">Crea un portafolio para habilitar su descarga.</div>
+            <div className="text-[10px] text-muted-foreground/55">Crea un portafolio para compartir tus logros y habilidades.</div>
           </div>
         </div>
         </div>
@@ -465,11 +470,17 @@ export function PortfolioPanel({
               <div className="text-[10px] text-muted-foreground truncate">{portfolio.bio}</div>
             )}
           </div>
-          {viewingOwn && (
-            <button onClick={startEditing}
-              className="h-8 px-2.5 rounded-md border border-border bg-surface text-[10px] font-medium text-primary hover:bg-primary/5 active:scale-95 transition flex items-center gap-1 shrink-0">
-              <Edit3 size={11} /> Editar
-            </button>
+          {viewingOwn && !readOnlySnapshot && (
+            <>
+              <button onClick={() => setShareOpen(true)}
+                className="h-8 px-2.5 rounded-md grad-brand text-primary-foreground text-[10px] font-semibold active:scale-95 transition flex items-center gap-1 shrink-0">
+                <Send size={11} /> Compartir
+              </button>
+              <button onClick={startEditing}
+                className="h-8 px-2.5 rounded-md border border-border bg-surface text-[10px] font-medium text-primary hover:bg-primary/5 active:scale-95 transition flex items-center gap-1 shrink-0">
+                <Edit3 size={11} /> Editar
+              </button>
+            </>
           )}
           <button onClick={onClose}
             className="w-8 h-8 rounded-md border border-border grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition shrink-0">
@@ -546,6 +557,7 @@ export function PortfolioPanel({
         </div>
       </div>
       </div>
+      {!readOnlySnapshot && <SharePortfolioModal portfolio={portfolio} profile={profile} open={shareOpen} onClose={() => setShareOpen(false)} />}
     </div>
   );
 }

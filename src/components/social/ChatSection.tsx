@@ -1,7 +1,7 @@
 import { Component, useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Send, Copy, Check, Reply, SmilePlus, ImagePlus, Image as ImageIcon, Film, Loader2, Users, Users2, Settings2, UserPlus, UserMinus, Camera, Pencil, LogOut, MessageCircle, AtSign, BarChart3, Shield, ShieldCheck, ArrowLeft, WifiOff, RefreshCw, KeyRound, CheckCircle2, AlertTriangle, Mic, Play, Pause, Trash2, ArrowDown, ExternalLink, Megaphone, Gift, PartyPopper, Lock, Sparkles, Timer, Undo2, ChevronRight, Briefcase, ClipboardList, FolderOpen, MessagesSquare, Download, Paperclip, MessageSquarePlus, Search, Layers } from "lucide-react";
+import { X, Send, Copy, Check, Reply, SmilePlus, ImagePlus, Image as ImageIcon, Film, Loader2, Users, Users2, Settings2, UserPlus, UserMinus, Camera, Pencil, LogOut, MessageCircle, AtSign, BarChart3, Shield, ShieldCheck, ArrowLeft, WifiOff, RefreshCw, KeyRound, CheckCircle2, AlertTriangle, Mic, Play, Pause, Trash2, ArrowDown, ExternalLink, Megaphone, Gift, PartyPopper, Lock, Sparkles, Timer, Undo2, ChevronRight, Briefcase, ClipboardList, FolderOpen, MessagesSquare, Download, Paperclip, MessageSquarePlus, Search, Layers, Trophy } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import {
@@ -74,6 +74,13 @@ import { UserName } from "./UserName";
 import { getMyProfile, getMyOrbes, isAdmin, pushNotification, uploadAvatar } from "@/lib/social/api";
 import type { Profile } from "@/lib/social/api";
 import { Avatar as SharedAvatar } from "./Avatar";
+import { PortfolioPanel, getPortfolio } from "./PortfolioPanel";
+import {
+  parsePortfolioShare,
+  serializePortfolioShare,
+  stripPortfolioShare,
+  type PortfolioSharePayload,
+} from "@/lib/social/portfolio-share";
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
@@ -359,6 +366,44 @@ function ProfileLinkCard({ userId }: { userId: string }) {
   );
 }
 
+function PortfolioShareCard({ share, onOpen }: { share: PortfolioSharePayload; onOpen: () => void }) {
+  const { owner, portfolio } = share;
+  const shownSkills = portfolio.skills.slice(0, 4);
+  return (
+    <div className="mt-2 w-full max-w-[21rem] rounded-xl border border-border/70 bg-card text-foreground shadow-sm overflow-hidden">
+      <div className="px-3 pt-2.5 pb-2 bg-primary/[0.045] border-b border-primary/10">
+        <div className="flex items-center gap-1.5 text-[9px] font-display font-bold tracking-[0.16em] text-primary uppercase">
+          <Briefcase size={10} /> Portafolio compartido
+        </div>
+        <div className="mt-2 flex items-start gap-2.5">
+          <div className="w-9 h-9 rounded-xl grid place-items-center shrink-0" style={{ background: `${portfolio.accentColor}18`, color: portfolio.accentColor }}>
+            <Trophy size={16} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-display font-bold truncate">{owner.displayName}</div>
+            {owner.username && <div className="text-[10px] font-mono text-primary/85 truncate">@{owner.username}</div>}
+          </div>
+        </div>
+      </div>
+      <div className="p-3">
+        <div className="text-[13px] font-semibold leading-snug line-clamp-2">{portfolio.headline}</div>
+        {portfolio.bio && <p className="mt-1 text-[11px] leading-snug text-muted-foreground line-clamp-2">{portfolio.bio}</p>}
+        {(shownSkills.length > 0 || portfolio.achievements.length > 0) && (
+          <div className="mt-2.5 flex flex-wrap gap-1.5 items-center">
+            {shownSkills.map((skill) => (
+              <span key={skill} className="px-2 py-0.5 rounded-full border text-[9px] font-medium" style={{ borderColor: `${portfolio.accentColor}45`, color: portfolio.accentColor, background: `${portfolio.accentColor}10` }}>{skill}</span>
+            ))}
+            {portfolio.achievements.length > 0 && <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"><Trophy size={10} style={{ color: portfolio.accentColor }} />{portfolio.achievements.length} logro{portfolio.achievements.length === 1 ? "" : "s"}</span>}
+          </div>
+        )}
+        <button onClick={onOpen} className="mt-3 w-full h-8 rounded-lg grad-brand text-primary-foreground text-[10px] font-display font-semibold tracking-wide flex items-center justify-center gap-1.5 active:scale-[0.98] transition">
+          <Trophy size={12} /> Abrir portafolio
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Resalta las menciones @usuario dentro del texto (enlazando al perfil si se conoce). */
 function renderContentWithMentions(content: string, mine: boolean, senders: Map<string, Profile>): ReactNode[] {
   const parts = content.split(/(@[\w.]+)/g);
@@ -396,6 +441,7 @@ function MessageBubble({
   copied,
   onCopy,
   onReply,
+  onOpenPortfolio,
 }: {
   m: ChatMessage;
   mine: boolean;
@@ -406,13 +452,16 @@ function MessageBubble({
   copied: boolean;
   onCopy: () => void;
   onReply: () => void;
+  onOpenPortfolio: (share: PortfolioSharePayload) => void;
 }) {
-  const contentProfileId = m.content ? extractProfileLink(m.content) : null;
+  const portfolioShare = parsePortfolioShare(m.content);
+  const contentWithoutPortfolio = portfolioShare ? stripPortfolioShare(m.content) : m.content;
+  const contentProfileId = contentWithoutPortfolio ? extractProfileLink(contentWithoutPortfolio) : null;
   // Si el mensaje contiene un enlace de perfil, la URL cruda no se muestra: la tarjeta lo representa.
   const displayContent =
-    contentProfileId && m.content
-      ? m.content.replace(/[^\s]*\/profile\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[^\s]*/gi, "").trim()
-      : m.content;
+    contentProfileId && contentWithoutPortfolio
+      ? contentWithoutPortfolio.replace(/[^\s]*\/profile\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[^\s]*/gi, "").trim()
+      : contentWithoutPortfolio;
   return (
     <div className={`group relative flex gap-2 ${mine ? "justify-end pl-10" : "justify-start pr-10"}`}>
       {!mine && (
@@ -452,6 +501,7 @@ function MessageBubble({
             </div>
           )}
           {contentProfileId && <ProfileLinkCard userId={contentProfileId} />}
+          {portfolioShare && <PortfolioShareCard share={portfolioShare} onOpen={() => onOpenPortfolio(portfolioShare)} />}
           {mediaUrl && isAudioMessage(m) ? (
             <AudioBubble url={mediaUrl} mine={mine} duration={0} />
           ) : m.media_url && !mediaUrl ? (
@@ -887,6 +937,7 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
   const [chatInfo, setChatInfo] = useState<{ id: string; name: string; memberCount: number; memberOk?: boolean; local?: boolean } | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [senders, setSenders] = useState<Map<string, Profile>>(new Map());
+  const [sharedPortfolio, setSharedPortfolio] = useState<PortfolioSharePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
@@ -1523,6 +1574,42 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
     },
     [currentChatId, draft, replyTo]
   );
+
+  const sharePortfolioInCurrentChat = useCallback(async () => {
+    if (!currentChatId || !myId) {
+      toast.error("Inicia sesión para compartir tu Portafolio");
+      return;
+    }
+    const portfolio = getPortfolio(myId);
+    if (!portfolio) {
+      toast.error("Aún no tienes Portafolio", { description: "Créalo desde tu perfil para poder compartirlo." });
+      return;
+    }
+    const profile = senders.get(myId) ?? await getMyProfile().catch(() => null);
+    if (!profile) {
+      toast.error("No se pudo identificar tu perfil", { description: "Reintenta en unos segundos." });
+      return;
+    }
+    const content = serializePortfolioShare({
+      owner: { id: profile.id, displayName: profile.display_name || profile.username, username: profile.username },
+      portfolio,
+    });
+    try {
+      const sent = await sendChatMessage(currentChatId, { content });
+      setMessages((prev) => (prev.some((message) => message.id === sent.id) ? prev : [...prev, sent]));
+      if (activeDmRef.current) {
+        setDmList((prev) => prev.map((chat) => chat.chat_id === sent.chat_id ? { ...chat, last_message: sent, last_at: sent.created_at, unread: 0 } : chat));
+        void markDmRead(sent.chat_id).catch(() => {});
+      } else if (activeGroupRef.current) {
+        setGroupList((prev) => prev.map((chat) => chat.chat_id === sent.chat_id ? { ...chat, last_message: sent, last_at: sent.created_at, unread: 0 } : chat));
+        void markDmRead(sent.chat_id).catch(() => {});
+      }
+      toast.success("Portafolio compartido en este chat");
+    } catch (error) {
+      if (isNetworkError(error)) queuePendingMessage(currentChatId, { content });
+      reportSendError(error);
+    }
+  }, [currentChatId, myId, reportSendError, senders]);
 
   const copyMessage = useCallback(async (m: ChatMessage) => {
     if (!m.content) return;
@@ -2818,6 +2905,7 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
                     setStickersOpen(false);
                     inputRef.current?.focus();
                   }}
+                  onOpenPortfolio={setSharedPortfolio}
                 />
               )}
             </SafeRow>
@@ -2975,6 +3063,13 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
             className={`w-9 h-9 rounded-xl grid place-items-center active:scale-95 transition shrink-0 disabled:opacity-40 ${pendingMedia?.kind === "video" ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted/60"}`}
           >
             <Film size={18} />
+          </button>
+          <button
+            onClick={() => void sharePortfolioInCurrentChat()}
+            title="Compartir Portafolio"
+            className="w-9 h-9 rounded-xl grid place-items-center active:scale-95 transition shrink-0 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          >
+            <Briefcase size={17} />
           </button>
           <input
             ref={photoInputRef}
@@ -3183,6 +3278,22 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
         </div>
       </div>
       </>
+      )}
+
+      {sharedPortfolio && (
+        <PortfolioPanel
+          userId={sharedPortfolio.owner.id}
+          profile={senders.get(sharedPortfolio.owner.id) ?? {
+            id: sharedPortfolio.owner.id,
+            username: sharedPortfolio.owner.username || "creador",
+            display_name: sharedPortfolio.owner.displayName,
+            avatar_url: null,
+            bio: null,
+          }}
+          viewingOwn={false}
+          portfolioSnapshot={sharedPortfolio.portfolio}
+          onClose={() => setSharedPortfolio(null)}
+        />
       )}
 
       {/* Diálogo: crear grupo personalizado */}
@@ -4048,5 +4159,3 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
     </motion.div>
   );
 }
-
-

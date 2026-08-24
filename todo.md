@@ -1095,3 +1095,11 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Retirar la acción «Descargar portafolio» de la pantalla aislada de Portafolio.
 - [x] Evitar que los likes y otras interacciones de publicaciones reinicien o desplacen la vista actual.
 - [x] Validar el estado local de reacciones, 35 pruebas, compilación y revisión móvil disponible; la comprobación de interacciones con sesión queda disponible para el usuario.
+---
+# Portafolios compartibles en chats
+- [x] Identificar los modelos y compositores de mensajes directos, grupales y comunitarios compatibles con adjuntos de Portafolio.
+- [x] Añadir una acción para compartir el Portafolio y guardar el mensaje estructurado correspondiente.
+- [x] Renderizar una tarjeta de Portafolio con botón para abrir su vista aislada desde cada tipo de chat.
+- [x] Validar los flujos disponibles, ejecutar pruebas, compilar, revisar responsive y publicar.
+
+Se añadió un protocolo versionado y validado para snapshots de Portafolio dentro del contenido ya existente de los mensajes, sin modificar APIs, Supabase ni el esquema. El Portafolio puede compartirse desde su pantalla aislada a Comunidad, grupos o mensajes directos, y el compositor ofrece un acceso rápido para el chat abierto. Cada mensaje muestra una tarjeta Azure Drift con identidad, habilidades, logros y el botón «Abrir portafolio», que conserva la vista aislada en modo de lectura. `pnpm test` completó 37 pruebas y `pnpm build` fue correcto; las capturas disponibles verificaron el shell en escritorio y móvil. La prueba interactiva con sesión real queda disponible para la cuenta del usuario.
