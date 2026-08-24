@@ -1151,3 +1151,13 @@ Las opciones de función ahora transicionan color, borde y superficie en 200 ms 
 - [x] Validar en móvil, compilar y publicar la corrección.
 
 El selector de compartir publicaciones ahora se portaliza a `document.body`, por lo que deja de heredar el contenedor y el apilamiento de la lista del feed. En móvil se muestra como pantalla aislada de viewport completo; en escritorio se conserva como superficie centrada. Sus destinos están agrupados explícitamente en Chat comunitario, Chats grupales y Mensajes directos; «Copiar enlace» queda como acción secundaria al final. `pnpm test` completó 37 pruebas y `pnpm build` finalizó correctamente. La captura móvil disponible confirmó que el shell se mantiene estable; la comprobación autenticada del selector queda disponible para el usuario.
+
+---
+
+# Tarjetas de publicaciones compartidas en chat
+- [x] Auditar el contenido de mensaje y las tarjetas enriquecidas existentes del chat.
+- [x] Definir un formato seguro para transportar la vista previa de una publicación compartida.
+- [x] Mostrar una tarjeta organizada de publicación con autor, contenido y acceso a la publicación original.
+- [x] Validar en los tipos de chat disponibles, compilar y publicar.
+
+Las publicaciones ahora viajan en el contenido existente de mensajes como snapshots versionados y saneados, sin cambios de API, Supabase ni esquema. La burbuja detecta el marcador, lo oculta y presenta una tarjeta Azure Drift con autor, tipo, vista previa de imagen, contenido y «Abrir publicación». Ese botón abre una superficie aislada con la publicación compartida. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto; la captura móvil disponible confirmó que el shell sin sesión se mantiene estable. La comprobación interactiva de enviar y abrir tarjetas en chats requiere la sesión real del usuario.

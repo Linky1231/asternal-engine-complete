@@ -75,12 +75,18 @@ import { getMyProfile, getMyOrbes, isAdmin, pushNotification, uploadAvatar } fro
 import type { Profile } from "@/lib/social/api";
 import { Avatar as SharedAvatar } from "./Avatar";
 import { PortfolioPanel, getPortfolio } from "./PortfolioPanel";
+import { SharedPostPanel } from "./SharedPostPanel";
 import {
   parsePortfolioShare,
   serializePortfolioShare,
   stripPortfolioShare,
   type PortfolioSharePayload,
 } from "@/lib/social/portfolio-share";
+import {
+  parsePostShare,
+  stripPostShare,
+  type PostSharePayload,
+} from "@/lib/social/post-share";
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
@@ -404,6 +410,36 @@ function PortfolioShareCard({ share, onOpen }: { share: PortfolioSharePayload; o
   );
 }
 
+function PostShareCard({ share, onOpen }: { share: PostSharePayload; onOpen: () => void }) {
+  const { owner, post } = share;
+  const kindLabel: Record<PostSharePayload["post"]["kind"], string> = {
+    post: "Publicación compartida",
+    game: "Juego compartido",
+    art: "Arte compartido",
+    gallery: "Galería compartida",
+    image: "Imagen compartida",
+    video: "Vídeo compartido",
+    link: "Enlace compartido",
+  };
+  return (
+    <div className="mt-2 w-full max-w-[21rem] overflow-hidden rounded-xl border border-primary/30 bg-primary/[0.1] text-foreground shadow-[0_12px_28px_rgba(43,112,190,0.14)] backdrop-blur-sm">
+      <div className="h-1 grad-brand-fade" />
+      <div className="p-3">
+        <div className="flex items-center gap-2 text-[9px] font-display font-bold uppercase tracking-[0.16em] text-primary"><Send size={10} /> {kindLabel[post.kind]}</div>
+        <div className="mt-2 flex items-center gap-2.5">
+          <div className="grid h-8 w-8 shrink-0 place-items-center overflow-hidden rounded-xl border border-primary/20 bg-primary/10 text-[11px] font-display font-bold text-primary">
+            {owner.avatarUrl ? <img src={owner.avatarUrl} alt="" className="h-full w-full object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} /> : owner.displayName.slice(0, 1).toUpperCase()}
+          </div>
+          <div className="min-w-0"><div className="truncate text-[12px] font-display font-bold">{owner.displayName}</div>{owner.username && <div className="truncate text-[10px] font-mono text-primary/85">@{owner.username}</div>}</div>
+        </div>
+        {post.imageUrl && <img src={post.imageUrl} alt="Vista previa de la publicación" className="mt-3 aspect-[16/8] w-full rounded-xl border border-border/60 bg-muted/30 object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} />}
+        {post.content ? <p className="mt-3 whitespace-pre-wrap break-words text-[12px] leading-snug line-clamp-4">{post.content}</p> : <p className="mt-3 text-[11px] text-muted-foreground">Publicación compartida desde Asternal.</p>}
+        <button type="button" onClick={onOpen} className="mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-lg grad-brand text-[10px] font-display font-semibold tracking-wide text-primary-foreground transition-transform active:scale-[0.98]"><ExternalLink size={12} /> Abrir publicación</button>
+      </div>
+    </div>
+  );
+}
+
 /** Resalta las menciones @usuario dentro del texto (enlazando al perfil si se conoce). */
 function renderContentWithMentions(content: string, mine: boolean, senders: Map<string, Profile>): ReactNode[] {
   const parts = content.split(/(@[\w.]+)/g);
@@ -442,6 +478,7 @@ function MessageBubble({
   onCopy,
   onReply,
   onOpenPortfolio,
+  onOpenPost,
 }: {
   m: ChatMessage;
   mine: boolean;
@@ -453,15 +490,18 @@ function MessageBubble({
   onCopy: () => void;
   onReply: () => void;
   onOpenPortfolio: (share: PortfolioSharePayload) => void;
+  onOpenPost: (share: PostSharePayload) => void;
 }) {
   const portfolioShare = parsePortfolioShare(m.content);
+  const postShare = parsePostShare(m.content);
   const contentWithoutPortfolio = portfolioShare ? stripPortfolioShare(m.content) : m.content;
-  const contentProfileId = contentWithoutPortfolio ? extractProfileLink(contentWithoutPortfolio) : null;
+  const contentWithoutShares = postShare ? stripPostShare(contentWithoutPortfolio) : contentWithoutPortfolio;
+  const contentProfileId = contentWithoutShares ? extractProfileLink(contentWithoutShares) : null;
   // Si el mensaje contiene un enlace de perfil, la URL cruda no se muestra: la tarjeta lo representa.
   const displayContent =
-    contentProfileId && contentWithoutPortfolio
-      ? contentWithoutPortfolio.replace(/[^\s]*\/profile\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[^\s]*/gi, "").trim()
-      : contentWithoutPortfolio;
+    contentProfileId && contentWithoutShares
+      ? contentWithoutShares.replace(/[^\s]*\/profile\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}[^\s]*/gi, "").trim()
+      : contentWithoutShares;
   return (
     <div className={`group relative flex gap-2 ${mine ? "justify-end pl-10" : "justify-start pr-10"}`}>
       {!mine && (
@@ -502,6 +542,7 @@ function MessageBubble({
           )}
           {contentProfileId && <ProfileLinkCard userId={contentProfileId} />}
           {portfolioShare && <PortfolioShareCard share={portfolioShare} onOpen={() => onOpenPortfolio(portfolioShare)} />}
+          {postShare && <PostShareCard share={postShare} onOpen={() => onOpenPost(postShare)} />}
           {mediaUrl && isAudioMessage(m) ? (
             <AudioBubble url={mediaUrl} mine={mine} duration={0} />
           ) : m.media_url && !mediaUrl ? (
@@ -938,6 +979,7 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [senders, setSenders] = useState<Map<string, Profile>>(new Map());
   const [sharedPortfolio, setSharedPortfolio] = useState<PortfolioSharePayload | null>(null);
+  const [sharedPost, setSharedPost] = useState<PostSharePayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [replyTo, setReplyTo] = useState<ChatMessage | null>(null);
@@ -2906,6 +2948,7 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
                     inputRef.current?.focus();
                   }}
                   onOpenPortfolio={setSharedPortfolio}
+                  onOpenPost={setSharedPost}
                 />
               )}
             </SafeRow>
@@ -3295,6 +3338,8 @@ export default function ChatSection({ myId, onClose, initialText, initialView }:
           onClose={() => setSharedPortfolio(null)}
         />
       )}
+
+      {sharedPost && <SharedPostPanel share={sharedPost} onClose={() => setSharedPost(null)} />}
 
       {/* Diálogo: crear grupo personalizado */}
       <AnimatePresence>

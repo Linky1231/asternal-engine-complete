@@ -11,6 +11,7 @@ import {
   type DmChat,
   type GroupChat,
 } from "@/lib/social/chat";
+import { serializePostShare, type PostShareInput } from "@/lib/social/post-share";
 
 type ShareTarget =
   | { kind: "community"; chatId: string; name: string }
@@ -18,13 +19,11 @@ type ShareTarget =
   | { kind: "group"; chatId: string; name: string; memberCount: number };
 
 export function SharePostModal({
-  postId,
-  postContent,
+  post,
   open,
   onClose,
 }: {
-  postId: string;
-  postContent: string;
+  post: PostShareInput;
   open: boolean;
   onClose: () => void;
 }) {
@@ -78,10 +77,11 @@ export function SharePostModal({
     })();
   }, [open]);
 
-  const shareUrl = `${window.location.origin}/feed?p=${postId}`;
-  const shareText = postContent
-    ? `${postContent.slice(0, 120)}${postContent.length > 120 ? "…" : ""}\n\n${shareUrl}`
-    : shareUrl;
+  const shareUrl = `${window.location.origin}/feed?p=${post.post.id}`;
+  const shareText = serializePostShare({
+    ...post,
+    post: { ...post.post, sourceUrl: post.post.sourceUrl || shareUrl },
+  });
 
   const handleShare = async (target: ShareTarget) => {
     setSending(target.chatId);

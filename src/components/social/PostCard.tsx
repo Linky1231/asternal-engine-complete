@@ -10,6 +10,7 @@ import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
 import { toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
+import type { PostShareInput } from "@/lib/social/post-share";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
   FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
@@ -193,6 +194,30 @@ export const PostCard = memo(function PostCard({
       {postTypeInfo.label}
     </div>
   ) : null;
+  const shareKind: PostShareInput["post"]["kind"] = post.pinned_game
+    ? "game"
+    : post.media_type === "video"
+      ? "video"
+      : post.signed_media.length > 0 || post.signed_cover
+        ? "image"
+        : post.category?.toLowerCase() === "galería"
+          ? "gallery"
+          : "post";
+  const postShare: PostShareInput = {
+    owner: {
+      id: post.author_id,
+      displayName: author?.display_name ?? author?.username ?? "Creador de Asternal",
+      username: author?.username ?? "",
+      avatarUrl: author?.avatar_url ?? "",
+    },
+    post: {
+      id: post.id,
+      content: post.content,
+      kind: shareKind,
+      imageUrl: post.signed_media[0] ?? post.signed_cover ?? post.pinned_game?.cover_url ?? "",
+      sourceUrl: "",
+    },
+  };
 
   return (
     <article className={`group panel rounded-2xl border border-border/60 transition-[border-color,box-shadow] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-sm ${entranceClass}`}>
@@ -435,7 +460,7 @@ export const PostCard = memo(function PostCard({
 
       {openComments && <div className="border-t border-border/50 bg-muted/10 px-3 py-2.5"><CommentSection postId={post.id} myId={myId} isMod={isMod} onChange={() => setCommentsCount(current => current + 1)} /></div>}
 
-      <SharePostModal postId={post.id} postContent={post.content} open={showShare} onClose={() => setShowShare(false)} />
+      <SharePostModal post={postShare} open={showShare} onClose={() => setShowShare(false)} />
     </article>
   );
 });
