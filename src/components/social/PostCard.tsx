@@ -9,7 +9,7 @@ import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
-import { toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
+import { mergePostInteractionSnapshot, toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
 import { documentDisplayMeta } from "@/lib/social/document-display";
 import type { PostShareInput } from "@/lib/social/post-share";
 import {
@@ -48,21 +48,28 @@ export const PostCard = memo(function PostCard({
   const [commentsCount, setCommentsCount] = useState(post.comments_count);
   const [poll, setPoll] = useState(post.poll);
   const interactionVersion = useRef({ like: 0, favorite: 0, repost: 0, poll: 0 });
+  const personalInteractionOverride = useRef({ liked: false, favorited: false, reposted: false });
+  const interactionPostId = useRef(post.id);
   const menu = useCardMenuAnchor<HTMLButtonElement>();
 
   useEffect(() => {
-    setInteractions({
+    if (interactionPostId.current !== post.id) {
+      interactionPostId.current = post.id;
+      personalInteractionOverride.current = { liked: false, favorited: false, reposted: false };
+    }
+    const incoming: PostInteractionSnapshot = {
       likes: post.likes,
       favorites: post.favorites,
       reposts: post.reposts_count,
       liked: post.my_like,
       favorited: post.my_favorite,
       reposted: post.my_repost,
-    });
+    };
+    setInteractions(current => mergePostInteractionSnapshot(current, incoming, personalInteractionOverride.current));
     setCommentsCount(post.comments_count);
     setPoll(post.poll);
     interactionVersion.current = { like: 0, favorite: 0, repost: 0, poll: 0 };
-  }, [post.id]);
+  }, [post.id, post.likes, post.favorites, post.reposts_count, post.my_like, post.my_favorite, post.my_repost, post.comments_count, post.poll]);
 
   const mine = myId === post.author_id;
   const canDelete = mine || isMod;
@@ -78,24 +85,29 @@ export const PostCard = memo(function PostCard({
   const react = async (type: "like" | "favorite") => {
     const before = interactions;
     const version = ++interactionVersion.current[type];
+    const activeKey = type === "like" ? "liked" : "favorited";
+    personalInteractionOverride.current[activeKey] = true;
     setInteractions(current => toggleReactionSnapshot(current, type));
     try {
       const active = await toggleReaction({ postId: post.id, type });
       if (interactionVersion.current[type] === version) {
         setInteractions(current => {
-          const activeKey = type === "like" ? "liked" : "favorited";
           if (current[activeKey] === active) return current;
           return toggleReactionSnapshot(current, type);
         });
       }
     } catch (error) {
-      if (interactionVersion.current[type] === version) setInteractions(before);
+      if (interactionVersion.current[type] === version) {
+        personalInteractionOverride.current[activeKey] = false;
+        setInteractions(before);
+      }
       toast.error(error instanceof Error ? error.message : "No se pudo actualizar la reacción");
     }
   };
   const repost = async () => {
     const before = interactions;
     const version = ++interactionVersion.current.repost;
+    personalInteractionOverride.current.reposted = true;
     setInteractions(current => toggleRepostSnapshot(current));
     try {
       const active = await toggleRepost(post.id);
@@ -103,7 +115,10 @@ export const PostCard = memo(function PostCard({
         setInteractions(current => current.reposted === active ? current : toggleRepostSnapshot(current));
       }
     } catch (error) {
-      if (interactionVersion.current.repost === version) setInteractions(before);
+      if (interactionVersion.current.repost === version) {
+        personalInteractionOverride.current.reposted = false;
+        setInteractions(before);
+      }
       toast.error(error instanceof Error ? error.message : "No se pudo actualizar la republicación");
     }
   };

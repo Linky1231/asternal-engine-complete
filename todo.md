@@ -1205,3 +1205,9 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Reemplazar la superficie azul de los documentos por un indicador de archivo neutral, claro y legible.
 - [x] Mantener la descarga como acción secundaria explícita, sin apariencia de botón principal.
 - [x] Validar la presentación móvil, ejecutar pruebas y publicar.
+
+---
+# Estado personal de reacciones
+- [x] Evitar que los likes externos sobrescriban el icono relleno de la persona que ya dio like.
+- [x] Cubrir la sincronización de conteos y estado personal con una prueba de regresión.
+- [x] Validar, compilar y publicar la corrección.

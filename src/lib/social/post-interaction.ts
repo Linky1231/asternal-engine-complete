@@ -7,6 +7,33 @@ export type PostInteractionSnapshot = {
   reposted: boolean;
 };
 
+export type PersonalInteractionOverrides = {
+  liked: boolean;
+  favorited: boolean;
+  reposted: boolean;
+};
+
+/**
+ * Los contadores pertenecen al post completo, mientras que las banderas
+ * rellenas pertenecen exclusivamente a la persona que está viendo el feed.
+ * Si esa persona acaba de interactuar, conservamos su elección ante una
+ * actualización externa de conteos hasta que se monte una tarjeta nueva.
+ */
+export function mergePostInteractionSnapshot(
+  local: PostInteractionSnapshot,
+  incoming: PostInteractionSnapshot,
+  overrides: PersonalInteractionOverrides,
+): PostInteractionSnapshot {
+  return {
+    likes: incoming.likes,
+    favorites: incoming.favorites,
+    reposts: incoming.reposts,
+    liked: overrides.liked ? local.liked : incoming.liked,
+    favorited: overrides.favorited ? local.favorited : incoming.favorited,
+    reposted: overrides.reposted ? local.reposted : incoming.reposted,
+  };
+}
+
 export function toggleReactionSnapshot(
   snapshot: PostInteractionSnapshot,
   type: "like" | "favorite",
