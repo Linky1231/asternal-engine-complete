@@ -4,6 +4,7 @@ import { nextExclusiveFooterAction, optimisticFollowStats, profileControlStateCl
 import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } from "../src/lib/social/gallery-preview";
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
+import { postSurfaceClass } from "../src/lib/social/post-surface";
 
 describe("mensajes de acceso", () => {
   it("traduce el fallo técnico de credenciales a una explicación clara", () => {
@@ -67,6 +68,23 @@ describe("vista previa de obras", () => {
     expect(isArtistGalleryArtwork({ category: "artwork", asset_preset: { kind: "sprite" } })).toBe(false);
     expect(isArtistGalleryArtwork({ category: "game_asset", asset_preset: null })).toBe(false);
     expect(isArtistGalleryArtwork(undefined)).toBe(false);
+  });
+});
+
+describe("capas Azure Drift de publicaciones", () => {
+  it("usa una superficie azul suave para el juego fijado sin emplear fondos negros", () => {
+    const game = postSurfaceClass("game");
+    expect(game).toContain("bg-primary");
+    expect(game).toContain("border-primary");
+    expect(game).not.toContain("bg-black");
+  });
+
+  it("mantiene las piezas informativas en capas azules y no las convierte en acciones principales", () => {
+    for (const kind of ["poll", "html", "locked"] as const) {
+      const surface = postSurfaceClass(kind);
+      expect(surface).toContain("bg-primary");
+      expect(surface).not.toContain("grad-brand");
+    }
   });
 });
 

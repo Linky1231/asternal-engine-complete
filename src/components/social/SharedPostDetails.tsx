@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import type { PostSharePreview } from "@/lib/social/post-share";
 import { documentDisplayMeta } from "@/lib/social/document-display";
+import { postSurfaceClass } from "@/lib/social/post-surface";
 
 const POST_TYPE_LABELS: Record<string, string> = {
   update: "Actualización",
@@ -113,17 +114,17 @@ export function SharedPostDetails({
       )}
 
       {post.pinnedGame && (
-        <div className="flex items-center gap-2.5 rounded-2xl border border-border/60 bg-muted/20 p-2.5">
+        <div className={`flex items-center gap-2.5 rounded-2xl p-2.5 ${postSurfaceClass("game")}`}>
           {post.pinnedGame.coverUrl ? (
-            <img src={post.pinnedGame.coverUrl} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-border/50 bg-muted/25 object-contain" />
+            <img src={post.pinnedGame.coverUrl} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-primary/15 bg-primary/[0.07] object-contain" />
           ) : (
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-border/50 bg-muted/30 text-primary"><Gamepad2 size={18} /></span>
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/[0.1] text-primary"><Gamepad2 size={18} /></span>
           )}
           <div className="min-w-0 flex-1">
             <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-primary">Juego fijado</p>
             <p className="truncate text-[12px] font-display font-bold">{post.pinnedGame.title}</p>
           </div>
-          <span className="grid h-7 w-7 place-items-center rounded-full border border-border/60 bg-card text-primary"><Play size={12} fill="currentColor" /></span>
+          <span className="grid h-7 w-7 place-items-center rounded-full border border-primary/25 bg-primary/15 text-primary"><Play size={12} fill="currentColor" /></span>
         </div>
       )}
 

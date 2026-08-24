@@ -1239,3 +1239,9 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Hacer que Orión jerarquice por originalidad, novedad contextual y relevancia sin usar likes ni ocultar publicaciones.
 - [x] Aplicar el orden de originalidad de forma consistente en Para ti, Seguidos y Explorar.
 - [x] Cubrir criterios, respaldo cronológico y conservación completa con pruebas; validar y publicar.
+
+---
+# Coherencia Azure Drift en publicaciones
+- [x] Auditar superficies, texto e iconos de publicaciones que no respetan la paleta azul coherente.
+- [x] Sustituir el bloque negro del juego fijado y los acentos incongruentes por capas Azure Drift legibles.
+- [x] Cubrir el contrato de paleta, validar en móvil y publicar la corrección.

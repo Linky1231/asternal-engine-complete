@@ -11,6 +11,7 @@ import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
 import { mergePostInteractionSnapshot, toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
 import { documentDisplayMeta } from "@/lib/social/document-display";
+import { postSurfaceClass } from "@/lib/social/post-surface";
 import type { PostShareInput } from "@/lib/social/post-share";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
@@ -367,9 +368,9 @@ export const PostCard = memo(function PostCard({
 
         {/* HTML embebido */}
         {post.html_content && (
-          <div className="border border-border rounded-xl overflow-hidden">
+          <div className={`rounded-xl overflow-hidden ${postSurfaceClass("html")}`}>
             <button type="button" onClick={() => setShowHtml(s => !s)}
-              className="w-full flex items-center gap-2 px-3 py-2.5 text-xs bg-muted/30 pointer-fine:hover:bg-muted/50 transition-colors duration-300">
+              className="w-full flex items-center gap-2 px-3 py-2.5 text-xs bg-primary/[0.055] pointer-fine:hover:bg-primary/[0.09] transition-colors duration-300">
               <Code2 size={13} className="text-primary" />
               <span className="flex-1 text-left font-medium">Contenido HTML {showHtml ? "(ocultar)" : "(mostrar)"}</span>
               <span className="text-muted-foreground transition-transform duration-300 ease-out" style={{ transform: showHtml ? "rotate(180deg)" : "none" }}>▼</span>
@@ -377,7 +378,7 @@ export const PostCard = memo(function PostCard({
             {showHtml && (
               <>
                 <iframe srcDoc={post.html_content} sandbox="" className="w-full h-64 bg-white" title="html-content" />
-                <div className="text-[9px] text-muted-foreground px-2 py-1 bg-muted/20">Contenido de terceros · sandbox seguro</div>
+                <div className="text-[9px] text-muted-foreground px-2 py-1 bg-primary/[0.035]">Contenido de terceros · sandbox seguro</div>
               </>
             )}
           </div>
@@ -388,20 +389,20 @@ export const PostCard = memo(function PostCard({
           <button
             type="button"
             onClick={() => onOpenGame?.(post.pinned_game!.id)}
-            className="group/game flex items-center gap-3 rounded-2xl p-2 pr-3 bg-muted/20 border border-border/60 pointer-fine:hover:border-border-strong transition-[border-color,box-shadow] duration-300 ease-out pointer-fine:hover:shadow-md w-full text-left cursor-pointer">
+            className={`group/game flex items-center gap-3 rounded-2xl p-2 pr-3 ${postSurfaceClass("game")} pointer-fine:hover:border-primary/45 transition-[border-color,box-shadow,background-color] duration-300 ease-out pointer-fine:hover:bg-primary/[0.08] pointer-fine:hover:shadow-md w-full text-left cursor-pointer`}>
             {post.pinned_game.cover_url ? (
-              <img src={post.pinned_game.cover_url} alt="" className="w-14 aspect-square rounded-2xl object-contain bg-muted/20 shrink-0 ring-1 ring-border/50" />
+              <img src={post.pinned_game.cover_url} alt="" className="w-14 aspect-square rounded-2xl object-contain bg-primary/[0.07] shrink-0 ring-1 ring-primary/15" />
             ) : (
-              <div className="w-14 aspect-square rounded-2xl bg-muted/50 border border-border/60 grid place-items-center shrink-0">
-                <Gamepad2 size={22} className="text-muted-foreground/60" />
+              <div className="w-14 aspect-square rounded-2xl bg-primary/[0.1] border border-primary/20 grid place-items-center shrink-0">
+                <Gamepad2 size={22} className="text-primary" />
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <div className="text-[9px] font-display tracking-[0.18em] text-muted-foreground uppercase">Juego fijado</div>
+              <div className="text-[9px] font-display tracking-[0.18em] text-primary uppercase">Juego fijado</div>
               <div className="text-sm font-display truncate mt-0.5">{post.pinned_game.title}</div>
             </div>
-            <span className="w-8 h-8 rounded-full bg-muted/70 border border-border/60 grid place-items-center transition-transform duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5">
-              <Play size={14} className="text-foreground ml-0.5" fill="currentColor" />
+            <span className="w-8 h-8 rounded-full bg-primary/15 border border-primary/25 text-primary grid place-items-center transition-[transform,background-color] duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5 pointer-fine:group-hover/game:bg-primary/20">
+              <Play size={14} className="ml-0.5" fill="currentColor" />
             </span>
           </button>
         )}
@@ -411,7 +412,7 @@ export const PostCard = memo(function PostCard({
 
         {/* Contenido desbloqueable */}
         {post.locked_content && (
-          <div className={`rounded-2xl border p-3.5 transition-[border-color,background-color] duration-500 ease-out ${post.is_unlocked ? "border-primary/40 bg-primary/[0.05]" : "border-dashed border-border bg-muted/20"}`}>
+          <div className={`rounded-2xl p-3.5 transition-[border-color,background-color] duration-500 ease-out ${post.is_unlocked ? "border border-primary/40 bg-primary/[0.07]" : `${postSurfaceClass("locked")} border-dashed`}`}>
             <div className="flex items-center gap-2 text-[11px] font-display tracking-[0.15em] mb-2">
               <span className={`w-6 h-6 rounded-full grid place-items-center ${post.is_unlocked ? "bg-primary/15 text-primary-glow" : "bg-muted text-muted-foreground"}`}>
                 <Lock size={11} />
@@ -529,10 +530,10 @@ function frameCss(id: string): string {
 function PollView({ poll, onVote }: { poll: NonNullable<PostWithMeta["poll"]>; onVote: (i: number) => void }) {
   const voted = poll.my_vote !== null;
   return (
-    <div className="rounded-2xl border border-border bg-muted/20 p-3.5 space-y-2.5">
+    <div className={`rounded-2xl p-3.5 space-y-2.5 ${postSurfaceClass("poll")}`}>
       <div className="flex items-start gap-2">
-        <span className="w-7 h-7 rounded-lg bg-primary/10 grid place-items-center shrink-0 mt-0.5">
-          <span className="text-primary-foreground text-[11px]">📊</span>
+        <span className="w-7 h-7 rounded-lg bg-primary/15 text-primary grid place-items-center shrink-0 mt-0.5">
+          <span className="text-[11px]">📊</span>
         </span>
         <div className="text-sm font-display leading-snug">{poll.question}</div>
       </div>
