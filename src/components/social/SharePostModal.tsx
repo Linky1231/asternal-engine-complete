@@ -195,9 +195,9 @@ export function SharePostModal({
                     </>
                   )}
 
-                  {filteredGroups.length > 0 && (
+                  <ShareSectionLabel icon={<Users size={12} />} label="Chats grupales" />
+                  {filteredGroups.length > 0 ? (
                     <>
-                      <ShareSectionLabel icon={<Users size={12} />} label="Chats grupales" />
                       {filteredGroups.map((g) => (
                         <ShareRow
                           key={g.chatId}
@@ -207,7 +207,11 @@ export function SharePostModal({
                         />
                       ))}
                     </>
-                  )}
+                  ) : !query ? (
+                    <div className="mx-3 rounded-xl border border-dashed border-border/55 bg-muted/15 px-3 py-2.5 text-[10px] leading-relaxed text-muted-foreground">
+                      Aún no tienes chats grupales. Cuando formes parte de uno, aparecerá aquí como destino para compartir.
+                    </div>
+                  ) : null}
 
                   {filteredDms.length > 0 && (
                     <>

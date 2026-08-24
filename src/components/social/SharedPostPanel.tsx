@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import { ExternalLink, FileText, Gamepad2, Image as ImageIcon, Play, Send, Video, X } from "lucide-react";
 import type { PostSharePayload } from "@/lib/social/post-share";
+import { SharedPostDetails } from "./SharedPostDetails";
 
 const KIND_LABEL: Record<PostSharePayload["post"]["kind"], string> = {
   post: "Publicación",
@@ -23,7 +24,6 @@ function PostKindIcon({ kind }: { kind: PostSharePayload["post"]["kind"] }) {
 }
 
 export function SharedPostPanel({ share, onClose }: { share: PostSharePayload; onClose: () => void }) {
-  const [imageFailed, setImageFailed] = useState(false);
   const { owner, post } = share;
 
   useEffect(() => {
@@ -86,11 +86,7 @@ export function SharedPostPanel({ share, onClose }: { share: PostSharePayload; o
                   </span>
                 </div>
 
-                {post.imageUrl && !imageFailed && (
-                  <img src={post.imageUrl} alt="Vista previa de la publicación" className="mt-4 aspect-[16/9] w-full rounded-2xl border border-border/60 bg-muted/30 object-cover" onError={() => setImageFailed(true)} />
-                )}
-
-                {post.content ? <p className="mt-4 whitespace-pre-wrap break-words text-sm leading-relaxed text-foreground">{post.content}</p> : <p className="mt-4 text-sm leading-relaxed text-muted-foreground">Esta publicación se compartió sin texto adicional.</p>}
+                <div className="mt-4"><SharedPostDetails post={post} /></div>
 
                 {post.sourceUrl && (
                   <button type="button" onClick={goToFeed} className="mt-5 flex h-10 w-full items-center justify-center gap-2 rounded-xl grad-brand text-xs font-display font-semibold tracking-wide text-primary-foreground transition-transform active:scale-[0.98]">

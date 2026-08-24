@@ -216,6 +216,32 @@ export const PostCard = memo(function PostCard({
       kind: shareKind,
       imageUrl: post.signed_media[0] ?? post.signed_cover ?? post.pinned_game?.cover_url ?? "",
       sourceUrl: "",
+      mediaUrls: post.signed_media,
+      mediaType: post.media_type,
+      documents: post.signed_documents ?? [],
+      textColor: post.text_color ?? "",
+      linkUrl: post.link_url ?? "",
+      hasHtml: Boolean(post.html_content),
+      pinnedGame: post.pinned_game ? {
+        id: post.pinned_game.id,
+        title: post.pinned_game.title,
+        coverUrl: post.pinned_game.cover_url ?? "",
+      } : null,
+      poll: post.poll ? {
+        question: post.poll.question,
+        options: post.poll.options,
+        votes: post.poll.votes,
+        total: post.poll.total,
+      } : null,
+      locked: post.locked_content ? {
+        isUnlocked: post.is_unlocked === true,
+        text: post.locked_content,
+        goal: post.unlock_reactions_goal ?? 0,
+        current: interactions.likes + interactions.favorites,
+        unlockAt: post.unlock_at ?? "",
+      } : null,
+      postTypes: (post.post_type ?? "").split(","),
+      tags: post.tags,
     },
   };
 

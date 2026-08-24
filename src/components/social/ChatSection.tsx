@@ -87,6 +87,7 @@ import {
   stripPostShare,
   type PostSharePayload,
 } from "@/lib/social/post-share";
+import { SharedPostDetails } from "./SharedPostDetails";
 
 function fmtTime(iso: string): string {
   const d = new Date(iso);
@@ -432,8 +433,7 @@ function PostShareCard({ share, onOpen }: { share: PostSharePayload; onOpen: () 
           </div>
           <div className="min-w-0"><div className="truncate text-[12px] font-display font-bold">{owner.displayName}</div>{owner.username && <div className="truncate text-[10px] font-mono text-primary/85">@{owner.username}</div>}</div>
         </div>
-        {post.imageUrl && <img src={post.imageUrl} alt="Vista previa de la publicación" className="mt-3 aspect-[16/8] w-full rounded-xl border border-border/60 bg-muted/30 object-cover" onError={(event) => { event.currentTarget.style.display = "none"; }} />}
-        {post.content ? <p className="mt-3 whitespace-pre-wrap break-words text-[12px] leading-snug line-clamp-4">{post.content}</p> : <p className="mt-3 text-[11px] text-muted-foreground">Publicación compartida desde Asternal.</p>}
+        <div className="mt-3"><SharedPostDetails post={post} compact /></div>
         <button type="button" onClick={onOpen} className="mt-3 flex h-8 w-full items-center justify-center gap-1.5 rounded-lg grad-brand text-[10px] font-display font-semibold tracking-wide text-primary-foreground transition-transform active:scale-[0.98]"><ExternalLink size={12} /> Abrir publicación</button>
       </div>
     </div>

@@ -1190,3 +1190,12 @@ Las tarjetas compartidas de publicaciones y Portafolios ahora usan base blanca o
 - [x] Validar en móvil, compilar y publicar el ajuste.
 
 Las filas del menú se compactaron a 40 px, los grupos redujeron su separación a 5 px y los encabezados recuperaron un ritmo vertical contenido. El panel usa menos relleno superior, el acceso de perfil es más compacto y la salida deja de forzar un espacio flexible que alargaba el menú. Así se conserva la separación visual, pero el desplazamiento permite recorrer todas las opciones en móvil. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto; la captura móvil disponible confirmó la estabilidad del acceso sin sesión.
+
+---
+
+# Funciones visibles en publicaciones compartidas
+- [x] Auditar todos los tipos de contenido y funciones de las publicaciones existentes.
+- [x] Ampliar el snapshot compartido para representar texto con color, documentos, medios, enlaces, encuestas, juegos y adjuntos aplicables.
+- [x] Renderizar una vista previa organizada de cada función dentro de la tarjeta del chat.
+- [x] Incluir chats grupales reales como destinos al compartir una publicación.
+- [x] Validar en Comunidad, grupos y directos, compilar y publicar.
