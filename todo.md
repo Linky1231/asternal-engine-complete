@@ -1141,3 +1141,13 @@ El degradado ya no se monta con opacidad cero en las opciones inactivas: se rend
 - [x] Validar, compilar y publicar la mejora de interacción.
 
 Las opciones de función ahora transicionan color, borde y superficie en 200 ms con una curva de salida rápida. El degradado activo entra y sale con opacidad y escala suave, mientras el toque conserva una respuesta inmediata. `pnpm test` completó 37 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Selector aislado para compartir publicaciones
+- [x] Localizar el montaje del selector que se superpone a la lista del feed.
+- [x] Mostrar el selector en una pantalla aislada sin mezcla visual con las publicaciones.
+- [x] Clasificar los destinos como Chat comunitario, Chats grupales y Mensajes directos.
+- [x] Validar en móvil, compilar y publicar la corrección.
+
+El selector de compartir publicaciones ahora se portaliza a `document.body`, por lo que deja de heredar el contenedor y el apilamiento de la lista del feed. En móvil se muestra como pantalla aislada de viewport completo; en escritorio se conserva como superficie centrada. Sus destinos están agrupados explícitamente en Chat comunitario, Chats grupales y Mensajes directos; «Copiar enlace» queda como acción secundaria al final. `pnpm test` completó 37 pruebas y `pnpm build` finalizó correctamente. La captura móvil disponible confirmó que el shell se mantiene estable; la comprobación autenticada del selector queda disponible para el usuario.
