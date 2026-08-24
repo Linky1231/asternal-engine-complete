@@ -1103,3 +1103,13 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Validar los flujos disponibles, ejecutar pruebas, compilar, revisar responsive y publicar.
 
 Se añadió un protocolo versionado y validado para snapshots de Portafolio dentro del contenido ya existente de los mensajes, sin modificar APIs, Supabase ni el esquema. El Portafolio puede compartirse desde su pantalla aislada a Comunidad, grupos o mensajes directos, y el compositor ofrece un acceso rápido para el chat abierto. Cada mensaje muestra una tarjeta Azure Drift con identidad, habilidades, logros y el botón «Abrir portafolio», que conserva la vista aislada en modo de lectura. `pnpm test` completó 37 pruebas y `pnpm build` fue correcto; las capturas disponibles verificaron el shell en escritorio y móvil. La prueba interactiva con sesión real queda disponible para la cuenta del usuario.
+
+---
+
+# Corrección visual de Portafolios compartidos
+- [x] Eliminar el espacio vertical residual bajo el selector de destinos en móvil.
+- [x] Reforzar el contraste y la superficie Azure Drift de la tarjeta de Portafolio compartido.
+- [x] Convertir Comunidad, grupos y directos en opciones de selección sutiles, no acciones azules principales.
+- [x] Validar en móvil, ejecutar pruebas, compilar y publicar.
+
+El selector ya no reserva altura flexible innecesaria: su lista tiene una altura máxima acotada y la hoja termina al finalizar sus opciones. Comunidad, grupos y directos ahora son filas de selección con superficie glass tenue, borde discreto e icono neutral; el degradado queda reservado al envío y otras acciones principales. La tarjeta y la pantalla de lectura del Portafolio recuperan capas Azure Drift con contraste azul suave, en lugar de superficies blancas planas. `pnpm test` completó 37 pruebas y `pnpm build` fue correcto. La captura móvil disponible confirmó que el shell no presenta regresiones; la validación funcional autenticada queda disponible para el usuario.

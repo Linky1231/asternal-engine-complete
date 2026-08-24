@@ -124,7 +124,7 @@ export function SharePortfolioModal({
             exit={{ y: 28, opacity: 0 }}
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             onClick={(event) => event.stopPropagation()}
-            className="w-full sm:max-w-md max-h-[85dvh] rounded-t-2xl sm:rounded-2xl border border-border/70 bg-surface shadow-xl flex flex-col overflow-hidden"
+            className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-primary/20 bg-surface/95 shadow-xl overflow-hidden"
           >
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50">
               <div className="w-9 h-9 rounded-xl grad-brand text-primary-foreground grid place-items-center shrink-0">
@@ -151,7 +151,7 @@ export function SharePortfolioModal({
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-2 pb-3 space-y-0.5">
+            <div className="max-h-[min(48dvh,24rem)] overflow-y-auto px-2 pb-3 space-y-1">
               {loading ? (
                 <div className="flex items-center justify-center gap-2 py-10 text-xs text-muted-foreground"><Loader2 size={14} className="animate-spin" /> Cargando chats…</div>
               ) : (
@@ -185,10 +185,10 @@ function ShareRow({ target, sending, onShare }: { target: ShareTarget; sending: 
   const Icon = target.kind === "community" ? Globe : target.kind === "group" ? Users : MessageCircle;
   const subtitle = target.kind === "community" ? "Comunidad" : target.kind === "group" ? `${target.memberCount} miembros` : `@${target.username}`;
   return (
-    <button onClick={() => onShare(target)} disabled={pending} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-primary/5 transition text-left active:scale-[0.99] disabled:opacity-55">
-      <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary grid place-items-center shrink-0"><Icon size={15} /></div>
+    <button onClick={() => onShare(target)} disabled={pending} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border/60 bg-surface/80 hover:border-primary/35 hover:bg-primary/[0.055] transition text-left active:scale-[0.99] disabled:opacity-55">
+      <div className="w-9 h-9 rounded-xl bg-muted/70 text-primary grid place-items-center shrink-0"><Icon size={15} /></div>
       <div className="min-w-0 flex-1"><div className="text-xs font-medium truncate">{target.name}</div><div className="text-[10px] text-muted-foreground">{subtitle}</div></div>
-      {pending ? <Loader2 size={14} className="animate-spin text-primary shrink-0" /> : <Send size={14} className="text-primary/60 shrink-0" />}
+      {pending ? <Loader2 size={14} className="animate-spin text-primary shrink-0" /> : <Send size={14} className="text-muted-foreground/65 shrink-0" />}
     </button>
   );
 }

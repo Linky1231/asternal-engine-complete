@@ -457,7 +457,7 @@ export function PortfolioPanel({
   return (
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Portafolio">
       <div className="min-h-full max-w-6xl mx-auto px-3 py-3 sm:px-6 sm:py-6">
-      <div className="relative min-h-[calc(100vh-1.5rem)] sm:min-h-[calc(100vh-3rem)] rounded-2xl border border-border bg-surface shadow-xl animate-in slide-in-from-bottom-2 duration-300 flex flex-col">
+      <div className="relative min-h-[calc(100vh-1.5rem)] sm:min-h-[calc(100vh-3rem)] rounded-2xl border border-primary/20 bg-[radial-gradient(circle_at_top_right,rgba(99,178,255,0.15),transparent_31%),linear-gradient(135deg,rgba(244,250,255,0.98),rgba(226,241,255,0.94))] shadow-xl animate-in slide-in-from-bottom-2 duration-300 flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 shrink-0">
           <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0"
@@ -490,7 +490,7 @@ export function PortfolioPanel({
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* ── User card ── */}
-          <div className="flex items-center gap-3 p-3 rounded-xl border border-border/40 bg-card">
+          <div className="flex items-center gap-3 p-3 rounded-xl border border-primary/20 bg-primary/[0.055]">
             <Avatar p={profile} size={48} rounded="xl" className="border-2" style={{ borderColor: portfolio?.accentColor ?? "#3b82f6" }} />
             <div className="min-w-0 flex-1">
               <UserName p={profile} size="md" />
@@ -515,7 +515,7 @@ export function PortfolioPanel({
             <div className="flex flex-wrap gap-1.5">
               {portfolio.links.map(l => (
                 <a key={l.id} href={l.url.startsWith("http") ? l.url : `https://${l.url}`} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border border-border/60 bg-muted/30 hover:border-primary/30 transition">
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] border border-primary/20 bg-primary/[0.045] hover:border-primary/35 transition">
                   <Link2 size={10} style={{ color: portfolio.accentColor }} />
                   <span className="text-foreground">{l.label}</span>
                 </a>
@@ -529,7 +529,7 @@ export function PortfolioPanel({
               {portfolio.achievements.map(ach => {
                 const Icon = getIcon(ach.icon);
                 return (
-                  <div key={ach.id} className="flex items-start gap-3 p-3 rounded-xl border border-border/40 bg-card hover:border-primary/20 transition">
+                  <div key={ach.id} className="flex items-start gap-3 p-3 rounded-xl border border-primary/20 bg-primary/[0.045] hover:border-primary/35 transition">
                     <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0"
                       style={{ background: (portfolio.accentColor ?? "#3b82f6") + "12" }}>
                       <Icon size={16} style={{ color: portfolio.accentColor ?? "#3b82f6" }} />

@@ -370,8 +370,8 @@ function PortfolioShareCard({ share, onOpen }: { share: PortfolioSharePayload; o
   const { owner, portfolio } = share;
   const shownSkills = portfolio.skills.slice(0, 4);
   return (
-    <div className="mt-2 w-full max-w-[21rem] rounded-xl border border-border/70 bg-card text-foreground shadow-sm overflow-hidden">
-      <div className="px-3 pt-2.5 pb-2 bg-primary/[0.045] border-b border-primary/10">
+    <div className="mt-2 w-full max-w-[21rem] rounded-xl border border-primary/35 bg-primary/[0.12] text-foreground shadow-[0_12px_28px_rgba(43,112,190,0.16)] backdrop-blur-sm overflow-hidden">
+      <div className="px-3 pt-2.5 pb-2 bg-primary/[0.13] border-b border-primary/20">
         <div className="flex items-center gap-1.5 text-[9px] font-display font-bold tracking-[0.16em] text-primary uppercase">
           <Briefcase size={10} /> Portafolio compartido
         </div>
@@ -385,7 +385,7 @@ function PortfolioShareCard({ share, onOpen }: { share: PortfolioSharePayload; o
           </div>
         </div>
       </div>
-      <div className="p-3">
+      <div className="p-3 bg-background/35">
         <div className="text-[13px] font-semibold leading-snug line-clamp-2">{portfolio.headline}</div>
         {portfolio.bio && <p className="mt-1 text-[11px] leading-snug text-muted-foreground line-clamp-2">{portfolio.bio}</p>}
         {(shownSkills.length > 0 || portfolio.achievements.length > 0) && (
