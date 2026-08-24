@@ -10,6 +10,7 @@ import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
 import { toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
+import { documentDisplayMeta } from "@/lib/social/document-display";
 import type { PostShareInput } from "@/lib/social/post-share";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
@@ -327,16 +328,25 @@ export const PostCard = memo(function PostCard({
         {/* Documentos */}
         {post.signed_documents && post.signed_documents.length > 0 && (
           <div className="space-y-1.5">
-            {post.signed_documents.map((d, i) => (
-              <a key={i} href={d.url} target="_blank" rel="noreferrer" download={d.name}
-                className="flex items-center gap-2.5 bg-muted/30 pointer-fine:hover:bg-primary/10 rounded-xl px-3 py-2.5 text-xs border border-border/50 pointer-fine:hover:border-primary/30 transition-[background-color,border-color] duration-300 ease-out group/doc">
-                <span className="w-8 h-8 rounded-lg bg-primary/10 grid place-items-center shrink-0">
-                  <FileText size={14} className="text-primary" />
-                </span>
-                <span className="flex-1 truncate font-medium">{d.name}</span>
-                <Download size={13} className="text-muted-foreground pointer-fine:group-hover/doc:text-primary transition-colors duration-300" />
-              </a>
-            ))}
+            {post.signed_documents.map((d, i) => {
+              const file = documentDisplayMeta(d.name);
+              return (
+                <div key={i} className="flex items-center gap-2.5 rounded-2xl border border-border/60 bg-card/70 px-3 py-2.5 text-xs shadow-[0_1px_0_rgba(15,23,42,0.03)]">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/[0.07] text-primary">
+                    <FileText size={16} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold text-foreground">{d.name}</span>
+                    <span className="mt-0.5 block text-[9px] font-medium uppercase tracking-[0.12em] text-muted-foreground">{file.label} · {file.format}</span>
+                  </span>
+                  <a href={d.url} target="_blank" rel="noreferrer" download={d.name}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border/70 bg-background/80 text-muted-foreground transition-[border-color,color,background-color,transform] duration-150 ease-out hover:border-primary/35 hover:bg-primary/[0.06] hover:text-primary active:scale-95"
+                    aria-label={`Descargar ${d.name}`} title={`Descargar ${d.name}`}>
+                    <Download size={14} />
+                  </a>
+                </div>
+              );
+            })}
           </div>
         )}
 

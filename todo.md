@@ -1199,3 +1199,9 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Renderizar una vista previa organizada de cada función dentro de la tarjeta del chat.
 - [x] Incluir chats grupales reales como destinos al compartir una publicación.
 - [x] Validar en Comunidad, grupos y directos, compilar y publicar.
+
+---
+# Indicador de archivo adjunto
+- [x] Reemplazar la superficie azul de los documentos por un indicador de archivo neutral, claro y legible.
+- [x] Mantener la descarga como acción secundaria explícita, sin apariencia de botón principal.
+- [x] Validar la presentación móvil, ejecutar pruebas y publicar.
