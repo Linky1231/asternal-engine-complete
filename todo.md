@@ -1123,3 +1123,12 @@ El selector ya no reserva altura flexible innecesaria: su lista tiene una altura
 - [x] Validar, compilar y publicar el ajuste.
 
 El selector móvil se transformó en una pantalla de selección completa, de modo que no conserva un bloque vacío encima de la hoja. Las filas de destino definen de forma explícita una superficie glass clara, tipografía de alto contraste e iconografía secundaria neutral, sin aceptar fondos azules heredados. `pnpm test` completó 37 pruebas y `pnpm build` fue correcto; la captura móvil disponible no muestra regresiones del shell. La comprobación autenticada directa queda disponible para la cuenta del usuario.
+
+---
+
+# Estados inactivos del compositor de publicaciones
+- [x] Localizar los botones de adjunto y sus clases de estado dentro del compositor.
+- [x] Eliminar el degradado azul de las opciones no seleccionadas y preservar el azul solo en selección o acción principal.
+- [x] Validar los estados visuales, compilar y publicar.
+
+El degradado ya no se monta con opacidad cero en las opciones inactivas: se renderiza únicamente cuando una función está activa. En reposo, Enlace, Encuesta, Juego y el resto de opciones usan superficie neutral, texto gris y borde suave; el azul queda reservado para una opción ya seleccionada y para «Publicar». `pnpm test` completó 37 pruebas y `pnpm build` finalizó correctamente.
