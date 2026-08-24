@@ -1161,3 +1161,13 @@ El selector de compartir publicaciones ahora se portaliza a `document.body`, por
 - [x] Validar en los tipos de chat disponibles, compilar y publicar.
 
 Las publicaciones ahora viajan en el contenido existente de mensajes como snapshots versionados y saneados, sin cambios de API, Supabase ni esquema. La burbuja detecta el marcador, lo oculta y presenta una tarjeta Azure Drift con autor, tipo, vista previa de imagen, contenido y «Abrir publicación». Ese botón abre una superficie aislada con la publicación compartida. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto; la captura móvil disponible confirmó que el shell sin sesión se mantiene estable. La comprobación interactiva de enviar y abrir tarjetas en chats requiere la sesión real del usuario.
+
+---
+
+# Jerarquía del menú lateral móvil
+- [x] Auditar las filas, separadores y espaciados del menú señalados en móvil.
+- [x] Separar visualmente las opciones y reforzar los grupos Social, Comunidad y Creación.
+- [x] Diferenciar la acción de Cerrar sesión del resto de navegación.
+- [x] Validar en móvil, compilar y publicar la corrección.
+
+El menú lateral ahora separa cada destino con una superficie glass discreta y un espacio consistente, en lugar de apilar filas visualmente pegadas. Los grupos Social, Comunidad y Creación disponen de encabezados con más aire y cada fila aumenta su área táctil sin convertirse en un CTA azul. El perfil se distingue como acceso de cabecera y «Cerrar sesión» como acción independiente al pie. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto; la captura móvil disponible confirmó la estabilidad del shell. La comprobación autenticada del menú queda disponible para el usuario.
