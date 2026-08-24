@@ -1,4 +1,4 @@
-import { memo, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Avatar } from "./Avatar";
 import { Link } from "@tanstack/react-router";
@@ -9,6 +9,7 @@ import { SharePostModal } from "./SharePostModal";
 import { UserName } from "./UserName";
 import { CardMenu, CardMenuItem, useCardMenuAnchor } from "./CardMenu";
 import { nextExclusiveFooterAction, socialActionStateClass, type FooterActionSelection } from "@/lib/social/interaction-state";
+import { toggleReactionSnapshot, toggleRepostSnapshot, type PostInteractionSnapshot } from "@/lib/social/post-interaction";
 import {
   Heart, Star, MessageCircle, Repeat2, MoreHorizontal, Pencil, Trash2, Flag, Share2,
   FileText, Download, Lock, Gamepad2, Code2, Link2, Play,
@@ -34,7 +35,32 @@ export const PostCard = memo(function PostCard({
   const [deleting, setDeleting] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [activeFooterAction, setActiveFooterAction] = useState<FooterActionSelection>(null);
+  const [interactions, setInteractions] = useState<PostInteractionSnapshot>(() => ({
+    likes: post.likes,
+    favorites: post.favorites,
+    reposts: post.reposts_count,
+    liked: post.my_like,
+    favorited: post.my_favorite,
+    reposted: post.my_repost,
+  }));
+  const [commentsCount, setCommentsCount] = useState(post.comments_count);
+  const [poll, setPoll] = useState(post.poll);
+  const interactionVersion = useRef({ like: 0, favorite: 0, repost: 0, poll: 0 });
   const menu = useCardMenuAnchor<HTMLButtonElement>();
+
+  useEffect(() => {
+    setInteractions({
+      likes: post.likes,
+      favorites: post.favorites,
+      reposts: post.reposts_count,
+      liked: post.my_like,
+      favorited: post.my_favorite,
+      reposted: post.my_repost,
+    });
+    setCommentsCount(post.comments_count);
+    setPoll(post.poll);
+    interactionVersion.current = { like: 0, favorite: 0, repost: 0, poll: 0 };
+  }, [post.id]);
 
   const mine = myId === post.author_id;
   const canDelete = mine || isMod;
@@ -47,8 +73,38 @@ export const PostCard = memo(function PostCard({
   const showEntrance = !!post.entrance_effect && authorPlus && ageMs < 30_000;
   const entranceClass = showEntrance ? `post-fx-${post.entrance_effect}` : "";
 
-  const react = async (type: "like" | "favorite") => { await toggleReaction({ postId: post.id, type }); onChange(); };
-  const repost = async () => { await toggleRepost(post.id); onChange(); };
+  const react = async (type: "like" | "favorite") => {
+    const before = interactions;
+    const version = ++interactionVersion.current[type];
+    setInteractions(current => toggleReactionSnapshot(current, type));
+    try {
+      const active = await toggleReaction({ postId: post.id, type });
+      if (interactionVersion.current[type] === version) {
+        setInteractions(current => {
+          const activeKey = type === "like" ? "liked" : "favorited";
+          if (current[activeKey] === active) return current;
+          return toggleReactionSnapshot(current, type);
+        });
+      }
+    } catch (error) {
+      if (interactionVersion.current[type] === version) setInteractions(before);
+      toast.error(error instanceof Error ? error.message : "No se pudo actualizar la reacción");
+    }
+  };
+  const repost = async () => {
+    const before = interactions;
+    const version = ++interactionVersion.current.repost;
+    setInteractions(current => toggleRepostSnapshot(current));
+    try {
+      const active = await toggleRepost(post.id);
+      if (interactionVersion.current.repost === version) {
+        setInteractions(current => current.reposted === active ? current : toggleRepostSnapshot(current));
+      }
+    } catch (error) {
+      if (interactionVersion.current.repost === version) setInteractions(before);
+      toast.error(error instanceof Error ? error.message : "No se pudo actualizar la republicación");
+    }
+  };
   const chooseFooterAction = (next: Exclude<FooterActionSelection, null>) => {
     setActiveFooterAction(current => {
       const selected = nextExclusiveFooterAction(current, next);
@@ -96,9 +152,21 @@ export const PostCard = memo(function PostCard({
   };
   const share = () => { setShowShare(true); menu.close(); };
   const vote = async (i: number) => {
-    if (!post.poll) return;
-    await votePoll(post.poll.id, i);
-    onChange();
+    if (!poll || poll.my_vote !== null) return;
+    const before = poll;
+    const version = ++interactionVersion.current.poll;
+    setPoll(current => current ? {
+      ...current,
+      my_vote: i,
+      total: current.total + 1,
+      votes: current.votes.map((count, index) => index === i ? count + 1 : count),
+    } : current);
+    try {
+      await votePoll(poll.id, i);
+    } catch (error) {
+      if (interactionVersion.current.poll === version) setPoll(before);
+      toast.error(error instanceof Error ? error.message : "No se pudo registrar el voto");
+    }
   };
 
   const avatarInner = <Avatar p={author} className="w-full h-full" />;
@@ -284,7 +352,7 @@ export const PostCard = memo(function PostCard({
                       <span className="block h-full bg-primary rounded-full transition-[width] duration-700 ease-out"
                         style={{ width: `${Math.min(100, Math.round(((post.likes + post.favorites) / post.unlock_reactions_goal) * 100))}%` }} />
                     </span>
-                    <span className="tabular-nums">{post.likes + post.favorites} / {post.unlock_reactions_goal}</span>
+                      <span className="tabular-nums">{interactions.likes + interactions.favorites} / {post.unlock_reactions_goal}</span>
                   </div>
                 )}
                 {post.unlock_at && (
@@ -319,41 +387,41 @@ export const PostCard = memo(function PostCard({
           aria-pressed={activeFooterAction === "like"}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "like" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <motion.span
-            key={post.my_like ? "liked" : "unliked"}
+            key={interactions.liked ? "liked" : "unliked"}
             initial={{ scale: 0.4, rotate: -18 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 520, damping: 17 }}
             className="inline-flex"
           >
-            <Heart size={15} className={post.my_like ? "fill-current" : ""} />
+            <Heart size={15} className={interactions.liked ? "fill-current" : ""} />
           </motion.span>
-          <span className="tabular-nums font-medium">{post.likes}</span>
+          <span className="tabular-nums font-medium">{interactions.likes}</span>
         </button>
         <button type="button" onClick={() => { chooseFooterAction("favorite"); void react("favorite"); }}
           aria-pressed={activeFooterAction === "favorite"}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "favorite" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <motion.span
-            key={post.my_favorite ? "favd" : "unfavd"}
+            key={interactions.favorited ? "favd" : "unfavd"}
             initial={{ scale: 0.4, rotate: 18 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 520, damping: 17 }}
             className="inline-flex"
           >
-            <Star size={15} className={post.my_favorite ? "fill-current" : ""} />
+            <Star size={15} className={interactions.favorited ? "fill-current" : ""} />
           </motion.span>
-          <span className="tabular-nums font-medium">{post.favorites}</span>
+          <span className="tabular-nums font-medium">{interactions.favorites}</span>
         </button>
         <button type="button" onClick={() => chooseFooterAction("comments")}
           aria-expanded={activeFooterAction === "comments"}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "comments" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <MessageCircle size={15} className={activeFooterAction === "comments" ? "fill-current/10" : ""} />
-          <span className="tabular-nums font-medium">{post.comments_count}</span>
+          <span className="tabular-nums font-medium">{commentsCount}</span>
         </button>
         <button type="button" onClick={() => { chooseFooterAction("repost"); void repost(); }}
           aria-pressed={activeFooterAction === "repost"}
           className={`flex-1 flex items-center justify-center gap-1.5 px-1 py-2 rounded-lg border transition-[transform,color,border-color] duration-150 ease-out active:scale-[0.93] ${activeFooterAction === "repost" ? "border-primary/35 bg-transparent text-primary shadow-none" : socialActionStateClass(false)}`}>
           <motion.span
-            key={post.my_repost ? "reposted" : "unreposted"}
+            key={interactions.reposted ? "reposted" : "unreposted"}
             initial={{ scale: 0.6, rotate: -25 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 480, damping: 16 }}
@@ -361,11 +429,11 @@ export const PostCard = memo(function PostCard({
           >
             <Repeat2 size={15} />
           </motion.span>
-          <span className="tabular-nums font-medium">{post.reposts_count}</span>
+          <span className="tabular-nums font-medium">{interactions.reposts}</span>
         </button>
       </footer>
 
-      {openComments && <div className="border-t border-border/50 bg-muted/10 px-3 py-2.5"><CommentSection postId={post.id} myId={myId} isMod={isMod} onChange={onChange} /></div>}
+      {openComments && <div className="border-t border-border/50 bg-muted/10 px-3 py-2.5"><CommentSection postId={post.id} myId={myId} isMod={isMod} onChange={() => setCommentsCount(current => current + 1)} /></div>}
 
       <SharePostModal postId={post.id} postContent={post.content} open={showShare} onClose={() => setShowShare(false)} />
     </article>

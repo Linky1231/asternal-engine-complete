@@ -1090,3 +1090,8 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 - [x] Cambiar el tratamiento visual del control seleccionado para que use un indicador azul sutil y no parezca un botón degradado.
 - [x] Garantizar que «Descargar portafolio» sea visible, accesible y produzca el archivo correspondiente.
 - [x] Validar el contrato de visibilidad, 33 pruebas, compilación y revisión móvil de la ruta protegida; la comprobación visual con sesión queda disponible para el usuario.
+---
+# Descarga retirada e interacciones estables de publicaciones
+- [x] Retirar la acción «Descargar portafolio» de la pantalla aislada de Portafolio.
+- [x] Evitar que los likes y otras interacciones de publicaciones reinicien o desplacen la vista actual.
+- [x] Validar el estado local de reacciones, 35 pruebas, compilación y revisión móvil disponible; la comprobación de interacciones con sesión queda disponible para el usuario.
