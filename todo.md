@@ -1220,3 +1220,9 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Ordenar el feed recomendado con señales semánticas de Orion en vez de likes e interacciones.
 - [x] Crear el apartado Acerca de nosotros con lectura pública y controles administrativos.
 - [x] Cubrir la moderación y orden con pruebas, validar la interfaz adaptable y publicar.
+
+---
+# Visibilidad del feed recomendado
+- [x] Localizar por qué el orden recomendado puede dejar publicaciones fuera de la vista.
+- [x] Garantizar que la recomendación de Orión solo reordene y nunca filtre publicaciones.
+- [x] Añadir una prueba de conservación completa, validar y publicar la corrección.

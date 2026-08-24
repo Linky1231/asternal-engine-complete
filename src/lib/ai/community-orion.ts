@@ -45,7 +45,12 @@ export function rankingCacheKey(posts: Array<Pick<PostWithMeta, "id">>, followin
   return `asternal_orion_ranking:${posts.map(post => post.id).join(",")}:${followingKey}`;
 }
 
-function applyOrder(posts: PostWithMeta[], orderedIds: string[]) {
+/**
+ * Aplica una preferencia de orden sin convertirla en un filtro: cada publicación
+ * de origen aparece una sola vez, incluso si Orión devuelve una lista parcial,
+ * repetida o con identificadores desconocidos.
+ */
+export function preserveAllRankedPosts(posts: PostWithMeta[], orderedIds: string[]) {
   const postMap = new Map(posts.map(post => [post.id, post]));
   const selected: PostWithMeta[] = [];
   for (const id of orderedIds) {
@@ -67,7 +72,7 @@ export async function rankFeedWithOrion(posts: PostWithMeta[], followingAuthorId
   const key = rankingCacheKey(posts, followingAuthorIds);
   try {
     const cached = sessionStorage.getItem(key);
-    if (cached) return applyOrder(posts, JSON.parse(cached) as string[]);
+    if (cached) return preserveAllRankedPosts(posts, JSON.parse(cached) as string[]);
   } catch { /* el cache es solo una optimización */ }
 
   try {
@@ -88,7 +93,7 @@ export async function rankFeedWithOrion(posts: PostWithMeta[], followingAuthorId
     const orderedIds = Array.isArray(response.orderedIds) ? response.orderedIds : [];
     if (orderedIds.length) {
       try { sessionStorage.setItem(key, JSON.stringify(orderedIds)); } catch { /* ignore */ }
-      return applyOrder(posts, orderedIds);
+      return preserveAllRankedPosts(posts, orderedIds);
     }
   } catch { /* el orden cronológico es el respaldo fiable */ }
   return posts;

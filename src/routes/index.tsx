@@ -359,53 +359,22 @@ function HomePage() {
                       );
                     }
 
-                    // In explore tab, show some extra sections
+                    // Explorar también conserva el resultado completo: Orión solo
+                    // decide la posición. No hay cortes por categoría ni límites
+                    // que puedan hacer desaparecer publicaciones de la vista.
                     if (feedSub === "explore") {
-                      const gamesPosts = filtered.filter(p => p.pinned_game);
-                      const tutorials = filtered.filter(p => p.tags.some(t => ["tutorial","guide","tip","howto"].includes(t)));
-                      const withMedia = filtered.filter(p => (p.media_type === "image" || p.media_type === "video") && !gamesPosts.includes(p) && !tutorials.includes(p));
-
                       return (
-                        <div className="space-y-6">
-                          {gamesPosts.length > 0 && (
-                            <div>
-                              <h3 className="text-xs font-display font-bold tracking-wider text-primary/80 uppercase mb-3 flex items-center gap-2">
-                                <Gamepad2 size={13} /> Proyectos destacados
-                              </h3>
-                              <div className="space-y-3">
-                                {gamesPosts.slice(0, 3).map((p, i) => (
-                                  <div key={p.id} className="card-enter" style={{ animationDelay: `${i * 30}ms` }}>
-                                    <PostCard post={p} myId={myId} isMod={mod} onChange={onFeedChange} onOpenGame={(id) => setGamePageId(id)} />
-                                  </div>
-                                ))}
+                        <div>
+                          <h3 className="text-xs font-display font-bold tracking-wider text-primary/80 uppercase mb-1 flex items-center gap-2">
+                            <TrendingUp size={13} /> Recomendado por Orión
+                          </h3>
+                          <p className="text-[11px] text-muted-foreground mb-3">Todas las publicaciones aparecen aquí; Orión únicamente ajusta su orden.</p>
+                          <div className="space-y-3">
+                            {filtered.map((p, i) => (
+                              <div key={p.id} className="card-enter" style={{ animationDelay: `${Math.min(i * 25, 180)}ms` }}>
+                                <PostCard post={p} myId={myId} isMod={mod} onChange={onFeedChange} onOpenGame={(id) => setGamePageId(id)} />
                               </div>
-                            </div>
-                          )}
-                          {tutorials.length > 0 && (
-                            <div>
-                              <h3 className="text-xs font-display font-bold tracking-wider text-primary/80 uppercase mb-3 flex items-center gap-2">
-                                <FileText size={13} /> Tutoriales y guías
-                              </h3>
-                              <div className="space-y-3">
-                                {tutorials.slice(0, 3).map((p, i) => (
-                                  <div key={p.id} className="card-enter" style={{ animationDelay: `${i * 30}ms` }}>
-                                    <PostCard post={p} myId={myId} isMod={mod} onChange={onFeedChange} onOpenGame={(id) => setGamePageId(id)} />
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          <div>
-                            <h3 className="text-xs font-display font-bold tracking-wider text-primary/80 uppercase mb-3 flex items-center gap-2">
-                              <TrendingUp size={13} /> Recomendado por Orión
-                            </h3>
-                            <div className="space-y-3">
-                              {filtered.slice(0, 8).map((p, i) => (
-                                <div key={p.id} className="card-enter" style={{ animationDelay: `${i * 25}ms` }}>
-                                  <PostCard post={p} myId={myId} isMod={mod} onChange={onFeedChange} onOpenGame={(id) => setGamePageId(id)} />
-                                </div>
-                              ))}
-                            </div>
+                            ))}
                           </div>
                         </div>
                       );
