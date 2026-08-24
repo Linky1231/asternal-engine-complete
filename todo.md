@@ -1113,3 +1113,13 @@ Se añadió un protocolo versionado y validado para snapshots de Portafolio dent
 - [x] Validar en móvil, ejecutar pruebas, compilar y publicar.
 
 El selector ya no reserva altura flexible innecesaria: su lista tiene una altura máxima acotada y la hoja termina al finalizar sus opciones. Comunidad, grupos y directos ahora son filas de selección con superficie glass tenue, borde discreto e icono neutral; el degradado queda reservado al envío y otras acciones principales. La tarjeta y la pantalla de lectura del Portafolio recuperan capas Azure Drift con contraste azul suave, en lugar de superficies blancas planas. `pnpm test` completó 37 pruebas y `pnpm build` fue correcto. La captura móvil disponible confirmó que el shell no presenta regresiones; la validación funcional autenticada queda disponible para el usuario.
+
+---
+
+# Ajuste final del selector de Portafolio
+- [x] Eliminar el degradado azul residual de las filas de Comunidad, grupos y mensajes directos.
+- [x] Recuperar el contraste de los subtítulos e iconos de las opciones sobre superficies claras.
+- [x] Reducir el vacío vertical visible encima de la hoja de selección en móvil.
+- [x] Validar, compilar y publicar el ajuste.
+
+El selector móvil se transformó en una pantalla de selección completa, de modo que no conserva un bloque vacío encima de la hoja. Las filas de destino definen de forma explícita una superficie glass clara, tipografía de alto contraste e iconografía secundaria neutral, sin aceptar fondos azules heredados. `pnpm test` completó 37 pruebas y `pnpm build` fue correcto; la captura móvil disponible no muestra regresiones del shell. La comprobación autenticada directa queda disponible para la cuenta del usuario.

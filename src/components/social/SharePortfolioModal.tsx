@@ -112,7 +112,7 @@ export function SharePortfolioModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[120] flex items-end sm:items-center sm:justify-center p-0 sm:p-4 bg-background/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[120] flex items-stretch sm:items-center sm:justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm"
           onClick={onClose}
           role="dialog"
           aria-modal="true"
@@ -124,9 +124,9 @@ export function SharePortfolioModal({
             exit={{ y: 28, opacity: 0 }}
             transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
             onClick={(event) => event.stopPropagation()}
-            className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-primary/20 bg-surface/95 shadow-xl overflow-hidden"
+            className="w-full h-[100dvh] sm:h-auto sm:max-w-md rounded-none sm:rounded-2xl border-0 sm:border sm:border-primary/20 bg-surface/95 shadow-xl overflow-hidden flex flex-col"
           >
-            <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50">
+            <div className="flex items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3 border-b border-border/50 shrink-0">
               <div className="w-9 h-9 rounded-xl grad-brand text-primary-foreground grid place-items-center shrink-0">
                 <Trophy size={16} />
               </div>
@@ -151,7 +151,7 @@ export function SharePortfolioModal({
               </div>
             </div>
 
-            <div className="max-h-[min(48dvh,24rem)] overflow-y-auto px-2 pb-3 space-y-1">
+            <div className="flex-1 min-h-0 overflow-y-auto px-3 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-1.5">
               {loading ? (
                 <div className="flex items-center justify-center gap-2 py-10 text-xs text-muted-foreground"><Loader2 size={14} className="animate-spin" /> Cargando chats…</div>
               ) : (
@@ -185,10 +185,10 @@ function ShareRow({ target, sending, onShare }: { target: ShareTarget; sending: 
   const Icon = target.kind === "community" ? Globe : target.kind === "group" ? Users : MessageCircle;
   const subtitle = target.kind === "community" ? "Comunidad" : target.kind === "group" ? `${target.memberCount} miembros` : `@${target.username}`;
   return (
-    <button onClick={() => onShare(target)} disabled={pending} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border/60 bg-surface/80 hover:border-primary/35 hover:bg-primary/[0.055] transition text-left active:scale-[0.99] disabled:opacity-55">
-      <div className="w-9 h-9 rounded-xl bg-muted/70 text-primary grid place-items-center shrink-0"><Icon size={15} /></div>
-      <div className="min-w-0 flex-1"><div className="text-xs font-medium truncate">{target.name}</div><div className="text-[10px] text-muted-foreground">{subtitle}</div></div>
-      {pending ? <Loader2 size={14} className="animate-spin text-primary shrink-0" /> : <Send size={14} className="text-muted-foreground/65 shrink-0" />}
+    <button onClick={() => onShare(target)} disabled={pending} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl border border-border/70 !bg-[var(--glass-fill-strong)] text-foreground shadow-[var(--glass-highlight)] hover:!bg-primary/[0.06] hover:border-primary/35 transition text-left active:scale-[0.99] disabled:opacity-55">
+      <div className="w-9 h-9 rounded-xl !bg-muted text-primary grid place-items-center shrink-0"><Icon size={15} /></div>
+      <div className="min-w-0 flex-1"><div className="text-xs font-medium text-foreground truncate">{target.name}</div><div className="text-[10px] text-muted-foreground/90">{subtitle}</div></div>
+      {pending ? <Loader2 size={14} className="animate-spin text-primary shrink-0" /> : <Send size={14} className="text-muted-foreground/80 shrink-0" />}
     </button>
   );
 }
