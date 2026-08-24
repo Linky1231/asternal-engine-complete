@@ -46,6 +46,7 @@ import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } fro
 import { optimisticFollowStats, profileControlStateClass } from "@/lib/social/interaction-state";
 import { qrPreviewGeometry } from "@/lib/social/qr-preview";
 import { createQrExportSvg, qrHex, safeExportFilename } from "@/lib/social/profile-export";
+import { trustLevelPresentation } from "@/lib/social/trust-points-panel";
 
 const GENRES = ["Acción", "Aventura", "Puzzle", "RPG", "Estrategia", "Plataformas", "Casual", "Terror", "Simulación", "Deportes"];
 
@@ -910,7 +911,7 @@ function QRCustomizer({ userId, username, qrStyle, isPlus, viewingOwn }: {
   );
 }
 
-/** Panel completo de puntos de confianza — se abre desde el menú de tres puntos */
+/** Pantalla aislada de puntos de confianza — se abre desde el menú de tres puntos */
 function TrustPointsPanel({ userId, trustPoints, isMod, viewingOwn, onClose, onTrustChange }: {
   userId: string;
   trustPoints: number;
@@ -922,6 +923,7 @@ function TrustPointsPanel({ userId, trustPoints, isMod, viewingOwn, onClose, onT
   const [busy, setBusy] = useState(false);
   const [deductAmt, setDeductAmt] = useState(1);
   const [reason, setReason] = useState("");
+  const [showHistory, setShowHistory] = useState(false);
 
   const handleDeduct = async () => {
     if (busy || !isMod || viewingOwn || deductAmt < 1) return;
@@ -947,85 +949,66 @@ function TrustPointsPanel({ userId, trustPoints, isMod, viewingOwn, onClose, onT
     finally { setBusy(false); }
   };
 
-  const level = trustPoints <= 2 ? "crítico" : trustPoints <= 5 ? "bajo" : "normal";
-  const levelColor = trustPoints <= 2 ? "text-red-500" : trustPoints <= 6 ? "text-amber-500" : "text-emerald-500";
-  const levelBg = trustPoints <= 2 ? "bg-red-50 border-red-200/60" : trustPoints <= 6 ? "bg-amber-50 border-amber-200/60" : "bg-emerald-50 border-emerald-200/60";
+  const level = trustLevelPresentation(trustPoints);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <button aria-label="Cerrar" onClick={onClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-[2px] animate-in fade-in duration-200" />
-      <div className="relative w-full sm:max-w-md rounded-t-2xl sm:rounded-lg border border-border bg-surface shadow-md animate-in slide-in-from-bottom-4 sm:slide-in-from-bottom-2 duration-300 max-h-[85vh] flex flex-col">
-        {/* Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60">
-          <div className="w-9 h-9 rounded-lg grid place-items-center shrink-0" style={{ background: "var(--gradient)" }}>
-            <Shield size={16} className="text-white" />
-          </div>
-          <div className="flex-1">
-            <div className="text-sm font-display font-semibold">Puntos de confianza</div>
-            <div className="text-[10px] text-muted-foreground">Nivel de reputación en la plataforma</div>
-          </div>
-          <button onClick={onClose}
-            className="w-8 h-8 rounded-md border border-border grid place-items-center text-muted-foreground hover:text-foreground active:scale-95 transition">
-            <X size={14} />
+  return createPortal(
+    <section className="fixed inset-0 z-[130] flex h-[100dvh] min-h-screen flex-col overflow-hidden bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Puntos de confianza">
+      <header className="glass-header shrink-0 border-b border-border/70">
+        <div className="mx-auto flex w-full max-w-5xl items-center gap-3 px-3 py-3 sm:px-6">
+          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-border/60 bg-surface/80 grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition" aria-label="Volver al perfil">
+            <ChevronRight size={16} className="rotate-180" />
           </button>
-        </div>
-
-        {/* Score display */}
-        <div className={`mx-4 mt-4 p-4 rounded-xl border ${levelBg} text-center`}
-          >
-          <div className="text-4xl font-display font-bold tabular-nums" style={{ color: "var(--primary)" }}>{trustPoints}</div>
-          <div className="text-[11px] text-muted-foreground mt-1">de 10 puntos</div>
-          <div className={`text-[10px] font-semibold uppercase tracking-wider mt-2 ${levelColor}`}>Nivel: {level}</div>
-          <div className="w-full h-1.5 rounded-full bg-muted/40 mt-3">
-            <div className="h-full rounded-full transition-all duration-500"
-              style={{ width: `${(trustPoints / DEFAULT_TRUST_POINTS) * 100}%`, background: trustPoints <= 2 ? "#ef4444" : trustPoints <= 6 ? "#f59e0b" : "#10b981" }} />
+          <div className="min-w-0 flex-1">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Perfil</div>
+            <h2 className="font-display text-base font-bold truncate">Puntos de confianza</h2>
           </div>
+          <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground"><Shield size={14} className="text-primary" />Reputación de la comunidad</div>
+          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-border/60 bg-surface/80 grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition" aria-label="Cerrar puntos de confianza"><X size={16} /></button>
         </div>
+      </header>
 
-        {/* Info */}
-        <div className="mx-4 mt-3 p-3 rounded-xl bg-muted/20 border border-border/30">
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
-            Los puntos de confianza reflejan tu comportamiento en la plataforma. Si llegan a 0, tu cuenta será bloqueada automáticamente. Los moderadores pueden ajustar puntos según las reglas de la comunidad.
-          </p>
-        </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <main className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+            <section className="rounded-2xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Estado actual</div>
+                  <div className="mt-2 flex items-end gap-2"><span className="font-display text-6xl font-bold tabular-nums text-primary">{trustPoints}</span><span className="mb-2 text-sm text-muted-foreground">de {DEFAULT_TRUST_POINTS} puntos</span></div>
+                </div>
+                <div className="h-11 w-11 rounded-2xl grid place-items-center text-white shadow-sm" style={{ background: "var(--gradient)" }}><Shield size={20} /></div>
+              </div>
+              <div className="mt-5 h-2 rounded-full bg-muted/50 overflow-hidden"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${Math.max(0, Math.min(100, (trustPoints / DEFAULT_TRUST_POINTS) * 100))}%`, background: level.progressColor }} /></div>
+              <div className="mt-4 flex items-center justify-between gap-3"><span className="text-xs text-muted-foreground">Tu comportamiento dentro de la comunidad.</span><span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${level.surfaceClass} ${level.textClass}`}>Nivel {level.label}</span></div>
+            </section>
 
-        {/* Moderator controls */}
-        {isMod && !viewingOwn && (
-          <div className="mx-4 mt-3 p-3 rounded-xl bg-muted/30 border border-border/30 space-y-2">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-primary-glow">Control de moderador</div>
-            <div className="flex items-center gap-2">
-              <button onClick={handleRestore} disabled={busy || trustPoints >= DEFAULT_TRUST_POINTS}
-                className="h-8 px-3 rounded-md border border-border/50 bg-surface text-[11px] font-medium text-primary hover:bg-primary/10 active:scale-95 transition disabled:opacity-40">
-                Restaurar +1
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <input type="number" min={1} max={10} value={deductAmt}
-                onChange={e => setDeductAmt(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
-                className="w-14 h-8 px-1.5 rounded-md bg-card border border-border/50 text-[11px] text-center font-mono outline-none focus:border-primary/40"
-              />
-              <input value={reason} onChange={e => setReason(e.target.value)}
-                placeholder="Razón para quitar puntos…"
-                className="flex-1 h-8 px-2.5 rounded-md bg-card border border-border/50 text-[11px] outline-none focus:border-primary/40 placeholder:text-muted-foreground/30"
-              />
-              <button onClick={handleDeduct} disabled={busy || trustPoints <= 0}
-                className="h-8 px-3 rounded-md bg-red-500 text-white text-[10px] font-semibold active:scale-95 transition disabled:opacity-50">
-                {busy ? "…" : "Quitar"}
-              </button>
-            </div>
+            <aside className="rounded-2xl border border-border/70 bg-surface/80 p-5 sm:p-6">
+              <div className="flex items-center gap-2 text-sm font-display font-bold"><Trophy size={16} className="text-primary" />Cómo funciona</div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Los puntos de confianza reflejan el cumplimiento de las reglas de la comunidad. Mantén una conducta respetuosa y protege tu cuenta.</p>
+              <div className="mt-4 rounded-xl border border-border/50 bg-muted/25 p-3 text-xs leading-relaxed text-muted-foreground">Al llegar a <strong className="text-foreground">0 puntos</strong>, la cuenta queda bloqueada automáticamente. Los ajustes realizados por moderación quedan registrados.</div>
+              <button type="button" onClick={() => setShowHistory(true)} className="mt-4 h-10 w-full rounded-xl border border-border/60 bg-card text-xs font-semibold text-foreground hover:bg-muted/60 active:scale-[0.98] transition">Ver historial de puntos</button>
+            </aside>
           </div>
-        )}
 
-        {/* History link */}
-        <div className="px-4 pb-4 pt-3">
-          <button onClick={() => { onClose(); }}
-            className="w-full text-center text-[11px] text-muted-foreground hover:text-primary transition py-2">
-            Ver historial completo de puntos
-          </button>
-        </div>
+          {isMod && !viewingOwn && (
+            <section className="mt-4 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
+              <div className="flex items-center gap-2"><Shield size={15} className="text-primary" /><div><div className="text-sm font-display font-bold">Control de moderación</div><p className="text-xs text-muted-foreground">Los cambios se registran en el historial del perfil.</p></div></div>
+              <div className="mt-4 grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)]">
+                <button onClick={handleRestore} disabled={busy || trustPoints >= DEFAULT_TRUST_POINTS} className="h-10 rounded-xl border border-border/60 bg-surface px-4 text-xs font-semibold text-primary hover:bg-primary/10 active:scale-95 transition disabled:opacity-40">Restaurar +1</button>
+                <div className="grid grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-2">
+                  <input type="number" min={1} max={10} value={deductAmt} onChange={e => setDeductAmt(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))} aria-label="Puntos a retirar" className="h-10 rounded-xl border border-border/60 bg-surface px-2 text-center text-sm font-mono outline-none focus:border-primary/50" />
+                  <input value={reason} onChange={e => setReason(e.target.value)} placeholder="Razón para quitar puntos…" className="min-w-0 h-10 rounded-xl border border-border/60 bg-surface px-3 text-xs outline-none focus:border-primary/50 placeholder:text-muted-foreground/50" />
+                  <button onClick={handleDeduct} disabled={busy || trustPoints <= 0} className="h-10 rounded-xl bg-red-500 px-4 text-xs font-bold text-white active:scale-95 transition disabled:opacity-50">{busy ? "Procesando…" : "Quitar"}</button>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
       </div>
-    </div>
+
+      {showHistory && <TrustPointsHistory userId={userId} onClose={() => setShowHistory(false)} />}
+    </section>,
+    document.body,
   );
 }
 

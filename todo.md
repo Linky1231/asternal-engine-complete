@@ -1075,3 +1075,7 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 # Respuesta inmediata de navegación inferior
 - [x] Identificar y eliminar la transición que retrasa los cambios rápidos de pestaña en la navegación inferior.
 - [x] Validar cambios consecutivos de pestaña mediante contrato de carga por sección, 29 pruebas, compilación y revisión móvil disponible; publicar la corrección.
+---
+# Panel aislado de Puntos de confianza
+- [x] Sustituir el apartado compacto de Puntos de confianza por un panel independiente de pantalla completa.
+- [x] Validar apertura, cierre y scroll interno mediante la estructura aislada, 31 pruebas, compilación y revisión móvil de la ruta protegida; la comprobación visual con sesión queda disponible para el usuario.
