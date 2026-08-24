@@ -13,10 +13,12 @@ describe("mensajes de acceso", () => {
 });
 
 describe("estado visual de acciones sociales", () => {
-  it("usa el azul de marca para una acción seleccionada", () => {
+  it("usa el azul de marca para una acción seleccionada sin convertirla en botón", () => {
     const state = socialActionStateClass(true);
-    expect(state).toContain("bg-primary/15");
+    expect(state).toContain("bg-transparent");
     expect(state).toContain("text-primary");
+    expect(state).not.toContain("shadow");
+    expect(state).not.toContain("bg-primary/");
   });
 
   it("mantiene una acción inactiva sin fondo seleccionado", () => {

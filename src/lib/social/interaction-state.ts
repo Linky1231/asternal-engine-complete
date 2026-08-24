@@ -4,7 +4,7 @@
  */
 export function socialActionStateClass(active: boolean): string {
   return active
-    ? "border-primary/35 bg-primary/15 text-primary shadow-sm"
+    ? "border-transparent bg-transparent text-primary"
     : "border-transparent bg-transparent text-muted-foreground pointer-fine:hover:bg-muted/50 pointer-fine:hover:text-foreground";
 }
 

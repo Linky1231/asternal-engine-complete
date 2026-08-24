@@ -1253,7 +1253,19 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Añadir una prueba de regresión, validar y publicar la corrección.
 
 ---
+# Indicador activo sutil de acciones
+- [x] Localizar la cápsula con degradado aplicada a las reacciones activas de publicaciones.
+- [x] Conservar icono y texto azules/rellenos sin fondo de botón cuando la reacción sea personal.
+- [x] Añadir una prueba de regresión, validar y publicar la corrección.
+
+---
 # Estado azul de reacciones
 - [x] Auditar la asignación entre reacciones personales y sus variantes visuales activas/inactivas.
 - [x] Hacer que solo los controles ya interactuados por la cuenta actual estén azules y rellenos.
+- [x] Añadir una prueba de regresión, validar y publicar la corrección.
+
+---
+# Indicador activo sutil de acciones
+- [x] Localizar la cápsula con degradado aplicada a las reacciones activas de publicaciones.
+- [x] Conservar icono y texto azules/rellenos sin fondo de botón cuando la reacción sea personal.
 - [x] Añadir una prueba de regresión, validar y publicar la corrección.
