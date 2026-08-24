@@ -1132,3 +1132,12 @@ El selector móvil se transformó en una pantalla de selección completa, de mod
 - [x] Validar los estados visuales, compilar y publicar.
 
 El degradado ya no se monta con opacidad cero en las opciones inactivas: se renderiza únicamente cuando una función está activa. En reposo, Enlace, Encuesta, Juego y el resto de opciones usan superficie neutral, texto gris y borde suave; el azul queda reservado para una opción ya seleccionada y para «Publicar». `pnpm test` completó 37 pruebas y `pnpm build` finalizó correctamente.
+
+---
+
+# Animación de opciones del compositor
+- [x] Revisar el control compartido de funciones y sus transiciones actuales.
+- [x] Añadir una transición breve y fluida al seleccionar y deseleccionar una función.
+- [x] Validar, compilar y publicar la mejora de interacción.
+
+Las opciones de función ahora transicionan color, borde y superficie en 200 ms con una curva de salida rápida. El degradado activo entra y sale con opacidad y escala suave, mientras el toque conserva una respuesta inmediata. `pnpm test` completó 37 pruebas y `pnpm build` finalizó correctamente.

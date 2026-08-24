@@ -257,8 +257,12 @@ export function PostComposer({ onCreated }: { onCreated: () => void }) {
 
   const Chip = ({ active, onClick, title, children }: { active?: boolean; onClick: () => void; title: string; children: React.ReactNode }) => (
     <button onClick={onClick} title={title}
-      className={`relative shrink-0 h-9 px-3 rounded-xl grid grid-flow-col auto-cols-max items-center gap-1.5 text-[11px] font-medium transition-[transform,color,border-color,background-color,box-shadow] duration-300 ease-out active:scale-[0.95] ${active ? "text-primary-foreground border border-transparent" : "!bg-muted/50 text-muted-foreground border border-border/40 hover:text-foreground hover:!bg-surface-2 hover:border-border/70"}`}>
-      {active && <span aria-hidden className="absolute inset-0 rounded-xl grad-brand" />}
+      className={`relative shrink-0 h-9 px-3 rounded-xl grid grid-flow-col auto-cols-max items-center gap-1.5 text-[11px] font-medium transition-[transform,color,border-color,background-color,box-shadow] duration-200 ease-[var(--ease-out-expo)] active:scale-[0.95] ${active ? "text-primary-foreground border border-transparent" : "!bg-muted/50 text-muted-foreground border border-border/40 hover:text-foreground hover:!bg-surface-2 hover:border-border/70"}`}>
+      <span
+        aria-hidden
+        className="absolute inset-0 rounded-xl grad-brand transition-[opacity,transform] duration-200 ease-[var(--ease-out-expo)]"
+        style={{ opacity: active ? 1 : 0, transform: active ? "scale(1)" : "scale(0.92)" }}
+      />
       <span className="relative z-10 flex items-center gap-1.5">{children}</span>
     </button>
   );
