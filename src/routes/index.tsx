@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Avatar } from "@/components/social/Avatar";
-import { Component, useEffect, useState, useCallback } from "react";
+import { Component, useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Compass, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, FileText, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,7 @@ import { ForumSection } from "@/components/social/ForumSection";
 import { StoreSection } from "@/components/social/StoreSection";
 import { EventsSection } from "@/components/social/EventsSection";
 import { GamePageSection } from "@/components/social/GamePageSection";
+import { isTabLoading, shouldFetchPrimaryTab } from "@/lib/social/tab-switch";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -95,7 +96,8 @@ function HomePage() {
   const [feedSub, setFeedSub] = useState<FeedSub>("forYou");
   const [games, setGames] = useState<PostWithMeta[]>([]);
   const [posts, setPosts] = useState<PostWithMeta[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingTab, setLoadingTab] = useState<Tab | null>("games");
+  const loadedTabsRef = useRef<Set<Tab>>(new Set());
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -154,13 +156,16 @@ function HomePage() {
   }, [tab]);
 
   const reload = useCallback(async (which: Tab) => {
-    if (which === "profile") return;
-    setLoading(true);
+    if (which !== "games" && which !== "feed") return;
+    setLoadingTab(which);
     try {
       if (which === "games") setGames(await fetchGames({ search: search || undefined }));
       else setPosts(await fetchFeed({ search: search || undefined }));
+      loadedTabsRef.current.add(which);
       getMyProfile().then(p => p && setMe(p)).catch(() => {/* ignore */});
-    } finally { setLoading(false); }
+    } finally {
+      setLoadingTab(current => current === which ? null : current);
+    }
   }, [search]);
 
   // Callback estable para PostCard (memoizado): no cambia de identidad en cada
@@ -222,7 +227,8 @@ function HomePage() {
         if (prof) setMe(prof);
         try { setMod(await isMod()); } catch { /* noop */ }
         try { setAdmin(await isAdmin()); } catch { /* noop */ }
-        await reload(tab);
+        // Las listas se cargan desde el efecto dependiente de `myId`, después de
+        // que React haya confirmado el identificador de sesión.
       } catch (e) {
         // No romper la preview si el esquema aún no está creado en Supabase.
         console.warn("[home] error de carga inicial (¿esquema sin crear?):", e);
@@ -231,7 +237,11 @@ function HomePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => { if (myId) reload(tab); }, [tab, reload, myId]);
+  useEffect(() => {
+    if (myId && shouldFetchPrimaryTab(tab, loadedTabsRef.current)) {
+      void reload(tab);
+    }
+  }, [tab, reload, myId]);
 
   const logout = async () => { await supabase.auth.signOut(); navigate({ to: "/auth" }); };
   const closeMenu = () => { setMenuOpen(false); setNotifOpen(false); };
@@ -280,21 +290,17 @@ function HomePage() {
 
       {/* Content */}
       <main className="flex-1 max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl mx-auto w-full px-3 py-3 space-y-3 pb-24">
-        {/* mode="wait" en vez de popLayout: el popLayout mantiene las dos pestañas
-            montadas y posicionadas de forma absoluta durante la transición (más DOM,
-            más medición de layout). Con wait solo existe una a la vez y el fade es
-            composited: cambio de pestaña sin lag. */}
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={tab}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.12, ease: "easeOut" }}
-            className="space-y-3"
-          >
+        {/* El contenido anterior se desmonta al instante: `mode="wait"` hacía que
+            varios toques consecutivos se encolaran detrás de la salida anterior. */}
+        <motion.div
+          key={tab}
+          initial={{ opacity: 0.92 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.1, ease: "easeOut" }}
+          className="space-y-3"
+        >
             {tab === "games" ? (
-              loading ? <SkeletonList /> : (
+              isTabLoading("games", loadingTab) ? <SkeletonList /> : (
                 <GamesHome games={games} myId={myId} isMod={mod} onChange={() => reload("games")} onOpenGame={(id) => setGamePageId(id)} />
               )
             ) : tab === "feed" ? (
@@ -319,7 +325,7 @@ function HomePage() {
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.12, ease: "easeOut" }}
                 >
-                  {loading ? <SkeletonList /> : (() => {
+                  {isTabLoading("feed", loadingTab) ? <SkeletonList /> : (() => {
                     const filtered = filterFeed(posts, feedSub, myId);
                     if (filtered.length === 0) {
                       return (
@@ -420,8 +426,7 @@ function HomePage() {
                 )}
               </motion.div>
             )}
-          </motion.div>
-        </AnimatePresence>
+        </motion.div>
       </main>
 
 

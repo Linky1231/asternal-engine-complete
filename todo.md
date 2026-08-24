@@ -1071,3 +1071,7 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 ---
 # Publicación web y sincronización pospuesta
 - [x] Confirmar la publicación de la versión `4a92f0a9` en la web y registrar que GitHub queda pospuesto por decisión del usuario.
+---
+# Respuesta inmediata de navegación inferior
+- [x] Identificar y eliminar la transición que retrasa los cambios rápidos de pestaña en la navegación inferior.
+- [x] Validar cambios consecutivos de pestaña mediante contrato de carga por sección, 29 pruebas, compilación y revisión móvil disponible; publicar la corrección.
