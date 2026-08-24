@@ -20,6 +20,27 @@ type ReviewResponse = {
 
 type RankResponse = { orderedIds: string[] };
 
+export type OriginalityCandidate = {
+  id: string;
+  authorId: string;
+  authorName: string;
+  content: string;
+  tags: string[];
+  postType: string;
+  category: string;
+  createdAt: string;
+  updatedAt: string;
+  followedAuthor: boolean;
+  media: { type: string; count: number; hasCover: boolean; screenshotCount: number };
+  documentNames: string[];
+  linkIncluded: boolean;
+  htmlIncluded: boolean;
+  textColorIncluded: boolean;
+  poll: { question: string; optionCount: number } | null;
+  pinnedGame: { title: string } | null;
+  lockedContentIncluded: boolean;
+};
+
 type CommunityRequestOptions = {
   timeoutMs?: number;
   timeoutMessage?: string;
@@ -77,9 +98,46 @@ export async function reviewPostWithOrion(input: PostReviewInput): Promise<Revie
   return callCommunityOrion<ReviewResponse>("/api/orion/review-post", input);
 }
 
-export function rankingCacheKey(posts: Array<Pick<PostWithMeta, "id">>, followingAuthorIds: string[]) {
+export function rankingCacheKey(posts: Array<Pick<PostWithMeta, "id"> & Partial<Pick<PostWithMeta, "updated_at" | "content" | "media_type" | "document_names" | "post_type">>>, followingAuthorIds: string[]) {
   const followingKey = [...followingAuthorIds].sort().join(",");
-  return `asternal_orion_ranking:${posts.map(post => post.id).join(",")}:${followingKey}`;
+  const originalityRevision = posts.map((post) => [
+    post.id,
+    post.updated_at ?? "",
+    post.content?.length ?? 0,
+    post.media_type ?? "",
+    post.document_names?.join(",") ?? "",
+    post.post_type ?? "",
+  ].join("~")).join("|");
+  return `asternal_orion_originality:${originalityRevision}:${followingKey}`;
+}
+
+/** Construye solo señales útiles para la originalidad; las reacciones nunca salen del cliente. */
+export function buildOriginalityCandidate(post: PostWithMeta, followingAuthorIds: Set<string>): OriginalityCandidate {
+  return {
+    id: post.id,
+    authorId: post.author_id,
+    authorName: post.author?.display_name ?? post.author?.username ?? "Creador",
+    content: post.content.slice(0, 700),
+    tags: post.tags.slice(0, 8),
+    postType: post.post_type ?? "",
+    category: post.category ?? "",
+    createdAt: post.created_at,
+    updatedAt: post.updated_at,
+    followedAuthor: followingAuthorIds.has(post.author_id),
+    media: {
+      type: post.media_type ?? "none",
+      count: post.signed_media.slice(0, 4).length,
+      hasCover: Boolean(post.signed_cover),
+      screenshotCount: post.signed_screenshots.slice(0, 4).length,
+    },
+    documentNames: (post.signed_documents ?? []).map(document => document.name.slice(0, 120)).slice(0, 5),
+    linkIncluded: Boolean(post.link_url),
+    htmlIncluded: Boolean(post.html_content?.trim()),
+    textColorIncluded: Boolean(post.text_color),
+    poll: post.poll ? { question: post.poll.question.slice(0, 180), optionCount: post.poll.options.slice(0, 6).length } : null,
+    pinnedGame: post.pinned_game ? { title: post.pinned_game.title.slice(0, 140) } : null,
+    lockedContentIncluded: Boolean(post.locked_content?.trim()),
+  };
 }
 
 /**
@@ -101,7 +159,7 @@ export function preserveAllRankedPosts(posts: PostWithMeta[], orderedIds: string
 }
 
 /**
- * Pide un orden semántico sin enviar likes, favoritos, comentarios ni republicaciones.
+ * Pide una jerarquía de originalidad sin enviar likes, favoritos, comentarios ni republicaciones.
  * Si Orión no está disponible, preserva el orden cronológico seguro del origen.
  */
 export async function rankFeedWithOrion(posts: PostWithMeta[], followingAuthorIds: string[] = []): Promise<PostWithMeta[]> {
@@ -115,17 +173,7 @@ export async function rankFeedWithOrion(posts: PostWithMeta[], followingAuthorId
   try {
     const following = new Set(followingAuthorIds);
     const response = await callCommunityOrion<RankResponse>("/api/orion/rank-feed", {
-      posts: posts.slice(0, 60).map(post => ({
-        id: post.id,
-        authorId: post.author_id,
-        authorName: post.author?.display_name ?? post.author?.username ?? "Creador",
-        content: post.content.slice(0, 700),
-        tags: post.tags.slice(0, 8),
-        postType: post.post_type ?? "",
-        category: post.category ?? "",
-        createdAt: post.created_at,
-        followedAuthor: following.has(post.author_id),
-      })),
+      posts: posts.slice(0, 60).map(post => buildOriginalityCandidate(post, following)),
     }, {
       timeoutMs: RANKING_TIMEOUT_MS,
       timeoutMessage: "La recomendación tardó demasiado; se mostrará el orden reciente.",

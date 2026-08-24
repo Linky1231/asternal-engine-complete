@@ -1232,3 +1232,10 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Localizar por qué Para ti, Seguidos y Explorar pueden quedar en esqueletos permanentes.
 - [x] Garantizar una salida a contenido, estado vacío o error recuperable en cada filtro.
 - [x] Cubrir los estados de carga del feed con pruebas, validar en móvil y publicar.
+
+---
+# Ranking de originalidad con Orión
+- [x] Auditar los datos de texto, medios, documentos, capacidades y fecha disponibles para la evaluación de originalidad.
+- [x] Hacer que Orión jerarquice por originalidad, novedad contextual y relevancia sin usar likes ni ocultar publicaciones.
+- [x] Aplicar el orden de originalidad de forma consistente en Para ti, Seguidos y Explorar.
+- [x] Cubrir criterios, respaldo cronológico y conservación completa con pruebas; validar y publicar.
