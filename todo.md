@@ -1180,3 +1180,13 @@ El menú lateral ahora separa cada destino con una superficie glass discreta y u
 - [x] Validar en móvil, compilar y publicar la corrección.
 
 Las tarjetas compartidas de publicaciones y Portafolios ahora usan base blanca opaca (`bg-card`), borde blanco y tipografía de alto contraste. El azul solo conserva la jerarquía de marco, iconos y CTA, sin competir con el contenido. La vista aislada de Portafolio aplica las mismas superficies claras para tarjetas de perfil, enlaces y logros. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto. La captura móvil disponible confirmó la estabilidad del acceso sin sesión; la comprobación de estas tarjetas con sesión real queda disponible para el usuario.
+
+---
+
+# Densidad vertical del menú lateral móvil
+- [x] Auditar las alturas y espacios que provocan el corte de opciones en móvil.
+- [x] Compactar filas, encabezados y espacios de grupo sin recuperar el aspecto de opciones pegadas.
+- [x] Confirmar que el menú puede recorrer todas las opciones de forma accesible.
+- [x] Validar en móvil, compilar y publicar el ajuste.
+
+Las filas del menú se compactaron a 40 px, los grupos redujeron su separación a 5 px y los encabezados recuperaron un ritmo vertical contenido. El panel usa menos relleno superior, el acceso de perfil es más compacto y la salida deja de forzar un espacio flexible que alargaba el menú. Así se conserva la separación visual, pero el desplazamiento permite recorrer todas las opciones en móvil. `pnpm test` completó 39 pruebas y `pnpm build` fue correcto; la captura móvil disponible confirmó la estabilidad del acceso sin sesión.

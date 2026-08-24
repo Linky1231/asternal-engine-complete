@@ -450,13 +450,13 @@ function HomePage() {
           <motion.div
             key="menu-drawer"
             onClick={e => e.stopPropagation()}
-            className="menu-drawer fixed right-0 top-0 z-[101] h-full w-[86vw] max-w-xs bg-card border-l border-border shadow-md px-4 py-5 flex flex-col overflow-y-auto"
+            className="menu-drawer fixed right-0 top-0 z-[101] h-full w-[86vw] max-w-xs bg-card border-l border-border shadow-md px-4 py-4 flex flex-col overflow-y-auto"
             initial={{ x: "100%", opacity: 0.4 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: "100%", opacity: 0 }}
             transition={{ type: "tween", duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-3">
               <div className="section-label">MENÚ</div>
               <button onClick={closeMenu}
                 className="w-8 h-8 rounded-lg border border-line-strong bg-card text-ink-2 grid place-items-center hover:bg-muted/60 hover:text-foreground active:scale-95 transition">
@@ -466,9 +466,9 @@ function HomePage() {
             {/* Acceso directo al perfil: al tocar la foto sales del menú y vas a tu perfil */}
             <button
               onClick={() => { closeMenu(); navigate({ to: "/profile" }); }}
-              className="flex items-center gap-3 p-3 rounded-2xl border border-white/60 bg-white/30 hover:bg-white/55 hover:border-primary/15 active:scale-[0.98] transition mb-3 text-left group"
+              className="flex items-center gap-3 p-2.5 rounded-2xl border border-white/60 bg-white/30 hover:bg-white/55 hover:border-primary/15 active:scale-[0.98] transition mb-2 text-left group"
             >
-              <Avatar p={me} size={44} className="ring-2 ring-primary/15" />
+              <Avatar p={me} size={40} className="ring-2 ring-primary/15" />
               <div className="min-w-0 flex-1">
                 <div className="font-display text-sm truncate group-hover:text-primary transition-colors">{me?.display_name ?? me?.username ?? "Mi perfil"}</div>
                 <div className="text-[11px] font-mono text-muted-foreground truncate">@{me?.username ?? "…"} · Ver perfil</div>
@@ -502,7 +502,7 @@ function HomePage() {
               <MenuLink icon={<Star size={16} fill="currentColor" style={{ color: "var(--plus)" }}/>} label="Centro Plus" to="/plus" onClick={closeMenu} />
             </div>
 
-            <div className="flex-1 min-h-6" />
+            <div className="mt-3" />
             <button onClick={() => { logout(); closeMenu(); }}
               className="mt-5 flex items-center gap-3 px-3 h-11 rounded-xl border border-destructive/15 bg-destructive/5 text-destructive hover:bg-destructive/10 active:scale-[0.98] transition">
               <LogOut size={16} /> <span className="text-sm font-medium">Cerrar sesión</span>
@@ -674,8 +674,8 @@ function SkeletonList() {
 function MenuLink({ icon, label, to, onClick }: { icon: React.ReactNode; label: string; to: string; onClick?: () => void }) {
   return (
     <Link to={to} onClick={onClick}
-      className="menu-action flex items-center gap-3 px-3.5 h-11 rounded-xl text-ink hover:bg-muted/60 active:scale-[0.98] transition">
-      {icon} <span className="text-sm font-medium">{label}</span>
+      className="menu-action flex items-center gap-3 px-3 h-10 rounded-xl text-ink hover:bg-muted/60 active:scale-[0.98] transition">
+      {icon} <span className="text-[13px] font-medium">{label}</span>
     </Link>
   );
 }
@@ -683,8 +683,8 @@ function MenuLink({ icon, label, to, onClick }: { icon: React.ReactNode; label: 
 function MenuItem({ icon, label, onClick, children }: { icon: React.ReactNode; label: string; onClick?: () => void; children?: React.ReactNode }) {
   return (
     <button onClick={onClick}
-      className="menu-action flex items-center gap-3 px-3.5 h-11 rounded-xl text-ink hover:bg-muted/60 active:scale-[0.98] transition w-full text-left">
-      {icon} <span className="text-sm font-medium flex-1">{label}</span>
+      className="menu-action flex items-center gap-3 px-3 h-10 rounded-xl text-ink hover:bg-muted/60 active:scale-[0.98] transition w-full text-left">
+      {icon} <span className="text-[13px] font-medium flex-1">{label}</span>
       {children}
     </button>
   );
@@ -692,7 +692,7 @@ function MenuItem({ icon, label, onClick, children }: { icon: React.ReactNode; l
 
 function CategoryHeader({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-2 pt-5 pb-2">
+    <div className="flex items-center gap-2 pt-3.5 pb-1.5">
       <div className="section-label">{label}</div>
       <div className="flex-1 h-px bg-border/60" />
     </div>

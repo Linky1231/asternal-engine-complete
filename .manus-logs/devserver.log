@@ -1627,3 +1627,5 @@
 [2026-08-24T19:50:23.283Z] 7:50:23 PM [vite] (client) hmr update /src/styles.css, /src/components/social/SharedPostPanel.tsx
 [2026-08-24T19:50:23.285Z] 7:50:23 PM [vite] (client) hmr update /src/styles.css, /src/components/social/ChatSection.tsx
 [2026-08-24T19:50:23.291Z] 7:50:23 PM [vite] (client) hmr update /src/styles.css, /src/components/social/PortfolioPanel.tsx
+[2026-08-24T20:08:39.874Z] 8:08:39 PM [vite] (client) hmr update /src/routes/index.tsx, /src/styles.css
+[2026-08-24T20:08:39.876Z] 8:08:39 PM [vite] (client) hmr update /src/glass-intensity.css, /src/styles.css
