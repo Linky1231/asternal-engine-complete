@@ -20,16 +20,53 @@ type ReviewResponse = {
 
 type RankResponse = { orderedIds: string[] };
 
-async function callCommunityOrion<T>(path: string, body: unknown): Promise<T> {
+type CommunityRequestOptions = {
+  timeoutMs?: number;
+  timeoutMessage?: string;
+};
+
+const RANKING_TIMEOUT_MS = 6_000;
+
+/**
+ * Evita que una llamada de IA pendiente retenga indefinidamente una pantalla
+ * de carga. La operación recibe la señal para cancelar el fetch subyacente.
+ */
+export async function withCommunityRequestDeadline<T>(
+  operation: (signal: AbortSignal) => Promise<T>,
+  timeoutMs: number,
+  timeoutMessage: string,
+): Promise<T> {
+  const controller = new AbortController();
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const expiration = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => {
+      controller.abort();
+      reject(new Error(timeoutMessage));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([operation(controller.signal), expiration]);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+  }
+}
+
+async function callCommunityOrion<T>(path: string, body: unknown, options: CommunityRequestOptions = {}): Promise<T> {
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error("Inicia sesión para que Orión revise la publicación.");
 
-  const response = await fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-    body: JSON.stringify(body),
-  });
+  const response = await withCommunityRequestDeadline(
+    (signal) => fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body),
+      signal,
+    }),
+    options.timeoutMs ?? RANKING_TIMEOUT_MS,
+    options.timeoutMessage ?? "Orión tardó demasiado en responder. Inténtalo de nuevo.",
+  );
   const payload = await response.json().catch(() => ({})) as T & { error?: string };
   if (!response.ok) throw new Error(payload.error || "Orión no pudo completar esta revisión.");
   return payload;
@@ -89,6 +126,9 @@ export async function rankFeedWithOrion(posts: PostWithMeta[], followingAuthorId
         createdAt: post.created_at,
         followedAuthor: following.has(post.author_id),
       })),
+    }, {
+      timeoutMs: RANKING_TIMEOUT_MS,
+      timeoutMessage: "La recomendación tardó demasiado; se mostrará el orden reciente.",
     });
     const orderedIds = Array.isArray(response.orderedIds) ? response.orderedIds : [];
     if (orderedIds.length) {

@@ -1,5 +1,5 @@
-import { preserveAllRankedPosts, rankingCacheKey } from "./community-orion";
-import { describe, expect, it } from "vitest";
+import { preserveAllRankedPosts, rankingCacheKey, withCommunityRequestDeadline } from "./community-orion";
+import { describe, expect, it, vi } from "vitest";
 
 describe("caché de recomendación de Orión", () => {
   it("diferencia la recomendación cuando cambia una cuenta seguida", () => {
@@ -18,5 +18,22 @@ describe("caché de recomendación de Orión", () => {
 
     expect(result.map(post => post.id)).toEqual(["post-b", "post-a", "post-c"]);
     expect(new Set(result.map(post => post.id)).size).toBe(posts.length);
+  });
+
+  it("cancela una recomendación que no responde para liberar el feed", async () => {
+    vi.useFakeTimers();
+    const operation = vi.fn(() => new Promise<never>(() => {}));
+    const pending = withCommunityRequestDeadline(operation, 120, "Tiempo agotado");
+    const outcome = pending.then(
+      () => null,
+      (error: unknown) => error,
+    );
+
+    await vi.advanceTimersByTimeAsync(120);
+    const error = await outcome;
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe("Tiempo agotado");
+    expect(operation).toHaveBeenCalledOnce();
+    vi.useRealTimers();
   });
 });

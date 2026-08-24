@@ -1226,3 +1226,9 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Localizar por qué el orden recomendado puede dejar publicaciones fuera de la vista.
 - [x] Garantizar que la recomendación de Orión solo reordene y nunca filtre publicaciones.
 - [x] Añadir una prueba de conservación completa, validar y publicar la corrección.
+
+---
+# Carga estable del feed
+- [x] Localizar por qué Para ti, Seguidos y Explorar pueden quedar en esqueletos permanentes.
+- [x] Garantizar una salida a contenido, estado vacío o error recuperable en cada filtro.
+- [x] Cubrir los estados de carga del feed con pruebas, validar en móvil y publicar.
