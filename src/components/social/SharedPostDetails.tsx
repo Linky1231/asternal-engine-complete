@@ -114,17 +114,17 @@ export function SharedPostDetails({
       )}
 
       {post.pinnedGame && (
-        <div className={`flex items-center gap-2.5 rounded-2xl p-2.5 ${postSurfaceClass("game")}`}>
+        <div className={`flex items-center gap-2 rounded-xl px-2.5 py-2 text-left ${postSurfaceClass("game")}`}>
           {post.pinnedGame.coverUrl ? (
-            <img src={post.pinnedGame.coverUrl} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-primary/15 bg-primary/[0.07] object-contain" />
+            <img src={post.pinnedGame.coverUrl} alt="" className="h-8 w-8 shrink-0 rounded-lg border border-primary/15 bg-primary/[0.07] object-contain" />
           ) : (
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-primary/20 bg-primary/[0.1] text-primary"><Gamepad2 size={18} /></span>
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-primary/15 bg-primary/[0.07] text-primary"><Gamepad2 size={14} /></span>
           )}
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-primary">Juego fijado</p>
-            <p className="truncate text-[12px] font-display font-bold">{post.pinnedGame.title}</p>
+            <p className="text-[8px] font-medium uppercase tracking-[0.1em] text-muted-foreground">Juego fijado</p>
+            <p className="truncate text-[11px] font-semibold text-foreground">{post.pinnedGame.title}</p>
           </div>
-          <span className="grid h-7 w-7 place-items-center rounded-full border border-primary/25 bg-primary/15 text-primary"><Play size={12} fill="currentColor" /></span>
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg border border-border/70 bg-background/80 text-muted-foreground" aria-hidden="true"><Play size={12} /></span>
         </div>
       )}
 

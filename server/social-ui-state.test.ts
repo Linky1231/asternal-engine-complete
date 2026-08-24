@@ -83,11 +83,13 @@ describe("vista previa de obras", () => {
 });
 
 describe("capas Azure Drift de publicaciones", () => {
-  it("usa una superficie azul suave para el juego fijado sin emplear fondos negros", () => {
+  it("usa una ficha neutra y legible para el juego fijado, no una superficie de botón", () => {
     const game = postSurfaceClass("game");
-    expect(game).toContain("bg-primary");
-    expect(game).toContain("border-primary");
+    expect(game).toContain("bg-card");
+    expect(game).toContain("border-border");
     expect(game).not.toContain("bg-black");
+    expect(game).not.toContain("bg-primary/");
+    expect(game).not.toContain("grad-brand");
   });
 
   it("mantiene las piezas informativas en capas azules y no las convierte en acciones principales", () => {

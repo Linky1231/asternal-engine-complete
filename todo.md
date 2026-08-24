@@ -1269,3 +1269,10 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Localizar la cápsula con degradado aplicada a las reacciones activas de publicaciones.
 - [x] Conservar icono y texto azules/rellenos sin fondo de botón cuando la reacción sea personal.
 - [x] Añadir una prueba de regresión, validar y publicar la corrección.
+
+---
+# Fichas informativas y separación sutil del feed
+- [x] Convertir el juego fijado de una publicación en una ficha informativa legible, sin apariencia de botón principal.
+- [x] Auditar otros adjuntos y metadatos del feed para retirar superficies de botón impropias y recuperar contraste de texto.
+- [x] Suavizar y contener el separador entre publicaciones para conservar ritmo visual sin líneas invasivas.
+- [x] Añadir cobertura de regresión, validar en móvil, compilar y publicar.

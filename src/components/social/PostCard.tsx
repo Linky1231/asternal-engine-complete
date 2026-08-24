@@ -263,9 +263,9 @@ export const PostCard = memo(function PostCard({
   };
 
   return (
-    <article className={`group panel rounded-2xl border border-border/60 transition-[border-color,box-shadow] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-sm ${entranceClass}`}>
+    <article className={`group panel overflow-hidden rounded-2xl border border-border/60 transition-[border-color,box-shadow] duration-200 ease-out pointer-fine:hover:border-primary/30 pointer-fine:hover:shadow-sm ${entranceClass}`}>
       {/* Hairline degradado superior */}
-      <div className="h-[3px] w-full rounded-t-2xl grad-brand-fade opacity-70 pointer-fine:group-hover:opacity-100 transition-opacity duration-300" />
+      <div aria-hidden="true" className="h-px w-full grad-brand-fade opacity-35 pointer-fine:group-hover:opacity-50 transition-opacity duration-200" />
 
       <div className="p-3 space-y-3">
         <header className="flex items-center gap-2.5">
@@ -386,25 +386,28 @@ export const PostCard = memo(function PostCard({
 
         {/* Juego fijado */}
         {post.pinned_game && (
-          <button
-            type="button"
-            onClick={() => onOpenGame?.(post.pinned_game!.id)}
-            className={`group/game flex items-center gap-3 rounded-2xl p-2 pr-3 ${postSurfaceClass("game")} pointer-fine:hover:border-primary/45 transition-[border-color,box-shadow,background-color] duration-300 ease-out pointer-fine:hover:bg-primary/[0.08] pointer-fine:hover:shadow-md w-full text-left cursor-pointer`}>
+          <div className={`flex items-center gap-2.5 rounded-2xl px-3 py-2.5 text-xs ${postSurfaceClass("game")}`}>
             {post.pinned_game.cover_url ? (
-              <img src={post.pinned_game.cover_url} alt="" className="w-14 aspect-square rounded-2xl object-contain bg-primary/[0.07] shrink-0 ring-1 ring-primary/15" />
+              <img src={post.pinned_game.cover_url} alt="" className="h-9 w-9 shrink-0 rounded-xl border border-primary/15 bg-primary/[0.07] object-contain" />
             ) : (
-              <div className="w-14 aspect-square rounded-2xl bg-primary/[0.1] border border-primary/20 grid place-items-center shrink-0">
-                <Gamepad2 size={22} className="text-primary" />
-              </div>
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-primary/15 bg-primary/[0.07] text-primary">
+                <Gamepad2 size={16} />
+              </span>
             )}
             <div className="min-w-0 flex-1">
-              <div className="text-[9px] font-display tracking-[0.18em] text-primary uppercase">Juego fijado</div>
-              <div className="text-sm font-display truncate mt-0.5">{post.pinned_game.title}</div>
+              <div className="text-[9px] font-medium uppercase tracking-[0.12em] text-muted-foreground">Juego fijado</div>
+              <div className="mt-0.5 truncate font-semibold text-foreground">{post.pinned_game.title}</div>
             </div>
-            <span className="w-8 h-8 rounded-full bg-primary/15 border border-primary/25 text-primary grid place-items-center transition-[transform,background-color] duration-300 ease-out pointer-fine:group-hover/game:translate-x-0.5 pointer-fine:group-hover/game:bg-primary/20">
+            <button
+              type="button"
+              onClick={() => onOpenGame?.(post.pinned_game!.id)}
+              className="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-border/70 bg-background/80 text-muted-foreground transition-[border-color,color,background-color,transform] duration-150 ease-out hover:border-primary/35 hover:bg-primary/[0.06] hover:text-primary active:scale-95"
+              aria-label={`Jugar ${post.pinned_game.title}`}
+              title={`Jugar ${post.pinned_game.title}`}
+            >
               <Play size={14} className="ml-0.5" fill="currentColor" />
-            </span>
-          </button>
+            </button>
+          </div>
         )}
 
         {/* Encuesta */}
