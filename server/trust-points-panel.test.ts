@@ -8,9 +8,10 @@ describe("presentación de Puntos de confianza", () => {
     expect(trustLevelPresentation(7).label).toBe("normal");
   });
 
-  it("conserva el color de progreso asociado a cada nivel", () => {
-    expect(trustLevelPresentation(0).progressColor).toBe("#ef4444");
-    expect(trustLevelPresentation(4).progressColor).toBe("#f59e0b");
-    expect(trustLevelPresentation(10).progressColor).toBe("#10b981");
+  it("usa únicamente intensidades de Azure Drift para todos los niveles", () => {
+    expect(trustLevelPresentation(0).progressColor).toBe("var(--blue-600)");
+    expect(trustLevelPresentation(4).progressColor).toBe("var(--primary)");
+    expect(trustLevelPresentation(10).progressColor).toBe("var(--azure)");
+    expect(trustLevelPresentation(10).textClass).toBe("text-primary");
   });
 });

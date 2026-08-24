@@ -49,28 +49,28 @@ export function TrustPointsHistory({
     <section className="fixed inset-0 z-[140] flex h-[100dvh] min-h-screen flex-col overflow-hidden bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Historial de confianza">
       <header className="glass-header shrink-0 border-b border-border/70">
         <div className="mx-auto flex w-full max-w-4xl items-center gap-3 px-3 py-3 sm:px-6">
-          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-border/60 bg-surface/80 grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition" aria-label="Volver a puntos de confianza"><X size={16} /></button>
-          <div className="min-w-0 flex-1"><div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Puntos de confianza</div><h2 className="font-display text-base font-bold truncate">Historial</h2></div>
+          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-primary/20 bg-primary/8 grid place-items-center text-primary hover:bg-primary/14 active:scale-95 transition" aria-label="Volver a puntos de confianza"><X size={16} /></button>
+          <div className="min-w-0 flex-1"><div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Puntos de confianza</div><h2 className="font-display text-base font-bold text-primary truncate">Historial</h2></div>
         </div>
       </header>
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <main className="mx-auto w-full max-w-4xl px-3 py-5 sm:px-6 sm:py-8">
-        <div className="grid grid-cols-3 gap-2 rounded-2xl border border-border/60 bg-card px-4 py-4">
+        <div className="grid grid-cols-3 gap-2 rounded-2xl border border-primary/20 bg-card px-4 py-4">
           <div className="text-center">
             <div className="text-[10px] font-mono text-muted-foreground/50 mb-0.5">RESTADOS</div>
-            <div className="text-sm font-display font-semibold text-red-500 tabular-nums">
+            <div className="text-sm font-display font-semibold text-primary tabular-nums">
               -{totalDeducted}
             </div>
           </div>
           <div className="text-center">
             <div className="text-[10px] font-mono text-muted-foreground/50 mb-0.5">EVENTOS</div>
-            <div className="text-sm font-display font-semibold text-foreground tabular-nums">
+            <div className="text-sm font-display font-semibold text-primary tabular-nums">
               {entries.length}
             </div>
           </div>
           <div className="text-center">
             <div className="text-[10px] font-mono text-muted-foreground/50 mb-0.5">RECUPERADOS</div>
-            <div className="text-sm font-display font-semibold text-emerald-500 tabular-nums">
+            <div className="text-sm font-display font-semibold text-primary tabular-nums">
               +{totalRestored}
             </div>
           </div>
@@ -96,22 +96,20 @@ export function TrustPointsHistory({
                 >
                   <div
                     className={`w-8 h-8 rounded-lg grid place-items-center shrink-0 mt-0.5 ${
-                      isDeduct
-                        ? "bg-red-50 border border-red-200/50"
-                        : "bg-emerald-50 border border-emerald-200/50"
+                      "bg-primary/10 border border-primary/25"
                     }`}
                   >
                     {isDeduct ? (
-                      <ShieldAlert size={14} className="text-red-500" />
+                      <ShieldAlert size={14} className="text-primary" />
                     ) : (
-                      <ShieldCheck size={14} className="text-emerald-500" />
+                      <ShieldCheck size={14} className="text-primary" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span
                         className={`text-xs font-display font-semibold ${
-                          isDeduct ? "text-red-500" : "text-emerald-500"
+                          "text-primary"
                         }`}
                       >
                         {isDeduct ? `-${entry.amount}` : `+${entry.amount}`} pts

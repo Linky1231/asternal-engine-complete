@@ -5,29 +5,34 @@ export type TrustLevelPresentation = {
   progressColor: string;
 };
 
+/**
+ * Mantiene los niveles semánticos sin introducir colores ajenos a Azure Drift.
+ * La intensidad de azul comunica el nivel; el texto y los bordes conservan
+ * contraste coherente con la superficie glass de Asternal.
+ */
 export function trustLevelPresentation(points: number): TrustLevelPresentation {
   if (points <= 2) {
     return {
       label: "crítico",
-      textClass: "text-red-500",
-      surfaceClass: "bg-red-50 border-red-200/60",
-      progressColor: "#ef4444",
+      textClass: "text-primary",
+      surfaceClass: "bg-primary/15 border-primary/35",
+      progressColor: "var(--blue-600)",
     };
   }
 
   if (points <= 6) {
     return {
       label: "bajo",
-      textClass: "text-amber-500",
-      surfaceClass: "bg-amber-50 border-amber-200/60",
-      progressColor: "#f59e0b",
+      textClass: "text-primary",
+      surfaceClass: "bg-primary/12 border-primary/30",
+      progressColor: "var(--primary)",
     };
   }
 
   return {
     label: "normal",
-    textClass: "text-emerald-500",
-    surfaceClass: "bg-emerald-50 border-emerald-200/60",
-    progressColor: "#10b981",
+    textClass: "text-primary",
+    surfaceClass: "bg-primary/8 border-primary/25",
+    progressColor: "var(--azure)",
   };
 }

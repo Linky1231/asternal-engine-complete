@@ -955,44 +955,44 @@ function TrustPointsPanel({ userId, trustPoints, isMod, viewingOwn, onClose, onT
     <section className="fixed inset-0 z-[130] flex h-[100dvh] min-h-screen flex-col overflow-hidden bg-background/95 backdrop-blur-md animate-in fade-in duration-200" role="dialog" aria-modal="true" aria-label="Puntos de confianza">
       <header className="glass-header shrink-0 border-b border-border/70">
         <div className="mx-auto flex w-full max-w-5xl items-center gap-3 px-3 py-3 sm:px-6">
-          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-border/60 bg-surface/80 grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition" aria-label="Volver al perfil">
+          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-primary/20 bg-primary/8 grid place-items-center text-primary hover:bg-primary/14 active:scale-95 transition" aria-label="Volver al perfil">
             <ChevronRight size={16} className="rotate-180" />
           </button>
           <div className="min-w-0 flex-1">
             <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Perfil</div>
-            <h2 className="font-display text-base font-bold truncate">Puntos de confianza</h2>
+            <h2 className="font-display text-base font-bold text-primary truncate">Puntos de confianza</h2>
           </div>
           <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground"><Shield size={14} className="text-primary" />Reputación de la comunidad</div>
-          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-border/60 bg-surface/80 grid place-items-center text-muted-foreground hover:bg-muted hover:text-foreground active:scale-95 transition" aria-label="Cerrar puntos de confianza"><X size={16} /></button>
+          <button type="button" onClick={onClose} className="h-9 w-9 shrink-0 rounded-xl border border-primary/20 bg-primary/8 grid place-items-center text-primary hover:bg-primary/14 active:scale-95 transition" aria-label="Cerrar puntos de confianza"><X size={16} /></button>
         </div>
       </header>
 
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
         <main className="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8">
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
-            <section className="rounded-2xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
+            <section className="rounded-2xl border border-primary/20 bg-card p-5 shadow-sm sm:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">Estado actual</div>
                   <div className="mt-2 flex items-end gap-2"><span className="font-display text-6xl font-bold tabular-nums text-primary">{trustPoints}</span><span className="mb-2 text-sm text-muted-foreground">de {DEFAULT_TRUST_POINTS} puntos</span></div>
                 </div>
-                <div className="h-11 w-11 rounded-2xl grid place-items-center text-white shadow-sm" style={{ background: "var(--gradient)" }}><Shield size={20} /></div>
+                <div className="grad-brand h-11 w-11 rounded-2xl grid place-items-center text-primary-foreground shadow-sm" aria-label="Protección de confianza"><Shield size={20} strokeWidth={2.25} /></div>
               </div>
               <div className="mt-5 h-2 rounded-full bg-muted/50 overflow-hidden"><div className="h-full rounded-full transition-[width] duration-300" style={{ width: `${Math.max(0, Math.min(100, (trustPoints / DEFAULT_TRUST_POINTS) * 100))}%`, background: level.progressColor }} /></div>
               <div className="mt-4 flex items-center justify-between gap-3"><span className="text-xs text-muted-foreground">Tu comportamiento dentro de la comunidad.</span><span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${level.surfaceClass} ${level.textClass}`}>Nivel {level.label}</span></div>
             </section>
 
-            <aside className="rounded-2xl border border-border/70 bg-surface/80 p-5 sm:p-6">
-              <div className="flex items-center gap-2 text-sm font-display font-bold"><Trophy size={16} className="text-primary" />Cómo funciona</div>
+            <aside className="rounded-2xl border border-primary/20 bg-surface/80 p-5 sm:p-6">
+              <div className="flex items-center gap-2 text-sm font-display font-bold text-primary"><Trophy size={16} className="text-primary" />Cómo funciona</div>
               <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Los puntos de confianza reflejan el cumplimiento de las reglas de la comunidad. Mantén una conducta respetuosa y protege tu cuenta.</p>
-              <div className="mt-4 rounded-xl border border-border/50 bg-muted/25 p-3 text-xs leading-relaxed text-muted-foreground">Al llegar a <strong className="text-foreground">0 puntos</strong>, la cuenta queda bloqueada automáticamente. Los ajustes realizados por moderación quedan registrados.</div>
-              <button type="button" onClick={() => setShowHistory(true)} className="mt-4 h-10 w-full rounded-xl border border-border/60 bg-card text-xs font-semibold text-foreground hover:bg-muted/60 active:scale-[0.98] transition">Ver historial de puntos</button>
+              <div className="mt-4 rounded-xl border border-primary/15 bg-primary/5 p-3 text-xs leading-relaxed text-muted-foreground">Al llegar a <strong className="text-primary">0 puntos</strong>, la cuenta queda bloqueada automáticamente. Los ajustes realizados por moderación quedan registrados.</div>
+              <button type="button" onClick={() => setShowHistory(true)} className="grad-brand mt-4 h-10 w-full rounded-xl text-xs font-semibold text-primary-foreground active:scale-[0.98] transition">Ver historial de puntos</button>
             </aside>
           </div>
 
           {isMod && !viewingOwn && (
-            <section className="mt-4 rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
-              <div className="flex items-center gap-2"><Shield size={15} className="text-primary" /><div><div className="text-sm font-display font-bold">Control de moderación</div><p className="text-xs text-muted-foreground">Los cambios se registran en el historial del perfil.</p></div></div>
+            <section className="mt-4 rounded-2xl border border-primary/20 bg-card p-4 sm:p-5">
+              <div className="flex items-center gap-2"><Shield size={15} className="text-primary" /><div><div className="text-sm font-display font-bold text-primary">Control de moderación</div><p className="text-xs text-muted-foreground">Los cambios se registran en el historial del perfil.</p></div></div>
               <div className="mt-4 grid gap-3 sm:grid-cols-[auto_minmax(0,1fr)]">
                 <button onClick={handleRestore} disabled={busy || trustPoints >= DEFAULT_TRUST_POINTS} className="h-10 rounded-xl border border-border/60 bg-surface px-4 text-xs font-semibold text-primary hover:bg-primary/10 active:scale-95 transition disabled:opacity-40">Restaurar +1</button>
                 <div className="grid grid-cols-[4.5rem_minmax(0,1fr)_auto] gap-2">

@@ -1079,3 +1079,8 @@ Validación: `pnpm test` completó 21 pruebas y `pnpm build` finalizó correctam
 # Panel aislado de Puntos de confianza
 - [x] Sustituir el apartado compacto de Puntos de confianza por un panel independiente de pantalla completa.
 - [x] Validar apertura, cierre y scroll interno mediante la estructura aislada, 31 pruebas, compilación y revisión móvil de la ruta protegida; la comprobación visual con sesión queda disponible para el usuario.
+---
+# Paleta y contraste de Puntos de confianza
+- [x] Sustituir los tonos negros y verdes por la paleta azul de Asternal dentro del panel de confianza.
+- [x] Hacer visible el escudo y aplicar el degradado azul de marca al botón de historial.
+- [x] Validar el contrato de paleta, 31 pruebas, compilación y revisión móvil de la ruta protegida; la comprobación visual con sesión queda disponible para el usuario.
