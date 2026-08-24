@@ -196,7 +196,7 @@ export async function fetchFeed(opts: { search?: string; tag?: string; category?
   // El feed normal solo muestra publicaciones: los juegos y las obras de la
   // galería (category = artwork) viven en sus propias secciones y no deben
   // colarse aquí.
-  else if (!opts.includeGames) q = q.or("category.is.null,category.neq.game,category.neq.artwork");
+  else if (!opts.includeGames) q = q.or("category.is.null,category.neq.game,category.neq.artwork,category.neq.system");
   const { data: posts, error } = await q;
   if (error) {
     // Esquema aún sin crear en Supabase: degradar a lista vacía en vez de crashear.

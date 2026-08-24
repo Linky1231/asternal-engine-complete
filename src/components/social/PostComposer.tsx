@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Avatar } from "./Avatar";
 import { createPost, fetchMyGamesLite, getMyProfile, type MediaType, type Profile } from "@/lib/social/api";
+import { reviewPostWithOrion } from "@/lib/ai/community-orion";
 import {
   Image as ImageIcon, Film, Link as LinkIcon, X, Send, Loader2, Tag,
   FileText, Code2, Palette, BarChart3, Lock, Gamepad2, Plus, Trash2, Share2, Sparkles,
@@ -226,6 +227,19 @@ export function PostComposer({ onCreated }: { onCreated: () => void }) {
     setErr(null);
     try {
       const tags = parseTags();
+      const review = await reviewPostWithOrion({
+        content: content.trim(),
+        tags,
+        postTypes,
+        linkUrl: linkUrl.trim() || undefined,
+        htmlIncluded: Boolean(htmlContent.trim()),
+        documentNames: documents.map(document => document.name).slice(0, MAX_DOC_FILES),
+        hasMedia: files.length > 0,
+        pollQuestion: poll?.question.trim() || undefined,
+      });
+      if (!review.allowed) {
+        throw new Error(review.reason || "Esta publicación no cumple las reglas de la comunidad.");
+      }
       await createPost({
         content: content.trim(),
         files,
@@ -498,7 +512,7 @@ export function PostComposer({ onCreated }: { onCreated: () => void }) {
           <button onClick={() => void submit()} disabled={!canSubmit}
             className="h-10 pl-4 pr-5 rounded-xl grad-brand text-primary-foreground font-display tracking-[0.15em] text-xs flex items-center gap-1.5 active:scale-[0.97] transition-[transform,box-shadow,opacity] duration-300 ease-out  disabled:opacity-40 disabled:pointer-events-none  ">
             {busy ? <Loader2 size={14} className="animate-spin" /> : <Send size={13} />}
-            {busy ? "…" : "PUBLICAR"}
+            {busy ? "ORIÓn REVISA…" : "PUBLICAR"}
           </button>
         </div>
       </div>

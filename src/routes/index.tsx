@@ -2,10 +2,11 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { Avatar } from "@/components/social/Avatar";
 import { Component, useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Compass, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, FileText, TrendingUp } from "lucide-react";
+import { Gamepad2, Newspaper, Search, LogOut, Wrench, Plus, ShieldCheck, User, Sparkles, Star, Menu, MessageCircle, Bell, X, Home, Users, Flame, MessageSquare, Compass, Palette, Trophy, BarChart3, ChevronRight, Megaphone, Bot, FileText, TrendingUp, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { fetchFeed, fetchGames, getMyProfile, isMod, isAdmin, type PostWithMeta, type Profile } from "@/lib/social/api";
+import { fetchFeed, fetchGames, fetchFollowing, getMyProfile, isMod, isAdmin, type PostWithMeta, type Profile } from "@/lib/social/api";
+import { rankFeedWithOrion } from "@/lib/ai/community-orion";
 import { syncAllProjects } from "@/lib/engine/cloud-sync";
 import { PostComposer } from "@/components/social/PostComposer";
 import { PostCard } from "@/components/social/PostCard";
@@ -96,6 +97,7 @@ function HomePage() {
   const [feedSub, setFeedSub] = useState<FeedSub>("forYou");
   const [games, setGames] = useState<PostWithMeta[]>([]);
   const [posts, setPosts] = useState<PostWithMeta[]>([]);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [loadingTab, setLoadingTab] = useState<Tab | null>("games");
   const loadedTabsRef = useRef<Set<Tab>>(new Set());
   const [search, setSearch] = useState("");
@@ -160,13 +162,16 @@ function HomePage() {
     setLoadingTab(which);
     try {
       if (which === "games") setGames(await fetchGames({ search: search || undefined }));
-      else setPosts(await fetchFeed({ search: search || undefined }));
+      else {
+        const feed = await fetchFeed({ search: search || undefined });
+        setPosts(await rankFeedWithOrion(feed, followingIds));
+      }
       loadedTabsRef.current.add(which);
       getMyProfile().then(p => p && setMe(p)).catch(() => {/* ignore */});
     } finally {
       setLoadingTab(current => current === which ? null : current);
     }
-  }, [search]);
+  }, [search, followingIds]);
 
   // Callback estable para PostCard (memoizado): no cambia de identidad en cada
   // render, así abrir un menú en una tarjeta no fuerza a re-renderizar el resto.
@@ -201,6 +206,9 @@ function HomePage() {
         }
         if (!uid) { navigate({ to: "/auth" }); return; }
         setMyId(uid);
+        void fetchFollowing(uid)
+          .then(profiles => setFollowingIds(profiles.map(profile => profile.id)))
+          .catch(() => setFollowingIds([]));
         // Estado de la nube: conectada (claves reales + cuenta real), cuenta
         // local con Supabase conectado, o modo local puro (todo en el navegador).
         // Sincroniza los proyectos con la nube (sube los locales sin respaldo y
@@ -326,7 +334,7 @@ function HomePage() {
                   transition={{ duration: 0.12, ease: "easeOut" }}
                 >
                   {isTabLoading("feed", loadingTab) ? <SkeletonList /> : (() => {
-                    const filtered = filterFeed(posts, feedSub, myId);
+                    const filtered = filterFeed(posts, feedSub, myId, followingIds);
                     if (filtered.length === 0) {
                       return (
                         <div className="text-center text-xs text-muted-foreground py-10 space-y-2">
@@ -389,7 +397,7 @@ function HomePage() {
                           )}
                           <div>
                             <h3 className="text-xs font-display font-bold tracking-wider text-primary/80 uppercase mb-3 flex items-center gap-2">
-                              <TrendingUp size={13} /> Contenido popular
+                              <TrendingUp size={13} /> Recomendado por Orión
                             </h3>
                             <div className="space-y-3">
                               {filtered.slice(0, 8).map((p, i) => (
@@ -490,6 +498,7 @@ function HomePage() {
               <MenuItem icon={<Trophy size={16} className="text-primary/80"/>} label="Eventos" onClick={() => { setEventsOpen(true); closeMenu(); }} />
               <MenuLink icon={<BarChart3 size={16} className="text-primary/80"/>} label="Historial" to="/history" onClick={closeMenu} />
               <MenuLink icon={<Megaphone size={16} className="text-primary/80"/>} label="Panel de Orbes" to="/orbes" onClick={closeMenu} />
+              <MenuLink icon={<Info size={16} className="text-primary/80"/>} label="Acerca de nosotros" to="/about" onClick={closeMenu} />
               {(mod || admin) && (
                 <MenuLink icon={<ShieldCheck size={16} className="text-primary/80"/>} label="Moderación" to="/admin" onClick={closeMenu} />
               )}
@@ -734,123 +743,13 @@ function FeedSubTabs({ value, onChange }: { value: FeedSub; onChange: (v: FeedSu
   );
 }
 
-function computeForYouScore(
-  p: PostWithMeta,
-  now: number,
-  authorCounts: Map<string, number>,
-): number {
-  // --- Raw engagement (weighted) ---
-  const likes = p.likes ?? 0;
-  const favs = p.favorites ?? 0;
-  const comments = p.comments_count ?? 0;
-  const reposts = p.reposts_count ?? 0;
-
-  const engagement =
-    likes * 1.0 +
-    favs * 2.5 +
-    comments * 3.0 +
-    reposts * 4.0;
-
-  // --- Recency: exponential decay (24h half-life) ---
-  const ageMs = now - new Date(p.created_at).getTime();
-  const ageH = Math.max(0.01, ageMs / 36e5);
-  const HALF_LIFE = 24; // hours
-  const recencyFactor = Math.pow(0.5, ageH / HALF_LIFE);
-
-  // --- Freshness burst: posts < 24h get a boost that fades linearly ---
-  const freshBoost = ageH < 24 ? 1 + (1 - ageH / 24) * 0.7 : 1;
-
-  // --- Media bonus ---
-  const hasMedia = p.media_type === "image" || p.media_type === "video";
-  const hasCover = !!p.cover_url;
-  const mediaBonus = hasMedia || hasCover ? 1.25 : 1;
-
-  // --- Engagement rate (interactions per hour) ---
-  const totalInteractions = likes + favs + comments + reposts;
-  const rateBonus = ageH > 0.5
-    ? 1 + Math.min(2, (totalInteractions / ageH) * 0.2)
-    : 2; // very fresh posts get a generous rate bonus
-
-  // --- Author diversity penalty ---
-  const authorCount = authorCounts.get(p.author_id) ?? 0;
-  // First post: no penalty. Second: -30%. Third+: -60%.
-  const diversityPenalty = authorCount === 0 ? 1
-    : authorCount === 1 ? 0.7
-    : 0.4;
-
-  // --- Base score ---
-  let score = engagement * recencyFactor * freshBoost * mediaBonus * rateBonus * diversityPenalty;
-
-  // --- Small chaotic jitter (±8%) for natural variety in ties ---
-  // Determinista por post: antes era Math.random() y cada re-render del feed
-  // re-ordenaba ligeramente las publicaciones (cambio brusco de posición).
-  score *= seededJitter(p.id);
-
-  return score;
-}
-
-// Hash FNV-1a estable por id: mismo post → mismo jitter en todos los renders,
-// así el orden del feed nunca cambia por re-renderizaciones ajenas (abrir un
-// menú, actualizar el perfil, etc.).
-function seededJitter(id: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < id.length; i++) {
-    h ^= id.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  const u = (h >>> 0) / 4294967295; // [0, 1)
-  return 0.92 + u * 0.16; // ±8%
-}
-
-function filterFeed(posts: PostWithMeta[], sub: FeedSub, myId: string | null): PostWithMeta[] {
-  const now = Date.now();
-
-  if (sub === "forYou") {
-    const authorCounts = new Map<string, number>();
-
-    const scored = [...posts]
-      .map(p => {
-        const score = computeForYouScore(p, now, authorCounts);
-        // Track author count AFTER scoring so the penalty is based on *prior* entries
-        authorCounts.set(p.author_id, (authorCounts.get(p.author_id) ?? 0) + 1);
-        return { p, score };
-      })
-      .sort((a, b) => b.score - a.score);
-
-    return scored.map(x => x.p);
-  }
-
-  if (sub === "explore") {
-    // Mix of trending + media-rich + project-linked posts for discovery
-    return [...posts]
-      .map(p => {
-        const likes = p.likes ?? 0;
-        const favs = p.favorites ?? 0;
-        const comments = p.comments_count ?? 0;
-        const reposts = p.reposts_count ?? 0;
-        const ageH = Math.max(1, (now - new Date(p.created_at).getTime()) / 36e5);
-        const velocity = (likes + favs * 3 + comments * 2 + reposts * 5) / Math.pow(ageH + 1, 0.6);
-        const hasMedia = p.media_type === "image" || p.media_type === "video" || !!p.cover_url;
-        const hasProject = !!p.pinned_game;
-        const mediaBoost = hasMedia ? 1.5 : 1;
-        const projectBoost = hasProject ? 1.3 : 1;
-        const hasTags = p.tags.length > 0;
-        const tagBoost = hasTags ? 1.1 : 1;
-        const score = velocity * mediaBoost * projectBoost * tagBoost;
-        return { p, score };
-      })
-      .sort((a, b) => b.score - a.score)
-      .map(x => x.p);
-  }
-
+function filterFeed(posts: PostWithMeta[], sub: FeedSub, myId: string | null, followingIds: string[]): PostWithMeta[] {
   if (sub === "following") {
     if (!myId) return [];
-    const engagedAuthors = new Set(
-      posts.filter(p => p.my_like || p.my_favorite || p.my_repost).map(p => p.author_id),
-    );
-    engagedAuthors.delete(myId);
-    return posts.filter(p => engagedAuthors.has(p.author_id));
+    const following = new Set(followingIds);
+    return posts.filter(post => following.has(post.author_id));
   }
-
+  // «Para ti» y «Explorar» conservan el orden semántico que entregó Orión.
+  // Los conteos de reacciones no participan en esta decisión.
   return posts;
 }

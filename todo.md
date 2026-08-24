@@ -1211,3 +1211,12 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Evitar que los likes externos sobrescriban el icono relleno de la persona que ya dio like.
 - [x] Cubrir la sincronización de conteos y estado personal con una prueba de regresión.
 - [x] Validar, compilar y publicar la corrección.
+
+---
+# Moderación y recomendación con Orion
+- [x] Auditar la integración actual de Orion, el compositor, el feed y los permisos administrativos.
+- [x] Definir y persistir las reglas comunitarias y la información de privacidad editables por administración.
+- [x] Revisar cada publicación con Orion antes de crearla y bloquear con una explicación las que incumplan las reglas.
+- [x] Ordenar el feed recomendado con señales semánticas de Orion en vez de likes e interacciones.
+- [x] Crear el apartado Acerca de nosotros con lectura pública y controles administrativos.
+- [x] Cubrir la moderación y orden con pruebas, validar la interfaz adaptable y publicar.

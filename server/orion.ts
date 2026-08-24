@@ -3,7 +3,7 @@ import { invokeLLM, listLLMModels } from "./_core/llm";
 
 let selectedModel: Promise<string> | undefined;
 
-async function getModel() {
+export async function getOrionModel() {
   if (!selectedModel) {
     selectedModel = listLLMModels().then(({ data }) => {
       const ids = data.map(({ id }) => id);
@@ -32,7 +32,7 @@ export function sanitizeHistory(history: unknown): OrionMessage[] {
 export async function completeOrionChat(history: unknown, options?: { temperature?: unknown }): Promise<OrionResult> {
   const cleanHistory = sanitizeHistory(history);
   if (!cleanHistory.some(message => message.role === "user")) throw new Error("Escribe un mensaje para Orión.");
-  const model = await getModel();
+  const model = await getOrionModel();
   const temperature = typeof options?.temperature === "number" ? Math.max(0, Math.min(1, options.temperature)) : 0.35;
   const response = await invokeLLM({ model, messages: buildOrionMessages(cleanHistory), temperature });
   const content = response.choices?.[0]?.message?.content?.trim();
