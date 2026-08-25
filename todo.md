@@ -1310,3 +1310,8 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Verificar el estado publicable del proyecto y excluir secretos o artefactos transitorios.
 - [x] Crear un repositorio privado nuevo en la cuenta conectada de GitHub.
 - [x] Subir la aplicación completa y comprobar que la rama remota contiene la versión actual.
+
+---
+# Visibilidad pública del repositorio
+- [x] Cambiar el repositorio nuevo de GitHub a visibilidad pública.
+- [x] Verificar el acceso público y confirmar la nueva visibilidad.
