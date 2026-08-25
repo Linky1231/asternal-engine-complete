@@ -1283,3 +1283,10 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Evaluar juegos y artes con Orión antes de publicar, usando las reglas comunitarias administrables.
 - [x] Mostrar un motivo legible y mantener el borrador si Orión bloquea el contenido.
 - [x] Añadir pruebas, validar los flujos, compilar y publicar.
+
+---
+# Resultados legibles del buscador
+- [x] Auditar los resultados de búsqueda y las clases que les aplican apariencia de botón o degradado.
+- [x] Convertir resultados de publicaciones, juegos, usuarios y galería en filas informativas claras y legibles.
+- [x] Reservar el azul para selección, iconos y acciones explícitas, con contraste suficiente para título y fragmentos.
+- [x] Añadir prueba de regresión, validar en móvil, compilar y publicar.

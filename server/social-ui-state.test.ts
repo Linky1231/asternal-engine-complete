@@ -5,6 +5,7 @@ import { galleryPreviewAuthor, galleryPreviewPrice, isArtistGalleryArtwork } fro
 import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
 import { postSurfaceClass } from "../src/lib/social/post-surface";
+import { searchResultRowClass, searchResultTextClass } from "../src/lib/social/search-presentation";
 
 describe("mensajes de acceso", () => {
   it("traduce el fallo técnico de credenciales a una explicación clara", () => {
@@ -98,6 +99,22 @@ describe("capas Azure Drift de publicaciones", () => {
       expect(surface).toContain("bg-primary");
       expect(surface).not.toContain("grad-brand");
     }
+  });
+});
+
+describe("resultados del buscador", () => {
+  it("usa una fila informativa neutra, no un botón ni una superficie con degradado", () => {
+    expect(searchResultRowClass).toContain("search-result-row");
+    expect(searchResultRowClass).toContain("border");
+    expect(searchResultRowClass).not.toContain("bg-card");
+    expect(searchResultRowClass).not.toContain("grad-brand");
+    expect(searchResultRowClass).not.toContain("bg-primary");
+  });
+
+  it("mantiene títulos, extractos y metadatos con contraste legible", () => {
+    expect(searchResultTextClass("title")).toBe("text-foreground");
+    expect(searchResultTextClass("excerpt")).toBe("text-foreground/70");
+    expect(searchResultTextClass("meta")).toBe("text-muted-foreground/70");
   });
 });
 
