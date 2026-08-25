@@ -1309,4 +1309,4 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 # Copia completa en GitHub
 - [x] Verificar el estado publicable del proyecto y excluir secretos o artefactos transitorios.
 - [x] Crear un repositorio privado nuevo en la cuenta conectada de GitHub.
-- [ ] Subir la aplicación completa y comprobar que la rama remota contiene la versión actual.
+- [x] Subir la aplicación completa y comprobar que la rama remota contiene la versión actual.
