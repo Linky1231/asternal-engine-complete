@@ -83,7 +83,7 @@ export function GameCard({
       logPlaySession({
         gameId: post.id,
         gameTitle: title,
-        coverUrl: post.signed_cover ?? null,
+        coverUrl,
         startedAt: new Date(s.startedAt).toISOString(),
         endedAt,
         durationSeconds: dur,
