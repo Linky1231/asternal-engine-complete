@@ -6,6 +6,7 @@ import { galleryDetailMotion } from "../src/lib/social/gallery-detail-motion";
 import { qrPreviewGeometry } from "../src/lib/social/qr-preview";
 import { postSurfaceClass } from "../src/lib/social/post-surface";
 import { searchResultRowClass, searchResultTextClass } from "../src/lib/social/search-presentation";
+import { notificationCategoryOf, notificationEventRowClass, notificationFilterControlClass, notificationTotals } from "../src/lib/social/notification-presentation";
 
 describe("mensajes de acceso", () => {
   it("traduce el fallo técnico de credenciales a una explicación clara", () => {
@@ -115,6 +116,34 @@ describe("resultados del buscador", () => {
     expect(searchResultTextClass("title")).toBe("text-foreground");
     expect(searchResultTextClass("excerpt")).toBe("text-foreground/70");
     expect(searchResultTextClass("meta")).toBe("text-muted-foreground/70");
+  });
+});
+
+describe("notificaciones reales y legibles", () => {
+  it("deriva los conteos exclusivamente de eventos recibidos", () => {
+    const totals = notificationTotals([
+      { type: "follow", read: false, created_at: "2026-08-24T10:00:00Z" },
+      { type: "comment", read: true, created_at: "2026-08-24T10:01:00Z" },
+      { type: "game", read: false, created_at: "2026-08-24T10:02:00Z" },
+    ]);
+    expect(totals).toEqual({
+      total: 3,
+      unread: 2,
+      categories: {
+        interacciones: { total: 1, unread: 0 },
+        seguidores: { total: 1, unread: 1 },
+        juegos: { total: 1, unread: 1 },
+      },
+    });
+    expect(notificationCategoryOf("unknown")).toBe("interacciones");
+  });
+
+  it("mantiene filtros y eventos como capas informativas, sin degradado de botón", () => {
+    expect(notificationFilterControlClass).toContain("notification-filter-control");
+    expect(notificationFilterControlClass).not.toContain("bg-primary");
+    expect(notificationFilterControlClass).not.toContain("grad-brand");
+    expect(notificationEventRowClass).toContain("notification-event-row");
+    expect(notificationEventRowClass).not.toContain("bg-primary");
   });
 });
 

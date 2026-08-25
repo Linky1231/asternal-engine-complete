@@ -1290,3 +1290,10 @@ Las filas del menú se compactaron a 40 px, los grupos redujeron su separación 
 - [x] Convertir resultados de publicaciones, juegos, usuarios y galería en filas informativas claras y legibles.
 - [x] Reservar el azul para selección, iconos y acciones explícitas, con contraste suficiente para título y fragmentos.
 - [x] Añadir prueba de regresión, validar en móvil, compilar y publicar.
+
+---
+# Notificaciones reales y coherentes
+- [x] Auditar los eventos, conteos, categorías y periodos que alimentan el panel de notificaciones.
+- [x] Eliminar métricas ficticias y derivar la lista, resúmenes y estados desde eventos reales disponibles.
+- [x] Rediseñar filtros, estadísticas, tarjetas y estados vacíos sin superficies de botón impropias ni colores ajenos a la paleta.
+- [x] Añadir pruebas, validar en móvil, compilar y publicar.

@@ -113,6 +113,41 @@
   box-shadow: 0 10px 20px -17px oklch(0.32 0.06 260 / 0.28) !important;
 }
 
+/* Notificaciones: los eventos y filtros son información, no CTAs. */
+.notification-summary-surface,
+.notification-category-panel,
+.notification-empty-state,
+.notification-event-row {
+  background-color: oklch(1 0 0 / 0.72) !important;
+  background-image: none !important;
+  border-color: oklch(0.72 0.035 248 / 0.42) !important;
+  box-shadow: 0 8px 18px -18px oklch(0.28 0.05 260 / 0.3) !important;
+  backdrop-filter: blur(16px) saturate(1.05) !important;
+}
+
+.notification-filter-control {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--foreground) !important;
+}
+
+.notification-filter-control:hover {
+  background-color: oklch(0.94 0.025 248 / 0.52) !important;
+  border-color: oklch(0.62 0.07 245 / 0.24) !important;
+}
+
+.notification-filter-control-active {
+  background-color: oklch(0.91 0.04 245 / 0.58) !important;
+  border-color: oklch(0.56 0.11 252 / 0.34) !important;
+  box-shadow: inset 3px 0 0 var(--primary) !important;
+}
+
+.notification-event-row { border-color: transparent !important; }
+.notification-event-row:hover { background-color: oklch(0.96 0.018 248 / 0.7) !important; }
+.notification-event-row-unread { background-color: oklch(0.93 0.035 246 / 0.46) !important; }
+
 /* Acciones contextuales y navegación azul: misma firma de marca, no variantes de degradado. */
 :is(button, a)[class*="bg-primary/"] {
   position: relative;
