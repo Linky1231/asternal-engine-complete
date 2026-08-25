@@ -109,9 +109,9 @@ export default defineConfig({
     host: true,
     port: 5173,
     // Las vistas previas se exponen mediante subdominios temporales seguros.
-    // Aceptar exclusivamente los dominios de Manus evita el bloqueo de Host
-    // sin abrir el dev server a hosts arbitrarios.
-    allowedHosts: [".manus.computer", ".manus.space"],
+    // Aceptar todos los hosts evita el bloqueo del dev server en entornos de
+    // vista previa (p. ej. Base44) sin depender de un dominio fijo.
+    allowedHosts: true,
     hmr: {
       overlay: false,
     },
